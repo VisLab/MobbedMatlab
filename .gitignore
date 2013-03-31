@@ -1,0 +1,17 @@
+*.asv
+
+*.mat
+*.set
+*.html
+!index.html
+
+
+*help_*.png
+!help_ex.png
+!help_gs.png
+!help_ug.png
+!icons/*.png
+
+!doc.css
+
+pathdef.m
