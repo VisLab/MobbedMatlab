@@ -52,7 +52,7 @@ classdef EEG_Modality
                 otherFields = [];
             end
             description = strcat({'EEG channel: '}, label);
-            jElement = mobbed.Elements(DB.getConnection());
+            jElement = edu.utsa.mobbed.Elements(DB.getConnection());
             jElement.reset(datasetUuid, 'chanlocs',  [], 'EEG Cap', ...
                 label, description, position);
             jElement.addElements();
@@ -96,7 +96,7 @@ classdef EEG_Modality
             fields = fieldnames(event);
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
-            jEvent = mobbed.Events(DB.getConnection());
+            jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset(datasetUuid, 'event', [], uniqueTypes, types, ...
                 positions, startTimes, endTimes, certainties, eventUuids);
             uniqueEvents = cell(jEvent.addEvents())';

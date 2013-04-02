@@ -170,7 +170,7 @@ classdef Mobbed < hgsetget
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve up to limit row(s) from table of DB
             parser = inputParser();
-            parser.addRequired('table', @isstr);
+            parser.addRequired('table', @ischar);
             parser.addRequired('limit', @isnumeric);
             parser.addOptional('inS', [], @isstruct);
             parser.addParamValue('Tags', [], @iscell);
@@ -290,7 +290,6 @@ classdef Mobbed < hgsetget
             values = cellfun(@num2str, ...
                 squeeze(struct2cell(rmfield(datasets, 'data')))', ...
                 'UniformOutput', false);
-            [
             UUIDs = cell(DB.DbManager.addRows('datasets', columns, ...
                 values));
             numDatasets = length(datasets);
@@ -351,13 +350,17 @@ classdef Mobbed < hgsetget
         function UUIDs = putdb(DB, table, inS)
             % Insert or update row(s) in specified table of database DB
             parser = inputParser();
-            parser.addRequired('table', @ischar);
-            parser.addRequired('inS', @isstruct);
+            parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
+            parser.addRequired('inS', @(x) isstruct(x) && ...
+                ~isempty(fieldnames(x)));
             parser.parse(table, inS);
-            columns = fields(inS);
-            values = cellfun(@num2str, squeeze(struct2cell(inS))', ...
-                'UniformOutput', false);
-            UUIDs = cell(DB.DbManager.addRows(table, columns, values));
+            columns = fieldnames(parser.Results.inS);
+            doubleColumns = cell(DB.DbManager.getDoubleColumns(...
+                parser.Results.table));           
+            [values, doubleValues] = ...
+                DbHandler.extractValues(parser.Results.inS, doubleColumns);
+            UUIDs = cell(DB.DbManager.addRows(table, columns, values, ...
+                doubleColumns, doubleValues));
         end % putdb
         
         function rollback(DB)

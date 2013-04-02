@@ -8,7 +8,7 @@ classdef DbHandler
             jarFiles = dir([jarPath filesep '*.jar']);
             jarFileNames = {jarFiles.name};
             jarFilePaths = cellfun(@(x) fullfile(jarPath, x), ...
-                              jarFileNames, 'UniformOutput', false);
+                jarFileNames, 'UniformOutput', false);
             warning off all;
             try
                 javaaddpath(jarFilePaths(:));
@@ -43,22 +43,27 @@ classdef DbHandler
             end
         end % createJaggedArray
         
-        function [doubleColumns, doubleValues] = extractDoubles(DB, tableName, ...
-                structure)
-            columns = cell(DB.DbManager.getDoubleColumns(tableName));
-            numColumns = length(columns);
-            values = cell(numColumns, length(structure));
+        function [values, doubleValues] = extractValues(structure, ...
+                doubleColumns)
+            numColumns = length(doubleColumns);
+            doubleValues = zeros(numColumns, length(structure));
             for a = 1:numColumns
-            values(a,:) = {structure.(columns{a})};    
-            end        
-        end % extractDoubles 
+                doubleValues(a,:) = [structure.(doubleColumns{a})];
+            end
+            structure = rmfield(structure, doubleColumns);
+            values = cellfun(@num2str, ...
+                squeeze(struct2cell(structure))', 'UniformOutput', false);
+        end % extractDoubles
         
-        function [columns, values, doubleColumns, doubleValues] = ...
-                extractRows(DB, tableName, structure]
-        [doubleColumns, doubleValues] = DbHandler.extractDoubles(DB, ...
-            tableName, structure);
-                 
-        end % extractRows 
+%         function [columns, values, doubleColumns, doubleValues] = ...
+%                 extractRows(DB, tableName, structure)
+%             [doubleColumns, doubleValues] = DbHandler.extractDoubles(DB, ...
+%                 tableName, structure);
+%             structure = rmfield(doubleColumns);
+%             columns = fieldnames(structure);
+%             values = cellfun(@num2str, squeeze(struct2cell(structure))', ...
+%                 'UniformOutput', false);
+%         end % extractRows
         
         
         function string = reformatString(string)
@@ -74,10 +79,10 @@ classdef DbHandler
                 data = DbHandler.retrieveNumericStream(DB, ...
                     datadef.data_def_uuid);
             elseif strcmpi(datadef.data_def_format, 'NUMERIC_VALUE')
-                data = double(mobbed.DataDefs.retrieveNumericValue(...
+                data = double(edu.utsa.mobbed.DataDefs.retrieveNumericValue(...
                     DB.getConnection(), datadef.data_def_uuid));
             elseif strcmpi(datadef.data_def_format, 'XML_VALUE')
-                data = char(mobbed.DataDefs.retrieveXMLValue(...
+                data = char(edu.utsa.mobbed.DataDefs.retrieveXMLValue(...
                     DB.getConnection(), datadef.data_def_uuid));
             end
         end % retrieveDataDef
@@ -85,7 +90,7 @@ classdef DbHandler
         function file = retrieveFile(DB, entityUUID, isAdditionalData)
             % Retrieves data from a external file
             fileName = [tempname '.mat'];
-            mobbed.DataDefs.retrieveBlob(DB.getConnection(), ...
+            edu.utsa.mobbed.DataDefs.retrieveBlob(DB.getConnection(), ...
                 fileName, entityUUID, isAdditionalData);
             if exist(fileName, 'file')
                 load(fileName);
@@ -98,7 +103,7 @@ classdef DbHandler
         
         function data = retrieveNumericStream(DB, data_def_uuid)
             % Retrieves numeric stream data from database
-            jNumericData = mobbed.NumericStreams(DB.getConnection());
+            jNumericData = edu.utsa.mobbed.NumericStreams(DB.getConnection());
             jNumericData.reset(data_def_uuid);
             numElements = ...
                 mobbed.Elements.getElementCount(DB.getConnection(), ...
@@ -120,7 +125,7 @@ classdef DbHandler
             % Store data in a external file
             fileName = [tempname '.mat'];
             save(fileName, 'data', '-v7.3');
-            mobbed.DataDefs.storeBlob(DB.getConnection(), fileName, ...
+            edu.utsa.mobbed.DataDefs.storeBlob(DB.getConnection(), fileName, ...
                 entityUuid, backing);
             delete(fileName);
         end % storeExternal
@@ -155,13 +160,13 @@ classdef DbHandler
             end
             % Save as numeric value
             if strcmpi(datadef.data_def_format, 'NUMERIC_VALUE')
-                mobbed.DataDefs.storeNumericValue(...
+                edu.utsa.mobbed.DataDefs.storeNumericValue(...
                     DB.getConnection(), datadef.data_def_uuid, ...
                     datadef.data);
             end
             % Save as xml value
             if strcmpi(datadef.data_def_format, 'XML_VALUE')
-                mobbed.DataDefs.storeXMLValue(DB.getConnection(), ...
+                edu.utsa.mobbed.DataDefs.storeXMLValue(DB.getConnection(), ...
                     datadef.data_def_uuid, datadef.data);
             end
         end
@@ -169,7 +174,7 @@ classdef DbHandler
         function storeNumericStream(DB, dataDefUuid, data, times)
             % Store EEG data in database
             numFrames = length(data);
-            jNumericStream = mobbed.NumericStreams(DB.getConnection());
+            jNumericStream = edu.utsa.mobbed.NumericStreams(DB.getConnection());
             jNumericStream.reset(dataDefUuid);
             k = 1;
             while(k < numFrames)
