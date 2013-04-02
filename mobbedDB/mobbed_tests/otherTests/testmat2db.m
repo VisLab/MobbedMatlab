@@ -30,7 +30,7 @@ function testmat2dbOnlyData(tStruct) %#ok<DEFNU>
 % Unit test for EEG modality saved as a file
 fprintf('\nUnit test mat2db when EEG dataset structure only has a data field:\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;             % load a previously saved EEG structure
+load EEG.mat;             % load a previously saved EEG structure
 s = db2mat(DB);
 s.dataset_name = 'eeglabDataOnly';
 s.data = EEG;                        % set data to be stored
@@ -66,23 +66,11 @@ db2mat(DB, sUUID);
 function testmat2dbEmptyStructure(tStruct) %#ok<DEFNU>
 % Unit test for EEG modality saved as a file
 fprintf(['\nUnit test mat2db when a empty dataset structure is' ...
-'retrieved to fill in prior to the call:\n']);
+    'retrieved to fill in prior to the call:\n']);
 DB = tStruct.DB;
-load eeglab_data_ch.mat;             % load a previously saved EEG structure
+load EEG.mat;             % load a previously saved EEG structure
 s = db2mat(DB);                      % get empty structure to fill in
 s.dataset_name = 'eeglabEmptyStructure';      % dataset name is required
-s.data = EEG;                        % set data to be stored
-sUUID = mat2db(DB, s);
-db2mat(DB, sUUID);
-
-function testmat2dbNoEmptyStructure(tStruct) %#ok<DEFNU>
-% Unit test for EEG modality saved as a file
-fprintf(['\nUnit test mat2db when no empty dataset structure is' ...
-'retrieved to fill in prior to the call:\n']);
-DB = tStruct.DB;
-load eeglab_data_ch.mat;             % load a previously saved EEG structure
-s = db2mat(DB);
-s.dataset_name = 'eeglabNoEmptyStructure';      % dataset name is required
 s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s);
 db2mat(DB, sUUID);

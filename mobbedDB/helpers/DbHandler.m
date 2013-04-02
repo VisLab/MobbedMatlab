@@ -43,6 +43,24 @@ classdef DbHandler
             end
         end % createJaggedArray
         
+        function [doubleColumns, doubleValues] = extractDoubles(DB, tableName, ...
+                structure)
+            columns = cell(DB.DbManager.getDoubleColumns(tableName));
+            numColumns = length(columns);
+            values = cell(numColumns, length(structure));
+            for a = 1:numColumns
+            values(a,:) = {structure.(columns{a})};    
+            end        
+        end % extractDoubles 
+        
+        function [columns, values, doubleColumns, doubleValues] = ...
+                extractRows(DB, tableName, structure]
+        [doubleColumns, doubleValues] = DbHandler.extractDoubles(DB, ...
+            tableName, structure);
+                 
+        end % extractRows 
+        
+        
         function string = reformatString(string)
             % Convert character string to cellstr
             if ischar(string), string = cellstr(string); end;
