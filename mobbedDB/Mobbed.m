@@ -94,12 +94,7 @@ classdef Mobbed < hgsetget
             parser.addRequired('datadefs', @isstruct);
             parser.parse(datadefs);
             try
-                columns = fieldnames(rmfield(datadefs, 'data'));
-                values = cellfun(@num2str, ...
-                    squeeze(struct2cell(rmfield(datadefs, 'data')))', ...
-                    'UniformOutput', false);
-                UUIDs = cell(DB.DbManager.addRows('data_defs', columns, ...
-                    values));
+                UUIDs = putdb(DB, 'data_defs', rmfield(datadefs, 'data'));
                 for a = 1:length(UUIDs)
                     datadefs(a).data_def_uuid = UUIDs{a};
                     DbHandler.storeDataDef(DB, datadefs(a));
@@ -286,12 +281,7 @@ classdef Mobbed < hgsetget
             parser.parse(datasets, varargin{:});
             uniqueEvents = parser.Results.EventTypes;
             % Store the dataset(s)
-            columns = fieldnames(rmfield(datasets, 'data'));
-            values = cellfun(@num2str, ...
-                squeeze(struct2cell(rmfield(datasets, 'data')))', ...
-                'UniformOutput', false);
-            UUIDs = cell(DB.DbManager.addRows('datasets', columns, ...
-                values));
+            UUIDs = putdb(DB, 'datasets', rmfield(datasets, 'data'));
             numDatasets = length(datasets);
             % Store the tag(s)
             if ~isempty(parser.Results.Tags)
@@ -304,11 +294,7 @@ classdef Mobbed < hgsetget
                 [tagStruct.tag_name] = deal(tags{:});
                 [tagStruct.tag_entity_uuid] = deal(entityUuids{:});
                 [tagStruct.tag_entity_class] = deal('datasets');
-                columns = fieldnames(tagStruct);
-                values = cellfun(@num2str, ...
-                    squeeze(struct2cell(tagStruct))', ...
-                    'UniformOutput', false);
-                DB.DbManager.addRows('tags', columns, values);
+                putdb(DB, 'tags', tagStruct);
             end
             for k = 1:numDatasets
                 try
@@ -318,7 +304,8 @@ classdef Mobbed < hgsetget
                             datasets(k).dataset_modality_uuid;
                         modality = getdb(DB, 'modalities', 1, modality);
                         if isempty(modality)
-                            ME = MException('VerifyModality:InvalidModality', ...
+                            ME = MException(...
+                                'VerifyModality:InvalidModality', ...
                                 'Modality UUID does not exist');
                             throw(ME);
                         end

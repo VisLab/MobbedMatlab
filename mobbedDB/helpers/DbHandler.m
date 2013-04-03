@@ -45,26 +45,26 @@ classdef DbHandler
         
         function [values, doubleValues] = extractValues(structure, ...
                 doubleColumns)
+            numStructs = length(structure);
             numColumns = length(doubleColumns);
-            doubleValues = zeros(numColumns, length(structure));
+            %             doubleValues = zeros(length(structure), numColumns);
+            doubleValues = javaArray('java.lang.Double', ...
+                numStructs, numColumns);
             for a = 1:numColumns
-                doubleValues(a,:) = [structure.(doubleColumns{a})];
+                fieldDoubleValues = {structure.(doubleColumns{a})};
+                for b = 1:numStructs
+                    if isempty(fieldDoubleValues{b})
+                        doubleValues(a,b) = [];
+                    else
+                        doubleValues(a,b) = ...
+                            java.lang.Double(fieldDoubleValues{b});
+                    end
+                end
             end
             structure = rmfield(structure, doubleColumns);
             values = cellfun(@num2str, ...
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
-        end % extractDoubles
-        
-%         function [columns, values, doubleColumns, doubleValues] = ...
-%                 extractRows(DB, tableName, structure)
-%             [doubleColumns, doubleValues] = DbHandler.extractDoubles(DB, ...
-%                 tableName, structure);
-%             structure = rmfield(doubleColumns);
-%             columns = fieldnames(structure);
-%             values = cellfun(@num2str, squeeze(struct2cell(structure))', ...
-%                 'UniformOutput', false);
-%         end % extractRows
-        
+        end % extractValues
         
         function string = reformatString(string)
             % Convert character string to cellstr
@@ -106,7 +106,7 @@ classdef DbHandler
             jNumericData = edu.utsa.mobbed.NumericStreams(DB.getConnection());
             jNumericData.reset(data_def_uuid);
             numElements = ...
-                mobbed.Elements.getElementCount(DB.getConnection(), ...
+                edu.utsa.mobbed.Elements.getElementCount(DB.getConnection(), ...
                 data_def_uuid);
             maxPosition = jNumericData.getMaxPosition();
             width = 10000;
