@@ -47,17 +47,20 @@ classdef DbHandler
                 doubleColumns)
             numStructs = length(structure);
             numColumns = length(doubleColumns);
-            %             doubleValues = zeros(length(structure), numColumns);
-            doubleValues = javaArray('java.lang.Double', ...
-                numStructs, numColumns);
-            for a = 1:numColumns
-                fieldDoubleValues = {structure.(doubleColumns{a})};
-                for b = 1:numStructs
-                    if isempty(fieldDoubleValues{b})
-                        doubleValues(a,b) = [];
-                    else
-                        doubleValues(a,b) = ...
-                            java.lang.Double(fieldDoubleValues{b});
+            if numColumns < 1
+                doubleValues = [];
+            else
+                doubleValues = javaArray('java.lang.Double', ...
+                    numStructs, numColumns);
+                for a = 1:numStructs
+                    for b = 1:numColumns
+                        if isempty(structure(a).(doubleColumns{b}))
+                            doubleValues(a,b) = [];
+                        else
+                            doubleValues(a,b) = ...
+                                java.lang.Double(...
+                                structure(a).(doubleColumns{b}));
+                        end
                     end
                 end
             end
