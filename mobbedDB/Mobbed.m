@@ -165,53 +165,39 @@ classdef Mobbed < hgsetget
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve up to limit row(s) from table of DB
             parser = inputParser();
-            parser.addRequired('table', @ischar);
-            parser.addRequired('limit', @isnumeric);
-            parser.addOptional('inS', [], @isstruct);
+            parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
+            parser.addRequired('limit', @(x) isnumeric(x) && isscalar(x));
+            parser.addOptional('inS', [], @(x) isstruct(x) && ...
+                ~isempty(fieldnames(x)));
             parser.addParamValue('Tags', [], @iscell);
             parser.addParamValue('Attributes', [], @iscell);
             parser.addParamValue('RegExp', 'off', ...
                 @(x) any(strcmpi(x, {'on', 'off'})));
             parser.parse(table, limit, varargin{:});
-            if isequal(parser.Results.limit, 0)
+            columns = [];
+            values =[];
+            outS = [];
+            tags = DbHandler.createJaggedArray(parser.Results.Tags);
+            attributes = ...
+                    DbHandler.createJaggedArray(parser.Results.Attributes);
+            if parser.Results.limit == 0
                 columns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
                 outS = cell2struct(cell(length(columns),1), columns,1);
                 return;
             end
-            if isequal(parser.Results.limit, inf)
-                limit = -1;
-            else
-                limit = parser.Results.limit;
-            end
-            if isempty(parser.Results.inS)
-                columns = [];
-                values =[];
-            else
+            if ~isempty(parser.Results.inS)
                 columns = fieldnames(parser.Results.inS);
                 values = struct2cell(parser.Results.inS);
             end
-            if ~isempty(parser.Results.Tags)
-                tags = DbHandler.createJaggedArray(parser.Results.Tags);
-            else
-                tags = parser.Results.Tags;
-            end
-            if ~isempty(parser.Results.Attributes)
-                attributes = ...
-                    DbHandler.createJaggedArray(parser.Results.Attributes);
-            else
-                attributes = parser.Results.Attributes;
-            end
-            values = ...
+            outValues = ...
                 cell(DB.DbManager.retrieveRows(parser.Results.table, ...
-                limit, parser.Results.RegExp, tags, attributes, ...
-                columns, values));
-            if isempty(values)
-                outS = [];
-            else
-                columns = cell(DB.DbManager.getColumnNames(...
+                parser.Results.limit, parser.Results.RegExp, tags, ...
+                attributes, columns, values));
+            if ~isempty(outValues)
+                outColumns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
-                outS = cell2struct(values, columns, 2);
+                outS = cell2struct(outValues, outColumns, 2);
             end
         end % getdb
         

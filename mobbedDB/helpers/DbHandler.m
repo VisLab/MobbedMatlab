@@ -18,6 +18,10 @@ classdef DbHandler
         end % addJavaPath
         
         function jArray = createJaggedArray(array)
+            if isempty(array)
+                jArray = [];
+                return;
+            end
             if iscell(array)
                 arrayLength = length(array);
                 jArray = javaArray('java.lang.String[]', arrayLength);
