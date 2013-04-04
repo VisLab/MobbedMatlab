@@ -46,7 +46,7 @@ classdef DbHandler
                 jArray(1) = jArray2;
             end
         end % createJaggedArray
-        
+               
         function [values, doubleValues] = extractValues(structure, ...
                 doubleColumns)
             numStructs = length(structure);

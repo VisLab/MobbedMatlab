@@ -188,8 +188,11 @@ classdef Mobbed < hgsetget
                 return;
             end
             if ~isempty(parser.Results.inS)
-                columns = fieldnames(parser.Results.inS);
-                values = struct2cell(parser.Results.inS);
+                structFields = fieldnames(parser.Results.inS);
+                structure = rmfield(parser.Results.inS, ...
+                    structFields(structfun(@isempty,parser.Results.inS)));               
+                columns = fieldnames(structure);
+                values = DbHandler.createJaggedArray(struct2cell(structure));
             end
             outValues = ...
                 cell(DB.DbManager.retrieveRows(parser.Results.table, ...
