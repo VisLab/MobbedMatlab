@@ -166,7 +166,8 @@ classdef Mobbed < hgsetget
             % Retrieve up to limit row(s) from table of DB
             parser = inputParser();
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
-            parser.addRequired('limit', @(x) isnumeric(x) && isscalar(x));
+            parser.addRequired('limit', @(x) isnumeric(x) && ...
+                isscalar(x) && x > -1);
             parser.addOptional('inS', [], @(x) isstruct(x) && ...
                 ~isempty(fieldnames(x)));
             parser.addParamValue('Tags', [], @iscell);
@@ -205,54 +206,49 @@ classdef Mobbed < hgsetget
                 inS, outType, outS, limit, varargin)
             parser = inputParser();
             parser.addRequired('inType', @ischar);
-            parser.addRequired('inS', @(x) isempty(x) || isstruct(x));
+            parser.addRequired('inS', @(x) isempty(x) || isstruct(x) && ...
+                ~isempty(fieldnames(x)));
             parser.addRequired('outType', @ischar);
-            parser.addRequired('outS', @(x) isempty(x) || isstruct(x));
-            parser.addRequired('limit', @isnumeric);
+            parser.addRequired('outS', @(x) isempty(x) || isstruct(x) ...
+                && ~isempty(fieldnames(x)));
+            parser.addRequired('limit', @(x) isnumeric(x) && ...
+                isscalar(x) && x > -1);
             parser.addParamValue('Range', [0,1], @(x) ...
                 isnumeric(x) && isequal(size(x), [1,2]) && x(1) <= x(2));
             parser.addParamValue('RegExp', 'off', ...
                 @(x) any(strcmpi(x, {'on', 'off'})));
             parser.parse(inType, inS, outType, outS, ...
                 limit, varargin{:});
-            if isequal(parser.Results.limit, inf)
-                limit = -1;
-            else
-                limit = parser.Results.limit;
-            end
-            if isempty(parser.Results.inS)
-                inColumns = [];
-                inValues = [];
-            else
+            inColumns = [];
+            inValues = [];
+            outColumns = [];
+            outValues = [];
+            mStructure = [];
+            extStructure = [];
+            if ~isempty(parser.Results.inS)
                 inColumns = fieldnames(parser.Results.inS);
                 inValues = struct2cell(parser.Results.inS);
             end
-            if isempty(parser.Results.outS)
-                outColumns = [];
-                outValues = [];
-            else
+            if ~isempty(parser.Results.outS)
                 outColumns = fieldnames(parser.Results.outS);
                 outValues = struct2cell(parser.Results.outS);
             end
-            values = cell(DB.DbManager.extractRows(...
+            mValues = cell(DB.DbManager.extractRows(...
                 parser.Results.inType, inColumns, inValues, ...
                 parser.Results.outType, outColumns, outValues, ...
                 limit, parser.Results.RegExp, ...
                 parser.Results.Range(1), parser.Results.Range(2)));
-            if isempty(values)
-                mStructure = [];
-                extStructure = [];
-                return;
-            else
+            if ~isempty(mValues)
                 columns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.inType));
-                mStructure = cell2struct(values, [columns; 'extracted'], 2);
+                mStructure = ...
+                    cell2struct(mValues, [columns; 'extracted'], 2);        
+                evalues = cell(DB.DbManager.extractUniqueRows(...
+                    mValues, limit));
+                columns = cell(DB.DbManager.getColumnNames(...
+                    parser.Results.outType));
+                extStructure = cell2struct(evalues, columns, 2);
             end
-            values = cell(DB.DbManager.extractUniqueRows(...
-                values, limit));
-            columns = cell(DB.DbManager.getColumnNames(...
-                parser.Results.outType));
-            extStructure = cell2struct(values, columns, 2);
         end % extractdb
         
         

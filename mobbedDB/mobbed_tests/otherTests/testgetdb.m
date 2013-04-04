@@ -41,7 +41,7 @@ d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
 sNew1 = mat2db(DB, d1, false, 'Tags', 'single tag');
 assertTrue(iscellstr(sNew1));
-sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'single tag'}});
+sNew2 = getdb(DB, 'datasets', inf, 'Tags', {{'single tag'}});
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
