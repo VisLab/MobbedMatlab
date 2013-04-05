@@ -22,7 +22,7 @@ close(DB);
 load eeglab_data_ch.mat;             % load a previously saved EEG structure
 s = db2mat(DB);                      % get empty structure to fill in
 s.dataset_name = 'eeglab_data';      % dataset name is required
-% s.data = EEG;                        % set data to be stored
+s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s);
 
 %% 6.2 upload tagged EEGLAB EEG structure to database
@@ -131,7 +131,7 @@ sNewF = mat2db(DB, s, true);    % store the filtered dataset
 % Cache the transform for future quick retrieval
 t = getdb(DB, 'transforms', 0); % retrieve an empty transform structure
 t.transform_uuid = sNewF{1};    % set the fields
-t.transform_string = ['pop_eegfilt(' sUUID '),1.0,0,[],0)' ];
+t.transform_string = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)' ];
 t.transform_description = 'Used EEGLAB FIR filter [1.0, 0]';
 putdb(DB, 'transforms', t);     % set the fields
 commit(DB);
