@@ -114,7 +114,7 @@ classdef Mobbed < hgsetget
         function ddef = db2data(DB, varargin)
             % Retrieve additional data by data def uuid from DB
             parser = inputParser();
-            parser.addOptional('sdefUUID', {}, @DbHandler.validateUUIDs);
+            parser.addOptional('sdefUUID', {});
             parser.parse(varargin{:});
             ddef = getdb(DB, 'data_defs', 0);
             ddef.data = [];
