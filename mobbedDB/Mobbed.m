@@ -1,12 +1,12 @@
 % Mobbed connection object to a Postgresql database
 %
 % Usage:
-%   >>  DB = Mobbed(name, hostname, user, password)
-%   >>  DB = Mobbed(name, hostname, user, password, verbose)
+%   >>  DB = Mobbed(dbname, hostname, username, password)
+%   >>  DB = Mobbed(dbname, hostname, username, password, verbose)
 %
 % Description:
-% DB = Mobbed(name, hostname, user, password) creates a connection
-%   object to a Postgresql database called name on host hostname using
+% DB = Mobbed(dbname, hostname, username, password) creates a connection
+%   object to a Postgresql database called dbname on host hostname using
 %   the username user with the specified password. The DB connection
 %   object is used to read from and write to the database.
 %
@@ -62,15 +62,15 @@ classdef Mobbed < hgsetget
     
     methods
         
-        function DB = Mobbed(name, hostname, user, password, varargin)
+        function DB = Mobbed(dbname, hostname, username, password, varargin)
             % Create a connection object for database name on hostname
             parser = inputParser();
-            parser.addRequired('name', @ischar);
+            parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
-            parser.addRequired('user', @ischar);
+            parser.addRequired('username', @ischar);
             parser.addRequired('password', @ischar);
             parser.addOptional('verbose', true, @islogical);
-            parser.parse(name, hostname, user, password, varargin{:});
+            parser.parse(dbname, hostname, username, password, varargin{:});
             DB.Verbose = parser.Results.verbose;
             % Set the properties of a database
             DbHandler.addJavaPath();
@@ -366,35 +366,37 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
-        function createdb(name, hostname, user, password, script, varargin)
+        function createdb(dbname, hostname, username, password, script, varargin)
             % Create a Postgresql database called name on host hostname
             parser = inputParser();
-            parser.addRequired('name', @ischar);
+            parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
-            parser.addRequired('user', @ischar);
+            parser.addRequired('username', @ischar);
             parser.addRequired('password', @ischar);
             parser.addOptional('script', 'mobbed.sql', @ischar);
             parser.addOptional('verbose', true, @islogical);
-            parser.parse(name, hostname, user, password, script, ...
+            parser.parse(dbname, hostname, username, password, script, ...
                 varargin{:});
-            edu.utsa.mobbed.ManageDB.createDatabase(parser.Results.name, ...
-                parser.Results.hostname, parser.Results.user, ...
-                parser.Results.password, which(parser.Results.script), ...
-                parser.Results.verbose);
+            edu.utsa.mobbed.ManageDB.createDatabase(...
+                parser.Results.name, parser.Results.hostname, ...
+                parser.Results.user, parser.Results.password, ...
+                which(parser.Results.script), parser.Results.verbose);
         end % createdb
         
-        function deletedb(name, hostname, user, password, varargin)
+        function deletedb(dbname, hostname, username, password, varargin)
             % Delete Postgresql database name on host hostname
             parser = inputParser();
-            parser.addRequired('name', @ischar);
+            parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
-            parser.addRequired('user', @ischar);
+            parser.addRequired('username', @ischar);
             parser.addRequired('password', @ischar);
             parser.addOptional('verbose', true, @islogical);
-            parser.parse(name, hostname, user, password, varargin{:});
-            edu.utsa.mobbed.ManageDB.deleteDatabase(parser.Results.name, ...
-                parser.Results.hostname, parser.Results.user, ...
-                parser.Results.password, parser.Results.verbose);
+            parser.parse(dbname, hostname, username, password, ...
+                varargin{:});
+            edu.utsa.mobbed.ManageDB.deleteDatabase(...
+                parser.Results.dbname, parser.Results.hostname, ...
+                parser.Results.username, parser.Results.password, ...
+                parser.Results.verbose);
         end % deletedb
         
     end % Static methods
