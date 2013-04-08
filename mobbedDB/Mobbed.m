@@ -266,40 +266,40 @@ classdef Mobbed < hgsetget
             parser.addParamValue('EventTypes', {}, @iscellstr);
             parser.parse(datasets, varargin{:});
             uniqueEvents = parser.Results.EventTypes;
-            % Store the dataset(s)
-            UUIDs = putdb(DB, 'datasets', rmfield(datasets, 'data'));
             numDatasets = length(datasets);
-            % Store the tag(s)
-            if ~isempty(parser.Results.Tags)
-                tags = DbHandler.reformatString(parser.Results.Tags);
-                numTags = length(tags);
-                tags = repmat(tags, 1, numDatasets);
-                entityUuids = repmat(UUIDs, 1, numTags);
-                tagStruct = repmat(getdb(DB, 'tags', 0), 1, ...
-                    numDatasets * numTags);
-                [tagStruct.tag_name] = deal(tags{:});
-                [tagStruct.tag_entity_uuid] = deal(entityUuids{:});
-                [tagStruct.tag_entity_class] = deal('datasets');
-                putdb(DB, 'tags', tagStruct);
-            end
-            for k = 1:numDatasets
-                try
+            UUIDs = cell(1,numDatasets);
+            try
+                for k = 1:numDatasets
                     % Check the dataset modality
                     if ~isempty(datasets(k).dataset_modality_uuid)
-                        modality.modality_uuid = ...
-                            datasets(k).dataset_modality_uuid;
-                        modality = getdb(DB, 'modalities', 1, modality);
-                        if isempty(modality)
-                            ME = MException(...
-                                'VerifyModality:InvalidModality', ...
-                                'Modality UUID does not exist');
-                            throw(ME);
+                        expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
+                            '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
+                            '[0-9a-fA-F]{12}$'];
+                        if isempty(regexpi(...
+                                datasets(k).dataset_modality_uuid,expr))
+                            inModality.modality_name = ...
+                                datasets(k).dataset_modality_uuid;
+                        else
+                            inModality.modality_uuid = ...
+                                datasets(k).dataset_modality_uuid;
                         end
-                        modalityName = modality.modality_name;
-                        modality = [];
+                        outModality = getdb(DB, ...
+                            'modalities', 1, inModality);
+                        if isempty(outModality)
+                            throw(MException(...
+                                'getModality:inValidModality', ...
+                                'Modality does not exist'));
+                        end
+                        inModality = [];
+                        modalityName = outModality.modality_name;
+                        datasets(k).dataset_modality_uuid = ...
+                            outModality.modality_uuid;
                     else
                         modalityName = 'EEG';
                     end
+                    % Store the dataset
+                    UUIDs(k) = putdb(DB, 'datasets', rmfield(datasets, ...
+                        'data'));
                     % Store elements, events, and actual data
                     if isfield(datasets(k), 'data') && ...
                             ~isempty(datasets(k).data)
@@ -308,14 +308,27 @@ classdef Mobbed < hgsetget
                             '_Modality.store(DB, UUIDs{k},' ...
                             'datasets(k).data, uniqueEvents)']);
                     end
-                catch ME
-                    try
-                        DB.rollback();
-                    catch ME1
-                        ME = addCause(ME, ME1);
-                    end
-                    throw(ME);
                 end
+                % Store the tag(s)
+                if ~isempty(parser.Results.Tags)
+                    tags = DbHandler.reformatString(parser.Results.Tags);
+                    numTags = length(tags);
+                    tags = repmat(tags, 1, numDatasets);
+                    entityUuids = repmat(UUIDs, 1, numTags);
+                    tagStruct = repmat(getdb(DB, 'tags', 0), 1, ...
+                        numDatasets * numTags);
+                    [tagStruct.tag_name] = deal(tags{:});
+                    [tagStruct.tag_entity_uuid] = deal(entityUuids{:});
+                    [tagStruct.tag_entity_class] = deal('datasets');
+                    putdb(DB, 'tags', tagStruct);
+                end
+            catch ME
+                try
+                    DB.rollback();
+                catch ME1
+                    ME = addCause(ME, ME1);
+                end
+                throw(ME);
             end
             DB.commit();
         end % mat2db

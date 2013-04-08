@@ -73,6 +73,23 @@ classdef DbHandler
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
         end % extractValues
         
+        function outModality = getModality(DB, modalityUUID)
+            % Gets the modality by name or uuid
+            expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
+                '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'];
+            if isempty(regexpi(modalityUUID,expr))
+                inModality.modality_name = modalityUUID;
+            else
+                inModality.modality_uuid = modalityUUID;
+            end
+            outModality = DbHandler.retrieveRows(DB, ...
+                'modalities', 1, 'off', inModality);
+            if isempty(outModality)
+                throw(MException('getModality:inValidModality', ...
+                    'Modality does not exist'));
+            end
+        end % getModality
+        
         function string = reformatString(string)
             % Convert character string to cellstr
             if ischar(string), string = cellstr(string); end;
