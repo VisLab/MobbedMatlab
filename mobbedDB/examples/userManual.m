@@ -151,20 +151,20 @@ filtEEG = db2mat(DB, cached.transform_uuid); % get dataset
 
 %% 14.1 Explode the data from an EEG structure as individual frames that can be searched.
 sdef = db2data(DB);                         % get an empty template
-sdef.data_def_format = 'NUMERIC_STREAM';    % set the format (required)
-sdef.data_def_sampling_rate = EEG.srate;    % specify equally spaced samples
+sdef.datadef_format = 'NUMERIC_STREAM';    % set the format (required)
+sdef.datadef_sampling_rate = EEG.srate;    % specify equally spaced samples
 sdef.data = EEG.data;                       % set the data
-sdef.data_def_description = [EEG.setname ' individual frames'];
+sdef.datadef_description = [EEG.setname ' individual frames'];
 sdefUUID = data2db(DB, sdef);       % store the individual frames in database
 
 %% 14.2 Associate the data defined in Example 14.1 with the datasets whose UUIDs are contained in the array UUIDs
 commit(DB);                               % well, it never hurts
-smap = getdb(DB, 'data_maps', 0);         % get the template
-smap.data_map_def_uuid = sdefUUID{1};        % UUID of data from Example 14.2
-smap.data_map_structure_path = '/EEG/dataEx'; % load destination
+smap = getdb(DB, 'datamaps', 0);         % get the template
+smap.datamap_def_uuid = sdefUUID{1};        % UUID of data from Example 14.2
+smap.datamap_structure_path = '/EEG/dataEx'; % load destination
 for k = 1:length(UUIDs)
-    smap.data_map_entity_uuid = UUIDs{k};
-    putdb(DB, 'data_maps', smap);
+    smap.datamap_entity_uuid = UUIDs{k};
+    putdb(DB, 'datamaps', smap);
 end
 commit(DB);
 
@@ -196,4 +196,4 @@ sUUID = mat2db(DB, s, true, 'Tags', {'Image', 'Left Femur'});
 dataspecs = getdb(DB, 'datasets', inf, 'Tags', {'Image'});
 
 %% 16.4 Retrieve the actual data for the datasets retrieved in Example 16.3.
-datasets = db2mat(DB, {dataspec.dataset_uuid});
+datasets = db2mat(DB, {dataspecs.dataset_uuid});

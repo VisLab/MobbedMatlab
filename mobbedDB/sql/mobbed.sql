@@ -4,7 +4,6 @@ CREATE TABLE attributes
   attribute_entity_uuid uuid,
   attribute_organizational_uuid uuid,
   attribute_structure_uuid uuid,
-  attribute_position bigint,
   attribute_numeric_value double precision, 
   attribute_value character varying,
   CONSTRAINT attributes_pk PRIMARY KEY (attribute_uuid)
@@ -57,27 +56,28 @@ WITH (
   OIDS=FALSE
 );
 
- CREATE TABLE data_defs
+ CREATE TABLE datadefs
 (
-  data_def_uuid uuid NOT NULL,
-  data_def_format character varying,
-  data_def_sampling_rate double precision,
-  data_def_timestamps double precision[],
-  data_def_oid oid,
-  data_def_description character varying, 
-  CONSTRAINT data_defs_pk PRIMARY KEY (data_def_uuid)
+  datadef_uuid uuid NOT NULL,
+  datadef_format character varying,
+  datadef_sampling_rate double precision,
+  datadef_timestamps double precision[],
+  datadef_oid oid,
+  datadef_description character varying, 
+  CONSTRAINT datadefs_pk PRIMARY KEY (datadef_uuid)
 )
 WITH (
   OIDS=FALSE
 );
  
- CREATE TABLE data_maps
+ CREATE TABLE datamaps
 (
-  data_map_def_uuid uuid,
-  data_map_entity_uuid uuid,
-  data_map_structure_uuid uuid,
-  data_map_structure_path character varying, 
-  CONSTRAINT data_maps_pk PRIMARY KEY (data_map_def_uuid, data_map_entity_uuid)
+  datamap_def_uuid uuid,
+  datamap_entity_uuid uuid,
+  datamap_entity_class character varying, 
+  datamap_structure_uuid uuid,
+  datamap_structure_path character varying, 
+  CONSTRAINT datamaps_pk PRIMARY KEY (datamap_def_uuid, datamap_entity_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -178,9 +178,9 @@ WITH (
  
 CREATE TABLE numeric_values
 (
-  data_def_uuid uuid NOT NULL,  
+  datadef_uuid uuid NOT NULL,  
   numeric_value double precision[],
-  CONSTRAINT numeric_values_pk PRIMARY KEY (data_def_uuid)
+  CONSTRAINT numeric_values_pk PRIMARY KEY (datadef_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -188,11 +188,11 @@ WITH (
 
 CREATE TABLE numeric_streams
 (
-  data_def_uuid uuid NOT NULL,  
+  datadef_uuid uuid NOT NULL,  
   numeric_stream_record_position bigint NOT NULL,
   numeric_stream_record_time double precision,
   numeric_stream_data_value double precision[],
-  CONSTRAINT numeric_stream_pk PRIMARY KEY (data_def_uuid, numeric_stream_record_position)
+  CONSTRAINT numeric_stream_pk PRIMARY KEY (datadef_uuid, numeric_stream_record_position)
 )
 WITH (
   OIDS=FALSE
@@ -246,9 +246,9 @@ WITH (
 
 CREATE TABLE xml_values
 (
-  data_def_uuid uuid NOT NULL,
+  datadef_uuid uuid NOT NULL,
   xml_value character varying,
-  CONSTRAINT xml_values_pk PRIMARY KEY (data_def_uuid)
+  CONSTRAINT xml_values_pk PRIMARY KEY (datadef_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -256,11 +256,11 @@ WITH (
 
 CREATE TABLE xml_streams
 (
-  data_def_uuid uuid NOT NULL,
+  datadef_uuid uuid NOT NULL,
   xml_stream_record_position bigint NOT NULL,
   xml_stream_record_time double precision,
   xml_stream_data_value double precision[],
-  CONSTRAINT xml_streams_pk PRIMARY KEY (data_def_uuid, xml_stream_record_position)
+  CONSTRAINT xml_streams_pk PRIMARY KEY (datadef_uuid, xml_stream_record_position)
 )
 WITH (
   OIDS=FALSE

@@ -28,7 +28,6 @@ a1 = getdb(DB, 'attributes', 0);
 a1.attribute_entity_uuid = randomTestClass.generateRandomUUID;
 a1.attribute_organizational_uuid = randomTestClass.generateRandomUUID;
 a1.attribute_structure_uuid = randomTestClass.generateRandomUUID;
-a1.attribute_position = 1;
 a1.attribute_numeric_value = 1;
 a1.attribute_value = 'attribute value: attribute 1';
 putdb(DB, 'attributes', a1);
@@ -135,50 +134,50 @@ function testDataDefs_putdb(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test putdb function with data defs:\n');
 fprintf('It should save a data def\n');
 DB = tStruct.DB;
-d1 = getdb(DB, 'data_defs', 0);
-d1.data_def_format = 55;
-d1.data_def_sampling_rate = 256;
-d1.data_def_description = 'data def description: data def 1';
-putdb(DB, 'data_defs', d1);
+d1 = getdb(DB, 'datadefs', 0);
+d1.datadef_format = 55;
+d1.datadef_sampling_rate = 256;
+d1.datadef_description = 'data def description: data def 1';
+putdb(DB, 'datadefs', d1);
 
 fprintf('It should save multiple data defs\n');
 DB = tStruct.DB;
-d3(1) = getdb(DB, 'data_defs', 0);
-d3(1).data_def_format = 55;
-d3(1).data_def_sampling_rate = 256;
-d3(1).data_def_description = 'data def description: data def 2';
+d3(1) = getdb(DB, 'datadefs', 0);
+d3(1).datadef_format = 55;
+d3(1).datadef_sampling_rate = 256;
+d3(1).datadef_description = 'data def description: data def 2';
 
-d3(2) = getdb(DB, 'data_defs', 0);
-d3(2).data_def_format = 55;
-d3(2).data_def_sampling_rate = 256;
-d3(2).data_def_description = 'data def description: data def 3';
+d3(2) = getdb(DB, 'datadefs', 0);
+d3(2).datadef_format = 55;
+d3(2).datadef_sampling_rate = 256;
+d3(2).datadef_description = 'data def description: data def 3';
 
-putdb(DB, 'data_defs', d3);
+putdb(DB, 'datadefs', d3);
 DB.commit();
 
 function testDataMaps_putdb(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test putdb function with data maps:\n');
 fprintf('It should save a data map\n');
 DB = tStruct.DB;
-d1 = getdb(DB, 'data_maps', 0);
-d1.data_map_def_uuid = randomTestClass.generateRandomUUID;
-d1.data_map_entity_uuid = randomTestClass.generateRandomUUID;
-d1.data_map_structure_uuid = randomTestClass.generateRandomUUID;
-putdb(DB, 'data_maps', d1);
+d1 = getdb(DB, 'datamaps', 0);
+d1.datamap_def_uuid = randomTestClass.generateRandomUUID;
+d1.datamap_entity_uuid = randomTestClass.generateRandomUUID;
+d1.datamap_structure_uuid = randomTestClass.generateRandomUUID;
+putdb(DB, 'datamaps', d1);
 
 fprintf('It should save multiple data maps\n');
 DB = tStruct.DB;
-d3(1) = getdb(DB, 'data_maps', 0);
-d3(1).data_map_def_uuid = randomTestClass.generateRandomUUID;
-d3(1).data_map_entity_uuid = randomTestClass.generateRandomUUID;
-d3(1).data_map_structure_uuid = randomTestClass.generateRandomUUID;
+d3(1) = getdb(DB, 'datamaps', 0);
+d3(1).datamap_def_uuid = randomTestClass.generateRandomUUID;
+d3(1).datamap_entity_uuid = randomTestClass.generateRandomUUID;
+d3(1).datamap_structure_uuid = randomTestClass.generateRandomUUID;
 
-d3(2) = getdb(DB, 'data_maps', 0);
-d3(2).data_map_def_uuid = randomTestClass.generateRandomUUID;
-d3(2).data_map_entity_uuid = randomTestClass.generateRandomUUID;
-d3(2).data_map_structure_uuid = randomTestClass.generateRandomUUID;
+d3(2) = getdb(DB, 'datamaps', 0);
+d3(2).datamap_def_uuid = randomTestClass.generateRandomUUID;
+d3(2).datamap_entity_uuid = randomTestClass.generateRandomUUID;
+d3(2).datamap_structure_uuid = randomTestClass.generateRandomUUID;
 
-putdb(DB, 'data_maps', d3);
+putdb(DB, 'datamaps', d3);
 DB.commit();
 
 function testElements_putdb(tStruct) %#ok<DEFNU>

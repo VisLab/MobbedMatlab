@@ -56,19 +56,19 @@ end
 
 %% 4.6 Storing the EEG data frames individually in the database
 sdef = db2data(DB);                 % get an empty template
-sdef.data_def_format = 'NUMERIC_STREAM';
-sdef.data_def_sampling_rate = EEG.srate;
+sdef.datadef_format = 'NUMERIC_STREAM';
+sdef.datadef_sampling_rate = EEG.srate;
 sdef.data = EEG.data;
-sdef.data_def_description = [EEG.setname ' individual frames'];
+sdef.datadef_description = [EEG.setname ' individual frames'];
 sdefUUID = data2db(DB, sdef);       % store frames in database
 
 %% 4.6 Associating exploded frames with multiple datasets.
-smap = getdb(DB, 'data_maps', 0);
-smap.data_map_def_uuid = sdefUUID{1};
-smap.data_map_structure_path = '/EEG/dataEx'; % where to put on retrieval
+smap = getdb(DB, 'datamaps', 0);
+smap.datamap_def_uuid = sdefUUID{1};
+smap.datamap_structure_path = '/EEG/dataEx'; % where to put on retrieval
 for k = 1:10
-    smap.data_map_entity_uuid = UUIDs{k};
-    putdb(DB, 'data_maps', smap);
+    smap.datamap_entity_uuid = UUIDs{k};
+    putdb(DB, 'datamaps', smap);
 end
 commit(DB);
 
@@ -77,10 +77,10 @@ ddef = db2data(DB, sdefUUID);    %#ok<NASGU> % ddef.data has the actual data
 
 %% 4.6 Get the extra data associated with a particular dataset dUUID
 dUUID = UUIDs{1};     % pick first dataset of 10 above to try
-smap = getdb(DB, 'data_maps', 0);
-smap.data_map_entity_uuid = dUUID;
-dmaps = getdb(DB, 'data_maps', 1, smap);  % retrieve all data
-sdefUUID = {dmaps.data_map_def_uuid};
+smap = getdb(DB, 'datamaps', 0);
+smap.datamap_entity_uuid = dUUID;
+dmaps = getdb(DB, 'datamaps', 1, smap);  % retrieve all data
+sdefUUID = {dmaps.datamap_def_uuid};
 ddef = db2data(DB, sdefUUID); % get data in structured form
 
 %% 4.6 Caching, reuse, and standardization

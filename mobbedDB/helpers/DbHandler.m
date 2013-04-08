@@ -96,25 +96,26 @@ classdef DbHandler
         end % reformatString
         
         function data = retrieveDataDef(DB, datadef, isAdditionalData)
-            if strcmpi(datadef.data_def_format, 'EXTERNAL')
+            if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 data = DbHandler.retrieveFile(DB, ...
-                    datadef.data_def_uuid, isAdditionalData);
-            elseif strcmpi(datadef.data_def_format, 'NUMERIC_STREAM')
+                    datadef.datadef_uuid, isAdditionalData);
+            elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 data = DbHandler.retrieveNumericStream(DB, ...
-                    datadef.data_def_uuid);
-            elseif strcmpi(datadef.data_def_format, 'NUMERIC_VALUE')
-                data = double(edu.utsa.mobbed.DataDefs.retrieveNumericValue(...
-                    DB.getConnection(), datadef.data_def_uuid));
-            elseif strcmpi(datadef.data_def_format, 'XML_VALUE')
-                data = char(edu.utsa.mobbed.DataDefs.retrieveXMLValue(...
-                    DB.getConnection(), datadef.data_def_uuid));
+                    datadef.datadef_uuid);
+            elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
+                data = double(...
+                    edu.utsa.mobbed.Datadefs.retrieveNumericValue(...
+                    DB.getConnection(), datadef.datadef_uuid));
+            elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
+                data = char(edu.utsa.mobbed.Datadefs.retrieveXMLValue(...
+                    DB.getConnection(), datadef.datadef_uuid));
             end
         end % retrieveDataDef
         
         function file = retrieveFile(DB, entityUUID, isAdditionalData)
             % Retrieves data from a external file
             fileName = [tempname '.mat'];
-            edu.utsa.mobbed.DataDefs.retrieveBlob(DB.getConnection(), ...
+            edu.utsa.mobbed.Datadefs.retrieveBlob(DB.getConnection(), ...
                 fileName, entityUUID, isAdditionalData);
             if exist(fileName, 'file')
                 load(fileName);
@@ -149,56 +150,58 @@ classdef DbHandler
             % Store data in a external file
             fileName = [tempname '.mat'];
             save(fileName, 'data', '-v7.3');
-            edu.utsa.mobbed.DataDefs.storeBlob(DB.getConnection(), fileName, ...
+            edu.utsa.mobbed.Datadefs.storeBlob(DB.getConnection(), fileName, ...
                 entityUuid, backing);
             delete(fileName);
         end % storeExternal
         
         function storeDataDef(DB, datadef)
             % Save as file
-            if strcmpi(datadef.data_def_format, 'EXTERNAL')
-                DbHandler.storeFile(DB, datadef.data_def_uuid, ...
+            if strcmpi(datadef.datadef_format, 'EXTERNAL')
+                DbHandler.storeFile(DB, datadef.datadef_uuid, ...
                     datadef.data, false)
             end
             % Save as numeric stream
-            if strcmpi(datadef.data_def_format, 'NUMERIC_STREAM')
-                if ~isfield(datadef, 'data_def_sampling_rate') && ...
-                        ~isfield(datadef, 'timestamps')
+            if strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
+                if ~isfield(datadef, 'datadef_sampling_rate') && ...
+                        ~isfield(datadef, 'datadef_timestamps')
                     throw (MException(['EEG_Modality:' ...
                         'EEGSampleRateInvalid'], ...
                         'sample rate and timestamps are not present'));
                 end
-                if  isfield(datadef, 'data_def_sampling_rate')
-                    if datadef.data_def_sampling_rate < 0
-                        datadef.data_def_sampling_rate = 1;
+                if  isfield(datadef, 'datadef_sampling_rate')
+                    if datadef.datadef_sampling_rate < 0
+                        datadef.datadef_sampling_rate = 1;
                     end
                     times = zeros(1,size(datadef.data,2));
                     for a = 2:length(times)
-                        times(a) = (a-1)/datadef.data_def_sampling_rate;
+                        times(a) = (a-1)/datadef.datadef_sampling_rate;
                     end
                 else
                     times = datadef.timestamps;
                 end
-                DbHandler.storeNumericStream(DB, datadef.data_def_uuid, ...
+                DbHandler.storeNumericStream(DB, datadef.datadef_uuid, ...
                     datadef.data, times);
             end
             % Save as numeric value
-            if strcmpi(datadef.data_def_format, 'NUMERIC_VALUE')
-                edu.utsa.mobbed.DataDefs.storeNumericValue(...
-                    DB.getConnection(), datadef.data_def_uuid, ...
+            if strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
+                edu.utsa.mobbed.Datadefs.storeNumericValue(...
+                    DB.getConnection(), datadef.datadef_uuid, ...
                     datadef.data);
             end
             % Save as xml value
-            if strcmpi(datadef.data_def_format, 'XML_VALUE')
-                edu.utsa.mobbed.DataDefs.storeXMLValue(DB.getConnection(), ...
-                    datadef.data_def_uuid, datadef.data);
+            if strcmpi(datadef.datadef_format, 'XML_VALUE')
+                edu.utsa.mobbed.Datadefs.storeXMLValue(...
+                    DB.getConnection(), datadef.datadef_uuid, ...
+                    datadef.data);
             end
         end
         
         function storeNumericStream(DB, dataDefUuid, data, times)
             % Store EEG data in database
             numFrames = length(data);
-            jNumericStream = edu.utsa.mobbed.NumericStreams(DB.getConnection());
+            jNumericStream = edu.utsa.mobbed.NumericStreams(...
+                DB.getConnection());
             jNumericStream.reset(dataDefUuid);
             k = 1;
             while(k < numFrames)

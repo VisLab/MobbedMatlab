@@ -75,8 +75,8 @@ classdef Mobbed < hgsetget
             % Set the properties of a database
             DbHandler.addJavaPath();
             DB.DbManager = edu.utsa.mobbed.ManageDB(...
-                parser.Results.name, parser.Results.hostname, ...
-                parser.Results.user, parser.Results.password, ...
+                parser.Results.dbname, parser.Results.hostname, ...
+                parser.Results.username, parser.Results.password, ...
                 parser.Results.verbose);
         end % Mobbed
         
@@ -95,9 +95,9 @@ classdef Mobbed < hgsetget
             parser.addRequired('datadefs', @isstruct);
             parser.parse(datadefs);
             try
-                UUIDs = putdb(DB, 'data_defs', rmfield(datadefs, 'data'));
+                UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
                 for a = 1:length(UUIDs)
-                    datadefs(a).data_def_uuid = UUIDs{a};
+                    datadefs(a).datadef_uuid = UUIDs{a};
                     DbHandler.storeDataDef(DB, datadefs(a));
                 end
             catch ME
@@ -116,7 +116,7 @@ classdef Mobbed < hgsetget
             parser = inputParser();
             parser.addOptional('sdefUUID', {});
             parser.parse(varargin{:});
-            ddef = getdb(DB, 'data_defs', 0);
+            ddef = getdb(DB, 'datadefs', 0);
             ddef.data = [];
             if ~isempty(parser.Results.sdefUUID)
                 UUIDsReformat = ...
@@ -124,8 +124,8 @@ classdef Mobbed < hgsetget
                 numUUIDs = length(UUIDsReformat);
                 ddef = repmat(ddef, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    currentDataDef.data_def_uuid = UUIDsReformat{k};
-                    currentDataDef = getdb(DB, 'data_defs', 1, ...
+                    currentDataDef.datadef_uuid = UUIDsReformat{k};
+                    currentDataDef = getdb(DB, 'datadefs', 1, ...
                         currentDataDef);
                     currentDataDef.data = DbHandler.retrieveDataDef(DB, ...
                         currentDataDef, false);
@@ -138,7 +138,7 @@ classdef Mobbed < hgsetget
         function datasets = db2mat(DB, varargin)
             % Retrieve dataset(s) identified by UUIDs from DB
             parser = inputParser();
-            parser.addOptional('UUIDs', []);
+            parser.addOptional('UUIDs', {}, @DbHandler.validateUUIDs);
             parser.parse(varargin{:});
             datasets = getdb(DB, 'datasets', 0);
             datasets.data = [];
@@ -378,8 +378,8 @@ classdef Mobbed < hgsetget
             parser.parse(dbname, hostname, username, password, script, ...
                 varargin{:});
             edu.utsa.mobbed.ManageDB.createDatabase(...
-                parser.Results.name, parser.Results.hostname, ...
-                parser.Results.user, parser.Results.password, ...
+                parser.Results.dbname, parser.Results.hostname, ...
+                parser.Results.username, parser.Results.password, ...
                 which(parser.Results.script), parser.Results.verbose);
         end % createdb
         
