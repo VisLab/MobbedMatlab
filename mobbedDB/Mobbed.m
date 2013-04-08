@@ -138,7 +138,7 @@ classdef Mobbed < hgsetget
         function datasets = db2mat(DB, varargin)
             % Retrieve dataset(s) identified by UUIDs from DB
             parser = inputParser();
-            parser.addOptional('UUIDs', [], @DbHandler.validateUUIDs);
+            parser.addOptional('UUIDs', []);
             parser.parse(varargin{:});
             datasets = getdb(DB, 'datasets', 0);
             datasets.data = [];
@@ -298,8 +298,8 @@ classdef Mobbed < hgsetget
                         modalityName = 'EEG';
                     end
                     % Store the dataset
-                    UUIDs(k) = putdb(DB, 'datasets', rmfield(datasets, ...
-                        'data'));
+                    UUIDs(k) = putdb(DB, 'datasets', ...
+                        rmfield(datasets(k), 'data'));
                     % Store elements, events, and actual data
                     if isfield(datasets(k), 'data') && ...
                             ~isempty(datasets(k).data)

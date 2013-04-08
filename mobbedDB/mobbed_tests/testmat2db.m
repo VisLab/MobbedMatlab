@@ -26,51 +26,26 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testmat2dbOnlyData(tStruct) %#ok<DEFNU>
-% Unit test for EEG modality saved as a file
-fprintf('\nUnit test mat2db when EEG dataset structure only has a data field:\n');
+function testMat2dbNoData(tStruct) %#ok<DEFNU>
+fprintf('It should save a dataset with no data\n');
 DB = tStruct.DB;
-load EEG.mat;             % load a previously saved EEG structure
-s = db2mat(DB);
-s.dataset_name = 'eeglabDataOnly';
-s.data = EEG;                        % set data to be stored
-sUUID = mat2db(DB, s);
-dataset = db2mat(DB, sUUID);
-assertTrue(~isempty(dataset));
+s1 = db2mat(DB); 
+s1.dataset_name = 'mat2db - no data';
+s1.data = [];
+UUIDs = mat2db(DB, s1, false); 
+fprintf('It should retrieve a dataset with no data\n');
+s2 = db2mat(DB, UUIDs);
+assertTrue(isequal(s1.data,s2.data));
+assertTrue(isempty(s2.data));
 
-function testmat2NoData(tStruct) %#ok<DEFNU>
-% Unit test for EEG modality saved as a file
-fprintf('\nUnit test mat2db when EEG dataset structure has no data present:\n');
+function testMat2dbTags(tStruct) %#ok<DEFNU>
+fprintf('It should save a dataset with tags\n');
 DB = tStruct.DB;
-s = db2mat(DB);                      % get empty structure to fill in
-s.dataset_name = 'eeglabNoData';      % dataset name is required
-sUUID = mat2db(DB, s);
-dataset = db2mat(DB, sUUID);
-assertTrue(isempty(dataset.data));
+s1 = db2mat(DB); 
+s1.dataset_name = 'mat2db - tags';
+s1.data = [];
+mat2db(DB, s1, false, 'Tags', {'tag1', 'tag2'}); 
+s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
+s3 = db2mat(DB, {s2.dataset_uuid});
+assertTrue(isequal(s1.data,s3.data));
 
-function testmat2NoDefaults(tStruct) %#ok<DEFNU>
-% Unit test for EEG modality saved as a file
-fprintf('\nUnit test mat2db when EEG dataset structure using no default fields:\n');
-DB = tStruct.DB;
-m.modality_name = 'SIMPLE';
-m = getdb(DB, 'modalities', 1, m);
-s = db2mat(DB);                      % get empty structure to fill in
-s.dataset_name = 'eeglabNoDefaults';      % dataset name is required
-s.dataset_contact_uuid = randomTestClass.generateRandomUUID;
-s.dataset_modality_uuid = m.modality_uuid;
-s.dataset_namespace = 'test modality';
-s.dataset_parent_uuid = randomTestClass.generateRandomUUID;
-sUUID = mat2db(DB, s);
-db2mat(DB, sUUID);
-
-function testmat2dbEmptyStructure(tStruct) %#ok<DEFNU>
-% Unit test for EEG modality saved as a file
-fprintf(['\nUnit test mat2db when a empty dataset structure is' ...
-    'retrieved to fill in prior to the call:\n']);
-DB = tStruct.DB;
-load EEG.mat;             % load a previously saved EEG structure
-s = db2mat(DB);                      % get empty structure to fill in
-s.dataset_name = 'eeglabEmptyStructure';      % dataset name is required
-s.data = EEG;                        % set data to be stored
-sUUID = mat2db(DB, s);
-db2mat(DB, sUUID);
