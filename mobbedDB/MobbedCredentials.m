@@ -6,12 +6,14 @@ classdef MobbedCredentials < Mobbed
     end
     
     methods
-        function DB = MobbedCredentials(filename)
+        function DB = MobbedCredentials(filename, varargin)
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
-            DB = DB@Mobbed();
-            
+            propertyArray = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            DB = DB@Mobbed(propertyArray{1}, propertyArray{2}, ...
+                propertyArray{3}, propertyArray{4});            
         end
     end
     

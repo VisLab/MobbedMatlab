@@ -89,7 +89,7 @@ classdef DbHandler
                     'Modality does not exist'));
             end
         end % getModality
-        
+              
         function string = reformatString(string)
             % Convert character string to cellstr
             if ischar(string), string = cellstr(string); end;
