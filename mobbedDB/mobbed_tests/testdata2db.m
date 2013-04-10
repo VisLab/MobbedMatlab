@@ -1,4 +1,4 @@
-function test_suite = testdata2db  %#ok<STOUT>
+function test_suite = testData2db  %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test
@@ -10,11 +10,13 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 
 % Create connection object (create database first if doesn't exist)
 try
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, 'mobbed.sql');
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+        tStruct.password, 'mobbed.sql', false);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 end
 tStruct.DB = DB;
 
@@ -26,8 +28,8 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testNumericStream(tStruct) %#ok<DEFNU>
-fprintf('It should store additional data that is a numeric stream\n');
+function testData2dbNumericStream(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a datadef that is numeric stream format\n');
 DB = tStruct.DB;
 load EEG.mat;
 sdef = db2data(DB);        
@@ -39,8 +41,8 @@ UUIDs = data2db(DB, sdef);
 assertTrue(iscellstr(UUIDs));
 assertTrue(~isempty(UUIDs{1}));
 
-function testNumeric(tStruct) %#ok<DEFNU>
-fprintf('It should store additional data that is numeric\n');
+function testData2dbNumeric(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a datadef that is numeric format\n');
 DB = tStruct.DB;
 load EEG.mat;
 sdef = db2data(DB);        
@@ -48,12 +50,11 @@ sdef.datadef_format = 'NUMERIC_VALUE';
 sdef.data = EEG.data(1,:);
 sdef.datadef_description = [EEG.setname ' ' EEG.filename ' numeric'];
 UUIDs = data2db(DB, sdef);        
-% check that data def UUID(s) have been generated 
 assertTrue(iscellstr(UUIDs));
 assertTrue(~isempty(UUIDs{1}));
 
-function testExternal(tStruct) %#ok<DEFNU>
-fprintf('It should store additional data that is a file\n');
+function testData2dbExternal(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a datadef that is external format\n');
 DB = tStruct.DB;
 load EEG.mat;
 sdef = db2data(DB);        
@@ -61,12 +62,11 @@ sdef.datadef_format = 'EXTERNAL';
 sdef.data = EEG.data;
 sdef.datadef_description = [EEG.setname ' ' EEG.filename ' external'];
 UUIDs = data2db(DB, sdef);            
-% check that data def UUID(s) have been generated 
 assertTrue(iscellstr(UUIDs));
 assertTrue(~isempty(UUIDs{1}));
 
-function testXML(tStruct) %#ok<DEFNU>
-fprintf('It should store additional data that is xml\n');
+function testData2dbXML(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a datadef that is xml format\n');
 DB = tStruct.DB;
 sdef = db2data(DB);         
 sdef.datadef_format = 'XML_VALUE';
