@@ -1,4 +1,4 @@
-function test_suite = testsimple  %#ok<STOUT>
+function test_suite = testSimple  %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test
@@ -10,15 +10,16 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 
 % Create connection object (create database first if doesn't exist)
 try
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, 'mobbed.sql');
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+        tStruct.password, 'mobbed.sql', false);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 end
 tStruct.DB = DB;
 
-% Get EEG modality uuid
 m = getdb(DB, 'modalities', inf);
 mNames = {m.modality_name};
 pos = strcmp('SIMPLE', mNames);
@@ -33,22 +34,28 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testSimple(tStruct) %#ok<DEFNU>
+function testSimpleModalityUuid(tStruct) %#ok<DEFNU>
 % Unit test for EEG modality saved as a file
-fprintf('\nUnit test EEG modality saved as a file:\n');
-
-% Create Mobbed connection object
+fprintf('\nIt should store a simple dataset using the modality uuid\n');
 DB = tStruct.DB;
-
-% Load EEG dataset 
 load('EEG.mat');
-
-% Store EEG as file
-fprintf('It should save an EEG dataset as a file\n');
 s1 = getdb(DB, 'datasets', 0);
-s1.dataset_name = 'Simple';
+s1.dataset_name = 'simple - modality uuid';
 s1.data = EEG; 
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, false); 
-assertTrue(iscell(sUUID));
-assertTrue(~isempty(sUUID));
+UUIDs = mat2db(DB, s1, false); 
+s2 = db2mat(DB, UUIDs);
+assertTrue(isequal(s1.data,s2.data));
+
+function testSimpleModalityName(tStruct) %#ok<DEFNU>
+% Unit test for EEG modality saved as a file
+fprintf('\nIt should store a simple dataset using the modality name\n');
+DB = tStruct.DB;
+load('EEG.mat');
+s1 = getdb(DB, 'datasets', 0);
+s1.dataset_name = 'simple - modality name';
+s1.data = EEG; 
+s1.dataset_modality_uuid = 'simple';
+UUIDs = mat2db(DB, s1, false); 
+s2 = db2mat(DB, UUIDs);
+assertTrue(isequal(s1.data,s2.data));

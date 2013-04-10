@@ -10,11 +10,13 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 
 % Create connection object (create database first if doesn't exist)
 try
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, 'mobbed.sql');
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+        tStruct.password, 'mobbed.sql', false);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 end
 tStruct.DB = DB;
 
@@ -34,7 +36,7 @@ catch ME %#ok<NASGU>
 end
 
 function testEEGChanlocsAndEvents(tStruct) %#ok<DEFNU>
-fprintf('It should save an EEG dataset with chanlocs and events\n');
+fprintf('\nIt should store a EEG dataset with chanlocs and events\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB);
@@ -42,12 +44,11 @@ s1.dataset_name = 'EEG - chanlocs and events';
 s1.data = EEG; 
 s1.dataset_modality_uuid = tStruct.mUUID;
 UUIDs = mat2db(DB, s1, false); 
-fprintf('It should retrieve an EEG dataset with chanlocs and events\n');
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
 function testEEGNoChanlocs(tStruct) %#ok<DEFNU>
-fprintf('It should save an EEG dataset with no chanlocs\n');
+fprintf('\nIt should store a EEG dataset with no chanlocs\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB); 
@@ -56,13 +57,12 @@ s1.data = EEG;
 s1.data.chanlocs = [];
 s1.dataset_modality_uuid = tStruct.mUUID;
 UUIDs = mat2db(DB, s1, false); 
-fprintf('It should retrieve an EEG dataset with no chanlocs\n');
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 assertTrue(isempty(s2.data.chanlocs));
 
 function testEEGNoEvents(tStruct) %#ok<DEFNU>
-fprintf('It should save an EEG dataset with no events\n');
+fprintf('\nIt should store a EEG dataset with no events\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB); 
@@ -71,28 +71,35 @@ s1.data = EEG;
 s1.data.event = [];
 s1.dataset_modality_uuid = tStruct.mUUID;
 UUIDs = mat2db(DB, s1, false); 
-fprintf('It should retrieve an EEG dataset with no events\n');
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 assertTrue(isempty(s2.data.event));
 
-function testEEGModalityNameAsModalityUUID(tStruct) %#ok<DEFNU>
-fprintf(['It should save an EEG dataset with a modality name passed in'...
-' instead of a modality uuid \n']);
+function testEEGModalityName(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a EEG dataset using the modality name\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG - chanlocs and events';
+s1.dataset_name = 'EEG - modality name';
 s1.data = EEG; 
 s1.dataset_modality_uuid = 'EEG';
 UUIDs = mat2db(DB, s1, false); 
-fprintf(['It should retrieve an EEG dataset that was saved with a' ...
-    'modailty name passed in instead of a modality uuid \n']);
+s2 = db2mat(DB, UUIDs);
+assertTrue(isequal(s1.data,s2.data));
+
+function testEEGDefaultModality(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a EEG dataset using the default EEG modality\n');
+DB = tStruct.DB;
+load('EEG.mat');
+s1 = db2mat(DB);
+s1.dataset_name = 'EEG - default modality';
+s1.data = EEG; 
+UUIDs = mat2db(DB, s1, false); 
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
 function testEEGNoUniqueEventTypes(tStruct) %#ok<DEFNU>
-fprintf('It should save an EEG dataset that reuses event types\n');
+fprintf('\nIt should store a EEG dataset that reuses event types\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB); 
@@ -108,7 +115,7 @@ s2.dataset_modality_uuid = tStruct.mUUID;
 assertTrue(isequal(length(uniqueEvents1), length(uniqueEvents2)));
 
 function testEEGUniqueEventTypes(tStruct) %#ok<DEFNU>
-fprintf('It should save an EEG dataset that has unique event types\n');
+fprintf('\nIt should store a EEG dataset that has unique event types\n');
 DB = tStruct.DB;
 load('EEG.mat');
 s1 = db2mat(DB); 

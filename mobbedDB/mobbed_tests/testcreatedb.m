@@ -22,10 +22,6 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testcreatedbGetConnection(tStruct) %#ok<DEFNU>
-fprintf('It should get a connection of a database that has be created\n');
-assertTrue(~isempty(tStruct.DB.getConnection()));
-
 function testcreatedbAlreadyExist(tStruct) %#ok<DEFNU>
 fprintf(['It should throw an exception when creating a database that' ...
     'already exists']);

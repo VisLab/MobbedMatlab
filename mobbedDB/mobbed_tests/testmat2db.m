@@ -1,4 +1,4 @@
-function test_suite = testmat2db  %#ok<STOUT>
+function test_suite = testMat2db  %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test
@@ -10,11 +10,13 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 
 % Create connection object (create database first if doesn't exist)
 try
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, 'mobbed.sql');
-    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+        tStruct.password, 'mobbed.sql', false);
+    DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+        tStruct.password, false);
 end
 tStruct.DB = DB;
 
@@ -26,20 +28,19 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testmat2dbNoData(tStruct) %#ok<DEFNU>
-fprintf('It should save a dataset with no data\n');
+function testMat2dbNoData(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a dataset with no data\n');
 DB = tStruct.DB;
 s1 = db2mat(DB); 
 s1.dataset_name = 'mat2db - no data';
 s1.data = [];
 UUIDs = mat2db(DB, s1, false); 
-fprintf('It should retrieve a dataset with no data\n');
 s2 = db2mat(DB, UUIDs);
 assertTrue(isempty(s2.data));
 assertTrue(isequal(s1.data,s2.data));
 
-function testmat2dbTags(tStruct) %#ok<DEFNU>
-fprintf('It should save a dataset with tags\n');
+function testMat2dbTags(tStruct) %#ok<DEFNU>
+fprintf('\nIt should store a dataset with tags\n');
 DB = tStruct.DB;
 s1 = db2mat(DB); 
 s1.dataset_name = 'mat2db - tags';
