@@ -366,7 +366,8 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
-        function createdb(dbname, hostname, username, password, script, varargin)
+        function createdb(dbname, hostname, username, password, script, ...
+                varargin)
             % Create a Postgresql database called name on host hostname
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
