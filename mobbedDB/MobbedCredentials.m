@@ -1,42 +1,66 @@
 classdef MobbedCredentials < Mobbed
-    %MOBBEDCREDENTIALS Summary of this class goes here
-    %   Detailed explanation goes here
-    
-    properties
-    end
     
     methods
-        function DB = MobbedCredentials(filename, varargin)
+        
+        function DB = MobbedCredentials(filename)
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
-            propertyArray = cell(...
+            properties = cell(...
                 edu.utsa.mobbed.ManageDB.loadcredentials(filename));
-            DB = DB@Mobbed(propertyArray{1}, propertyArray{2}, ...
-                propertyArray{3}, propertyArray{4});            
-        end
-    end
+            DB = DB@Mobbed(properties{1}, properties{2}, ...
+                properties{3}, properties{4});
+        end % MobbedCredentials
+        
+    end % Public methods
     
     methods(Static)
+        
+        function createdb(filename, script)
+            parser = inputParser();
+            parser.addRequired('filename', @ischar);
+            parser.parse(filename);
+            properties = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            Mobbed.createdb(properties{1}, properties{2}, ...
+                properties{3}, properties{4}, script);
+        end % createdb
+        
         function propertyFile = createdbcredentials()
             propertyFile = [];
             credentials = inputdlg({'filename', 'dbname', 'hostname', ...
                 'port', 'username', 'password'}, ...
                 'Credentials', [1 35; 1 35; 1 35; 1 4; 1 35; 1 35], ...
                 {'config.properties', 'mobbed', 'localhost', '5432', ...
-                'postgres', 'password', ...
-                });
+                'postgres', 'password'});
             if ~isempty(credentials)
                 directory = uigetdir();
-                if ~isempty(directory) 
+                if ~isempty(directory)
+                    if ~isempty(credentials{4})
+                        credentials{3} = [credentials{3} ':' ...
+                            credentials{4}];
+                    end
                     propertyFile = [directory '\' credentials{1}];
                     edu.utsa.mobbed.ManageDB.createdbcredentials(...
                         propertyFile, credentials{2}, credentials{3}, ...
-                        credentials{4}, credentials{5}, credentials{6});                     
+                        credentials{5}, credentials{6});
                 end
             end
-        end
-    end
+        end % createdbcredentials
+        
+        function deletedb(filename)
+            parser = inputParser();
+            parser.addRequired('filename', @ischar);
+            parser.parse(filename);
+            properties = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            Mobbed.deletedb(properties{1}, properties{2}, ...
+                properties{3}, properties{4});
+        end % deletedb
+        
+    end % Static methods
+    
+    
     
 end
 
