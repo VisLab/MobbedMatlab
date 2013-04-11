@@ -5,13 +5,16 @@ classdef genericTestClass < hgsetget
     %    numElements = number of elements to create
     properties (Access = public)
         data
+    end % public properties
+    
+    properties (Access = private)
         featureTypes = {'numeric', 'numeric_stream', 'xml', 'xml_stream'};
     end % public properties
     
     
     methods (Access = public)
         function obj = genericTestClass(numElements, numEvents, ...
-                featureType, numMeta, numExtra)
+                numMeta, numExtra, featureType)
             if numElements > 0
                 obj.setElements(numElements, numExtra);
             end
@@ -68,18 +71,18 @@ classdef genericTestClass < hgsetget
             feature.type = featureType;
             feature.description = 'feature description';
             if strcmpi(featureType, 'numeric_stream')
-                % create 2-d matrix from sample eeg data 
+                % create 2-d matrix from sample eeg data
                 load('EEG.mat');
                 feature.value.data = EEG.data(1:numElements, :);
                 feature.value.samplingrate = EEG.srate;
             end
             if strcmpi(featureType, 'numeric')
-                % create 1-d vector from sample eeg data 
+                % create 1-d vector from sample eeg data
                 load('EEG.mat');
                 feature.value = EEG.data(1, :);
             end
             if strcmpi(featureType, 'xml')
-                % read from sample.xml file 
+                % read from sample.xml file
                 feature.value = xmlwrite(which('sample.xml'));
                 feature.value = strrep(feature.value, ...
                     '<?xml version="1.0" encoding="utf-8"?>', '');
