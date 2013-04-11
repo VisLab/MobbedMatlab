@@ -28,7 +28,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testGenericElements(tStruct)
+function testGenericElements(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with only elements\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 0, 0, 0, 0);
@@ -40,7 +40,7 @@ sUUID = mat2db(DB, s1, false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEvents(tStruct)
+function testGenericElementsEvents(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements and events\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 0, 0, 0);
@@ -52,7 +52,7 @@ sUUID = mat2db(DB, s1, false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEventsMetadata(tStruct)
+function testGenericElementsEventsMetadata(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements, events, and metadata\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 5, 0, 0);
@@ -64,7 +64,7 @@ sUUID = mat2db(DB, s1, false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEventsMetadataExtras(tStruct)
+function testGenericElementsEventsMetadataExtras(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements, events, metadata, and extra fields\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 5, 5, 0);

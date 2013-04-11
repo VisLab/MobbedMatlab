@@ -181,7 +181,7 @@ classdef Mobbed < hgsetget
             outS = [];
             tags = DbHandler.createJaggedArray(parser.Results.Tags);
             attributes = ...
-                    DbHandler.createJaggedArray(parser.Results.Attributes);
+                DbHandler.createJaggedArray(parser.Results.Attributes);
             if parser.Results.limit == 0
                 columns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
@@ -191,7 +191,7 @@ classdef Mobbed < hgsetget
             if ~isempty(parser.Results.inS)
                 structFields = fieldnames(parser.Results.inS);
                 structure = rmfield(parser.Results.inS, ...
-                    structFields(structfun(@isempty,parser.Results.inS)));               
+                    structFields(structfun(@isempty,parser.Results.inS)));
                 columns = fieldnames(structure);
                 values = DbHandler.createJaggedArray(struct2cell(structure));
             end
@@ -246,7 +246,7 @@ classdef Mobbed < hgsetget
                 columns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.inType));
                 mStructure = ...
-                    cell2struct(mValues, [columns; 'extracted'], 2);        
+                    cell2struct(mValues, [columns; 'extracted'], 2);
                 evalues = cell(DB.DbManager.extractUniqueRows(...
                     mValues, limit));
                 columns = cell(DB.DbManager.getColumnNames(...
@@ -342,7 +342,7 @@ classdef Mobbed < hgsetget
             parser.parse(table, inS);
             columns = fieldnames(parser.Results.inS);
             doubleColumns = cell(DB.DbManager.getDoubleColumns(...
-                parser.Results.table));           
+                parser.Results.table));
             [values, doubleValues] = ...
                 DbHandler.extractValues(parser.Results.inS, doubleColumns);
             UUIDs = cell(DB.DbManager.addRows(table, columns, values, ...
@@ -366,6 +366,29 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
+        function credentialPath = createdbCredentials()
+            credentialPath = [];
+            credentials = inputdlg({'Configuration filename', ...
+                'Database name', 'Host name', ...
+                'Port number', 'User name', 'Password'}, ...
+                'Database credentials', [1 40; 1 40; 1 40; 1 7; 1 40; 1 40], ...
+                {'config.properties', 'mobbed', 'localhost', '5432', ...
+                'postgres', 'password'});
+            if ~isempty(credentials)
+                directory = uigetdir();
+                if directory ~= 0
+                    if ~isempty(credentials{4})
+                        credentials{3} = [credentials{3} ':' ...
+                            credentials{4}];
+                    end
+                    credentialPath = [directory '\' credentials{1}];
+                    edu.utsa.mobbed.ManageDB.createdbcredentials(...
+                        credentialPath, credentials{2}, credentials{3}, ...
+                        credentials{5}, credentials{6});
+                end
+            end
+        end % createdbcredentials
+        
         function createdb(dbname, hostname, username, password, script, ...
                 varargin)
             % Create a Postgresql database called name on host hostname
@@ -384,6 +407,16 @@ classdef Mobbed < hgsetget
                 which(parser.Results.script), parser.Results.verbose);
         end % createdb
         
+        function createdbc(filename, script)
+            parser = inputParser();
+            parser.addRequired('filename', @ischar);
+            parser.parse(filename);
+            properties = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            Mobbed.createdb(properties{1}, properties{2}, ...
+                properties{3}, properties{4}, script);
+        end % createdbc
+        
         function deletedb(dbname, hostname, username, password, varargin)
             % Delete Postgresql database name on host hostname
             parser = inputParser();
@@ -399,6 +432,26 @@ classdef Mobbed < hgsetget
                 parser.Results.username, parser.Results.password, ...
                 parser.Results.verbose);
         end % deletedb
+        
+        function deletedbc(filename)
+            parser = inputParser();
+            parser.addRequired('filename', @ischar);
+            parser.parse(filename);
+            properties = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            Mobbed.deletedb(properties{1}, properties{2}, ...
+                properties{3}, properties{4});
+        end % deletedbc
+        
+        function DB = getFromCredentials(filename)
+            parser = inputParser();
+            parser.addRequired('filename', @ischar);
+            parser.parse(filename);
+            properties = cell(...
+                edu.utsa.mobbed.ManageDB.loadcredentials(filename));
+            DB = Mobbed(properties{1}, properties{2}, ...
+                properties{3}, properties{4});
+        end % MobbedCredentials
         
     end % Static methods
     
