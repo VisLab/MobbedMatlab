@@ -114,7 +114,7 @@ classdef Mobbed < hgsetget
         function ddef = db2data(DB, varargin)
             % Retrieve additional data by data def uuid from DB
             parser = inputParser();
-            parser.addOptional('sdefUUID', {});
+            parser.addOptional('sdefUUID', {}, @DbHandler.validateUUIDs);
             parser.parse(varargin{:});
             ddef = getdb(DB, 'datadefs', 0);
             ddef.data = [];
@@ -263,7 +263,8 @@ classdef Mobbed < hgsetget
             parser.addOptional('isUnique', true, @islogical);
             parser.addParamValue('Tags', {}, @(x) ischar(x) || ...
                 iscellstr(x));
-            parser.addParamValue('EventTypes', {}, @iscellstr);
+            parser.addParamValue('EventTypes', {}, ...
+                @DbHandler.validateUUIDs);
             parser.parse(datasets, varargin{:});
             uniqueEvents = parser.Results.EventTypes;
             numDatasets = length(datasets);
@@ -451,7 +452,7 @@ classdef Mobbed < hgsetget
                 edu.utsa.mobbed.ManageDB.loadcredentials(filename));
             DB = Mobbed(properties{1}, properties{2}, ...
                 properties{3}, properties{4});
-        end % MobbedCredentials
+        end % getFromCredentials
         
     end % Static methods
     

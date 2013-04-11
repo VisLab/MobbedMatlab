@@ -33,22 +33,22 @@ for k = 1:length(fPaths)
             k, fPaths{k});
         continue;
     end
-    temp.dataset_name = fileName;
+    temp.dataset_name = fileName{1};
     temp.dataset_description = [fPaths{k}];
     temp.data = x.(fNames{1});
     [fUUIDs(k), uniqueEvents] = ...
         mat2db(DB, temp, 'eventTypes', uniqueEvents);
-    sdef = getdb(DB, 'data_defs', 0);     % set the data definition template
-    sdef.data_def_format = dataType;
-    sdef.data_def_sampling_rate = x.(fNames{1}).srate;
+    sdef = getdb(DB, 'datadefs', 0);     % set the data definition template
+    sdef.datadef_format = dataType;
+    sdef.datadef_sampling_rate = x.(fNames{1}).srate;
     sdef.data = x.(fNames{1}).data;
-    sdef.data_def_description = [x.(fNames{1}).setname ' ' x.(fNames{1}).filename ' individual frames'];
+    sdef.datadef_description = [x.(fNames{1}).setname ' ' x.(fNames{1}).filename ' individual frames'];
     sdefUUID = data2db(DB, sdef);
-    smap = getdb(DB, 'data_maps', 0);
-    smap.data_map_def_uuid = sdefUUID{1};
-    smap.data_map_structure_path = '/EEG/dataEx'; % where to put on retrieval
-    smap.data_map_entity_uuid = fUUIDs{k};
-    putdb(DB, 'data_maps', smap);
+    smap = getdb(DB, 'datamaps', 0);
+    smap.datamap_def_uuid = sdefUUID{1};
+    smap.datamap_structure_path = '/EEG/dataEx'; % where to put on retrieval
+    smap.datamap_entity_uuid = fUUIDs{k};
+    putdb(DB, 'datamaps', smap);
 end
 commit(DB);
 tElapsed = toc(tStart);
