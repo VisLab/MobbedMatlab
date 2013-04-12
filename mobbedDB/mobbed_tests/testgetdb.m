@@ -1,15 +1,17 @@
-function test_suite = testgetdb %#ok<STOUT>
+function test_suite = testGetdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
 tStruct = struct('name', 'testdb', 'url', 'localhost', ...
                  'user', 'postgres', 'password', 'admin', 'DB', []);
 try
-   DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+   DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+       tStruct.password, false);
 catch ME %#ok<NASGU>
    Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
                    tStruct.password, 'mobbed.sql', false);
-   DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, tStruct.password);
+   DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
+       tStruct.password, false);
 end
 tStruct.DB = DB;
 
@@ -27,9 +29,8 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testTags_getdb(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test getdb function with tags:\n');
-fprintf('It should retrieve a dataset with a single tag\n');
+function testGetdbTags(tStruct) %#ok<DEFNU>
+fprintf('\nIt should retrieve a dataset with a single tag\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -45,7 +46,7 @@ sNew2 = getdb(DB, 'datasets', inf, 'Tags', {{'single tag'}});
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with a single tag using wildcards\n');
+fprintf('\nIt should retrieve a dataset with a single tag using wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -61,7 +62,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'singlewild*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using wildcards\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -77,7 +78,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multiplewildcard*'}}, 'RegExp', 'on'
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using and operator\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using and operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -93,7 +94,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag1','multipleandtag2'}}
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using or operator\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using or operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -109,7 +110,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleortag1'},{'multipleortag2'}}
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using or operator and and operator\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using or operator and and operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -125,7 +126,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag3'},{'multipleortag3',
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using and operator and wildcards\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using and operator and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -141,7 +142,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag5','multipleandwild*'}
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using or operator and wildcards\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using or operator and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -157,7 +158,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleortag5','multipleorwildcard*
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using and operator, or operator, and wildcards\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using and operator, or operator, and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');
@@ -173,7 +174,7 @@ sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag6'}, {'multipleortag6'
 assertTrue(isstruct(sNew2));
 assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 
-fprintf('It should retrieve a dataset with multiple tags using regular expressions\n');
+fprintf('\nIt should retrieve a dataset with multiple tags using regular expressions\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
 load('EEG.mat');

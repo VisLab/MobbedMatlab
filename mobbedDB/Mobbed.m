@@ -271,6 +271,11 @@ classdef Mobbed < hgsetget
             UUIDs = cell(1,numDatasets);
             try
                 for k = 1:numDatasets
+                    % Check that dataset has name
+                    if isempty(datasets(k).dataset_name)
+                        throw(MException('mat2db:noDatasetName', ...
+                            'Dataset name is required'));
+                    end
                     % Check the dataset modality
                     if ~isempty(datasets(k).dataset_modality_uuid)
                         expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
