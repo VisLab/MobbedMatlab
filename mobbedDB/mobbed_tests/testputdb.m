@@ -295,23 +295,20 @@ fprintf('It should save a structure\n');
 DB = tStruct.DB;
 s1 = getdb(DB, 'structures', 0);
 s1.structure_name = 'structure name: structure 1';
-s1.structure_handler = 'structure handler: structure 1';
 s1.structure_parent_uuid = randomTestClass.generateRandomUUID;
 putdb(DB, 'structures', s1);
 
 fprintf('It should save multiple structures\n');
 DB = tStruct.DB;
-s3(1) = getdb(DB, 'structures', 0);
-s3(1).structure_name = 'structure name: structure 2';
-s3(1).structure_handler = 'structure handler: structure 2';
-s3(1).structure_parent_uuid = randomTestClass.generateRandomUUID;
+s2(1) = getdb(DB, 'structures', 0);
+s2(1).structure_name = 'structure name: structure 2';
+s2(1).structure_parent_uuid = randomTestClass.generateRandomUUID;
 
-s3(2) = getdb(DB, 'structures', 0);
-s3(2).structure_name = 'structure name: structure 3';
-s3(2).structure_handler = 'structure handler: structure 3';
-s3(2).structure_parent_uuid = randomTestClass.generateRandomUUID;
+s2(2) = getdb(DB, 'structures', 0);
+s2(2).structure_name = 'structure name: structure 3';
+s2(2).structure_parent_uuid = randomTestClass.generateRandomUUID;
 
-putdb(DB, 'structures', s3);
+putdb(DB, 'structures', s2);
 DB.commit();
 
 function testTags_putdb(tStruct) %#ok<DEFNU>

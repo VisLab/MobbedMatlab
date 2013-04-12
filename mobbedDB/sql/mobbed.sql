@@ -138,17 +138,7 @@ WITH (
   OIDS=FALSE
 );
  
-CREATE TABLE event_type_maps
-(
-  event_type_uuid uuid NOT NULL,
-  event_type_entity_uuid uuid NOT NULL,
-  event_type_map_entity_class character varying,
-  CONSTRAINT event_type_maps_pk PRIMARY KEY (event_type_uuid, event_type_entity_uuid)
-)
-WITH (
-  OIDS=FALSE
-);
- 
+
 CREATE TABLE events
 (
   event_uuid uuid NOT NULL,
@@ -202,7 +192,6 @@ CREATE TABLE structures
 (
   structure_uuid uuid NOT NULL,
   structure_name character varying,
-  structure_handler character varying,
   structure_parent_uuid uuid,
   structure_path character varying, 
   CONSTRAINT structures_pk PRIMARY KEY (structure_uuid)
