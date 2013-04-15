@@ -1,20 +1,29 @@
+%% Setup for this installation.
+dbName = 'mobbed';
+dbHost = 'localhost';
+dbPort = 5432;
+dbUser = 'postgres';
+dbPassword = 'pgadminabc123';
+
 %% 4.1 Create a database
-Mobbed.createdb('mobbed', 'localhost', 'postgres', 'admin', 'mobbed.sql');
+Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...
+                dbPassword, 'mobbed.sql');
 
 %% 4.1 Delete a database
-Mobbed.deletedb('mobbed', 'localhost', 'postgres', 'admin');
+Mobbed.deletedb(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
 
 %% 4.1 Recreate a database
-Mobbed.createdb('mobbed', 'localhost', 'postgres', 'admin', 'mobbed.sql');
+Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...
+                dbPassword, 'mobbed.sql');
 
 %% 4.2 Accessing the database in MATLAB
-DB = Mobbed('mobbed', 'localhost', 'postgres', 'admin');
+DB = Mobbed(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
 
 %% 4.2 Close connection
 close(DB);
 
 %% 4.2 Reopen the connection
-DB = Mobbed('mobbed', 'localhost', 'postgres', 'admin');
+DB = Mobbed(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
 
 %% 4.3 Upload datasets to the database (no optional parameters)
 load eeglab_data_ch.mat;             % load saved EEG structure
@@ -33,7 +42,7 @@ s = getdb(DB, 'datasets', inf); %#ok<NASGU> all rows in datasets table
 s = getdb(DB, 'datasets', 0);
 s.dataset_name = 'eeg*';
 sNew = getdb(DB, 'datasets', 10, s, 'RegExp', 'on', ...
-    'Tags', {{'EyeTrack'}, {'VisualTarget', 'Audio*'}}); %#ok<NASGU>
+    'Tags', {{'EyeTrack'}, {'VisualTarget', 'Audio*'}});  %#ok<NASGU>
 
 %% 4.4 Searching for datasets from the database (search qualifications)
 sNew = getdb(DB, 'datasets', 10, s, 'RegExp', 'on', ...
@@ -80,9 +89,9 @@ ddef = db2data(DB, sdefUUID);    %#ok<NASGU> % ddef.data has the actual data
 
 %% 4.6 Get the extra data associated with a particular dataset dUUID
 smap = getdb(DB, 'datamaps', 0);
-smap.datamap_entity_uuid = UUIDs{1}; % pick first dataset to try
+smap.datamap_entity_uuid = UUIDs{1};       % pick first dataset to try
 dmaps = getdb(DB, 'datamaps', inf, smap);  % retrieve all data
-ddef = db2data(DB, dmaps);           % get data in structured form
+ddef = db2data(DB, dmaps);                 % get data in structured form
 
 %% 4.6 Caching, reuse, and standardization
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);
