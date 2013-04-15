@@ -14,17 +14,9 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
-function teardown(tStruct) %#ok<DEFNU>
-try
-    tStruct.DB.close();
-    Mobbed.deletedb(tStruct.name, tStruct.hostname, tStruct.user, ...
-        tStruct.password);
-catch ME %#ok<NASGU>
-end
-
 function testcreatedbAlreadyExist(tStruct) %#ok<DEFNU>
 fprintf(['\nIt should throw an exception when creating a database that' ...
-    'already exists']);
+    ' already exists']);
 assertExceptionThrown(...
     @() error(Mobbed.createdb(tStruct.name, tStruct.hostname, ...
     tStruct.user, tStruct.password, 'mobbed.sql', false)), ...

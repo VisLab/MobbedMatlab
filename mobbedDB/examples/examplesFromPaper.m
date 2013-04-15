@@ -3,7 +3,7 @@ dbName = 'mobbed';
 dbHost = 'localhost';
 dbPort = 5432;
 dbUser = 'postgres';
-dbPassword = 'pgadminabc123';
+dbPassword = 'admin';
 
 %% 4.1 Create a database
 Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...

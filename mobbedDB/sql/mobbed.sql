@@ -139,6 +139,7 @@ WITH (
 );
  
 
+ 
 CREATE TABLE events
 (
   event_uuid uuid NOT NULL,
@@ -168,9 +169,9 @@ WITH (
  
 CREATE TABLE numeric_values
 (
-  datadef_uuid uuid NOT NULL,  
+  numeric_value_def_uuid uuid NOT NULL,  
   numeric_value double precision[],
-  CONSTRAINT numeric_values_pk PRIMARY KEY (datadef_uuid)
+  CONSTRAINT numeric_values_pk PRIMARY KEY (numeric_value_def_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -178,11 +179,11 @@ WITH (
 
 CREATE TABLE numeric_streams
 (
-  datadef_uuid uuid NOT NULL,  
+  numeric_stream_def_uuid uuid NOT NULL,  
   numeric_stream_record_position bigint NOT NULL,
   numeric_stream_record_time double precision,
   numeric_stream_data_value double precision[],
-  CONSTRAINT numeric_stream_pk PRIMARY KEY (datadef_uuid, numeric_stream_record_position)
+  CONSTRAINT numeric_stream_pk PRIMARY KEY (numeric_stream_def_uuid, numeric_stream_record_position)
 )
 WITH (
   OIDS=FALSE
@@ -235,9 +236,9 @@ WITH (
 
 CREATE TABLE xml_values
 (
-  datadef_uuid uuid NOT NULL,
+  xml_value_def_uuid uuid NOT NULL,
   xml_value character varying,
-  CONSTRAINT xml_values_pk PRIMARY KEY (datadef_uuid)
+  CONSTRAINT xml_values_pk PRIMARY KEY (xml_value_def_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -245,11 +246,11 @@ WITH (
 
 CREATE TABLE xml_streams
 (
-  datadef_uuid uuid NOT NULL,
+  xml_stream_def_uuid uuid NOT NULL,
   xml_stream_record_position bigint NOT NULL,
   xml_stream_record_time double precision,
   xml_stream_data_value double precision[],
-  CONSTRAINT xml_streams_pk PRIMARY KEY (datadef_uuid, xml_stream_record_position)
+  CONSTRAINT xml_streams_pk PRIMARY KEY (xml_stream_def_uuid, xml_stream_record_position)
 )
 WITH (
   OIDS=FALSE
