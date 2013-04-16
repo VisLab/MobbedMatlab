@@ -30,7 +30,7 @@
         <tocitem target="mobbed_mehods_by_cat.html" 
                  image="HelpIcon.FUNCTION">MobbedDB Method Reference
             <!-- List category with link to anchor in above page -->
-           <tocitem target="mobbed_methods_by_cat.html#2">Top-level methods
+           <tocitem target="mobbed_methods_by_cat.html#2">Mobbed top-level methods
                 <tocitem target="data2db_help.html" image="HelpIcon.FUNCTION">data2db</tocitem>
                 <tocitem target="db2data_help.html" image="HelpIcon.FUNCTION">db2data</tocitem>
                 <tocitem target="db2mat_help.html" image="HelpIcon.FUNCTION">db2mat</tocitem>
@@ -39,13 +39,20 @@
                 <tocitem target="mat2db_help.html" image="HelpIcon.FUNCTION">mat2db</tocitem>
                 <tocitem target="putdb_help.html" image="HelpIcon.FUNCTION">pop_eegvis</tocitem>                
             </tocitem>
-            <tocitem target="mobbed_methods_by_cat_by_cat.html#2">Utility methods
+            <tocitem target="mobbed_methods_by_cat_by_cat.html#2">Mobbed utility methods
                 <tocitem target="close_help.html" image="HelpIcon.FUNCTION">close</tocitem>
                 <tocitem target="commit_help.html" image="HelpIcon.FUNCTION">commit</tocitem>
                 <tocitem target="rollback_help.html" image="HelpIcon.FUNCTION">rollback</tocitem>
                 <tocitem target="setAutocommit_help.html" image="HelpIcon.FUNCTION">setAutocommit</tocitem>
-       
-            <!-- <...> -->
+            </tocitem>
+            <tocitem target="mobbed_methods_by_cat_by_cat.html#2">Mobbed static methods
+                <tocitem target="createCredentials_help.html" image="HelpIcon.FUNCTION">createCredentials</tocitem>
+                <tocitem target="createdb_help.html" image="HelpIcon.FUNCTION">createdb</tocitem>
+                <tocitem target="createdbc_help.html" image="HelpIcon.FUNCTION">createdbc</tocitem>
+                <tocitem target="deletedb_help.html" image="HelpIcon.FUNCTION">deletedb</tocitem>
+                <tocitem target="deletedbc_help.html" image="HelpIcon.FUNCTION">deletedbc</tocitem>
+                <tocitem target="getFromCredentials_help.html" image="HelpIcon.FUNCTION">getFromCredentials</tocitem>               
+            </tocitem>
         </tocitem>
         <!-- Optional Release Notes file -->
         <tocitem target="mobbed_release_notes.html" 

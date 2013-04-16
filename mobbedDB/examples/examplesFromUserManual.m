@@ -39,15 +39,15 @@ sUUID = mat2db(DB, s);               %#ok<NASGU>
 s = db2mat(DB);                      % get empty structure to fill in
 s.dataset_name = 'eeglab_tagged';    % dataset name is required
 s.data = EEG;                        % set data to be stored
-sUUID = mat2db(DB, s, true, 'Tags', {'EyeTrack', 'Oddball', 'AudioLeft'});
+sUUID = mat2db(DB, s, 'IsUnique', true, 'Tags', {'EyeTrack', 'Oddball', 'AudioLeft'});
 
 %% 6.3 reuse event types
 s = db2mat(DB);                       % get empty structure to fill in
 s.data = EEG;                    % store EEG with new set of event types
 s.dataset_name = 'original EEG';
-[~, uniqueEvents] = mat2db(DB, s, true);
+[~, uniqueEvents] = mat2db(DB, s);
 s.dataset_name = 'EEG1';
-[~, uniqueEvents] = mat2db(DB, s, true, 'EventTypes', uniqueEvents); %#ok<NASGU>
+[~, uniqueEvents] = mat2db(DB, s, 'EventTypes', uniqueEvents); %#ok<NASGU>
 
 %% 7.1 retrieve dataset(s) based on UUID
 datasets = db2mat(DB, sUUID); %#ok<NASGU>
@@ -92,7 +92,7 @@ sNewF = cell(10, 1);             % save room to get created UUIDs
 uniqueEvents = {};               % start with no event types and accumulate
 for k = 1:10
     s.dataset_name = ['data' num2str(k) '.mat']; % set the dataset name
-    [sNewF(k), uniqueEvents] = mat2db(DB, s, true, 'EventTypes', uniqueEvents);
+    [sNewF(k), uniqueEvents] = mat2db(DB, s, 'EventTypes', uniqueEvents);
 end
 
 %% 10.2 Retrieve all events associated with the dataset identified by UUID
@@ -136,8 +136,8 @@ sUUID = mat2db(DB, s);               % store original dataset
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);         % filter an EEG dataset
 s.dataset_name = 'eeglab_data_filtered.set';   % set up for storage
 s.dataset_parent_uuid = sUUID{1};
-s.data = EEG;                   % put data in structure for storing
-sNewF = mat2db(DB, s, true);    % store the filtered dataset
+s.data = EEG;                         % put data in structure for storing
+sNewF = mat2db(DB, s);                % store the filtered dataset
 
 % Cache the transform for future quick retrieval
 t = getdb(DB, 'transforms', 0); % retrieve an empty transform structure
@@ -196,7 +196,7 @@ s = db2mat(DB);
 s.dataset_name = 'my simple dataset 1'; % dataset name is required
 s.data = xray;                          % set data to be stored
 s.dataset_modality_uuid = 'simple';     % dataset name is required
-sUUID = mat2db(DB, s, true, 'Tags', {'Image', 'Left Femur'});
+sUUID = mat2db(DB, s, 'Tags', {'Image', 'Left Femur'});
 
 %% 16.3 Retrieve datasets that have an 'Image' tag.
 dataspecs = getdb(DB, 'datasets', inf, 'Tags', {'Image'});

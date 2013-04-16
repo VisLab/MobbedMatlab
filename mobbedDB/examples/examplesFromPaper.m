@@ -33,7 +33,7 @@ s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s);               %#ok<NASGU> % store in database DB
 
 %% 4.3 Upload datasets to the database (optional parameters)
-sUUID = mat2db(DB, s, true, 'Tags', {'EyeTrack', 'VisualTarget', 'AudioLeft'});
+sUUID = mat2db(DB, s, 'IsUnique', true, 'Tags', {'EyeTrack', 'VisualTarget', 'AudioLeft'});
 
 %% 4.4 Search for datasets from the database (get all rows)
 s = getdb(DB, 'datasets', inf); %#ok<NASGU> all rows in datasets table
@@ -62,7 +62,7 @@ for k = 1:10
     load(s.dataset_name);
     s.data = EEG;
     [UUIDs(k), uniqueEvents] = ...
-        mat2db(DB, s, true, 'EventTypes', uniqueEvents);
+        mat2db(DB, s, 'EventTypes', uniqueEvents);
 end
 
 %% 4.6 Storing the EEG data frames individually in the database
@@ -99,7 +99,7 @@ s = db2mat(DB);
 s.dataset_name = 'eeglab_data_filtered.set';
 s.data = EEG;
 s.dataset_parent_uuid = sUUID{1};
-sNewF = mat2db(DB, s, true);
+sNewF = mat2db(DB, s);
 
 tString = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)'];
 

@@ -91,6 +91,7 @@ classdef Mobbed < hgsetget
         end % commit
         
         function UUIDs = data2db(DB, datadefs)
+            % Store data definitions specified by datadefs and return UUIDs
             parser = inputParser();
             parser.addRequired('datadefs', @isstruct);
             parser.parse(datadefs);
@@ -109,7 +110,7 @@ classdef Mobbed < hgsetget
                 throw(ME);
             end
             DB.commit();
-        end
+        end % data2db
         
         function ddef = db2data(DB, varargin)
             % Retrieve additional data by data def uuid from DB
@@ -167,7 +168,7 @@ classdef Mobbed < hgsetget
         
         function connection = getConnection(DB)
             connection = DB.DbManager.getConnection();
-        end
+        end %
         
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve up to limit row(s) from table of DB
@@ -374,11 +375,11 @@ classdef Mobbed < hgsetget
             DB.DbManager(autoCommit);
         end % setAutoCommit
         
-    end % Public methods
+    end % public methods
     
     methods(Static)
         
-        function credentialPath = createdbCredentials()
+        function credentialPath = createCredentials()
             credentialPath = [];
             credentials = inputdlg({'Configuration filename', ...
                 'Database name', 'Host name', ...
@@ -393,17 +394,17 @@ classdef Mobbed < hgsetget
                         credentials{3} = [credentials{3} ':' ...
                             credentials{4}];
                     end
-                    credentialPath = [directory '\' credentials{1}];
-                    edu.utsa.mobbed.ManageDB.createdbcredentials(...
+                    credentialPath = [directory filesep credentials{1}];
+                    edu.utsa.mobbed.ManageDB.createCredentials(...
                         credentialPath, credentials{2}, credentials{3}, ...
                         credentials{5}, credentials{6});
                 end
             end
-        end % createdbcredentials
+        end % createCredentials
         
         function createdb(dbname, hostname, username, password, script, ...
                 varargin)
-            % Create a Postgresql database called name on host hostname
+            % Create a database called dbname on hostname using explicit credentials
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
@@ -420,6 +421,7 @@ classdef Mobbed < hgsetget
         end % createdb
         
         function createdbc(filename, script)
+           % Create a database called dbname on hostname using credentials file
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
