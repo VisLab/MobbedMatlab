@@ -1,4 +1,4 @@
-function test_suite = testExtractdb %#ok<STOUT>
+function test_suite = testextractdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -81,7 +81,7 @@ tStruct.event_type_uuids = [uuid1(:),uuid2(:),uuid3(:),uuid4(:)];
 function teardown(tStruct) %#ok<DEFNU>
 tStruct.DB.close();
 
-function testExtractdbRange(tStruct) %#ok<DEFNU>
+function testextractdbRange(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test extractdb function with Range:\n');
 
 fprintf('\nIt should extract all events within default range ([0,1]) with no search qulifications and no limit \n');

@@ -1,4 +1,4 @@
-function test_suite = testPutdb %#ok<STOUT>
+function test_suite = testputdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -22,7 +22,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testPutdbAttributes(tStruct) %#ok<DEFNU>
+function testputdbAttributes(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a attribute\n');
 DB = tStruct.DB;
 a1 = getdb(DB, 'attributes', 0);
@@ -34,7 +34,7 @@ a1.attribute_value = 'attribute value: attribute 1';
 putdb(DB, 'attributes', a1);
 DB.commit();
 
-function testPutdbComments(tStruct) %#ok<DEFNU>
+function testputdbComments(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a comment\n');
 DB = tStruct.DB;
 c1 = getdb(DB, 'comments', 0);  % Get the template structure for upload
@@ -45,7 +45,7 @@ c1.comment_value = 'comment value: comment 1';
 putdb(DB, 'comments', c1);
 DB.commit();
 
-function testPutdbContacts(tStruct) %#ok<DEFNU>
+function testputdbContacts(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a contact\n');
 DB = tStruct.DB;
 c1 = getdb(DB, 'contacts', 0);  % Get the template structure for upload
@@ -63,7 +63,7 @@ c1.contact_email = 'c1@email.com';
 putdb(DB, 'contacts', c1);
 DB.commit();
 
-function testPutdbDataDefs(tStruct) %#ok<DEFNU>
+function testputdbDataDefs(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a data def\n');
 DB = tStruct.DB;
 d1 = getdb(DB, 'datadefs', 0);
@@ -73,7 +73,7 @@ d1.datadef_description = 'data def description: data def 1';
 putdb(DB, 'datadefs', d1);
 DB.commit();
 
-function testPutdbDataMaps(tStruct) %#ok<DEFNU>
+function testputdbDataMaps(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a data map\n');
 DB = tStruct.DB;
 d1 = getdb(DB, 'datamaps', 0);
@@ -83,7 +83,7 @@ d1.datamap_structure_uuid = randomTestClass.generateRandomUUID;
 putdb(DB, 'datamaps', d1);
 DB.commit();
 
-function testPutdbElements(tStruct) %#ok<DEFNU>
+function testputdbElements(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a element\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'elements', 0);
@@ -94,7 +94,7 @@ e1.element_description = 'element description: element 1';
 putdb(DB, 'elements', e1);
 DB.commit();
 
-function testPutdbEvents(tStruct) %#ok<DEFNU>
+function testputdbEvents(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a event\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'events', 0);
@@ -107,7 +107,7 @@ e1.event_certainty = 1;
 putdb(DB, 'events', e1);
 DB.commit();
 
-function testPutdbEventTypes(tStruct) %#ok<DEFNU>
+function testputdbEventTypes(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a event type\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'event_types', 0);
@@ -116,7 +116,7 @@ e1.event_type_description = 'event type description: event type 1';
 putdb(DB, 'event_types', e1);
 DB.commit();
 
-function testPutdbModalities(tStruct) %#ok<DEFNU>
+function testputdbModalities(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a modality\n');
 DB = tStruct.DB;
 m1 = getdb(DB, 'modalities', 0);
@@ -126,7 +126,7 @@ m1.modality_description = 'modality description: modality 1';
 putdb(DB, 'modalities', m1);
 DB.commit();
 
-function testPutdbTags(tStruct) %#ok<DEFNU>
+function testputdbTags(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a tag\n');
 DB = tStruct.DB;
 t1 = getdb(DB, 'tags', 0);  % Get the template structure for upload

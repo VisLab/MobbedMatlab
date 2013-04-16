@@ -38,7 +38,7 @@ function testSimpleModalityUuid(tStruct) %#ok<DEFNU>
 % Unit test for EEG modality saved as a file
 fprintf('\nIt should store a simple dataset using the modality uuid\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = getdb(DB, 'datasets', 0);
 s1.dataset_name = 'simple - modality uuid';
 s1.data = EEG; 
@@ -51,7 +51,7 @@ function testSimpleModalityName(tStruct) %#ok<DEFNU>
 % Unit test for EEG modality saved as a file
 fprintf('\nIt should store a simple dataset using the modality name\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = getdb(DB, 'datasets', 0);
 s1.dataset_name = 'simple - modality name';
 s1.data = EEG; 

@@ -1,4 +1,4 @@
-function test_suite = testGetdb %#ok<STOUT>
+function test_suite = testgetdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -29,11 +29,11 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testGetdbTags(tStruct) %#ok<DEFNU>
+function testgetdbTags(tStruct) %#ok<DEFNU>
 fprintf('\nIt should retrieve a dataset with a single tag\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -49,7 +49,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with a single tag using wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -65,7 +65,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -81,7 +81,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using and operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -97,7 +97,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using or operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -113,7 +113,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using or operator and and operator\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -129,7 +129,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using and operator and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -145,7 +145,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using or operator and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG)); 
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -161,7 +161,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using and operator, or operator, and wildcards\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG));
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
@@ -177,7 +177,7 @@ assertTrue(isequal(sNew2.dataset_name, d1.dataset_name));
 fprintf('\nIt should retrieve a dataset with multiple tags using regular expressions\n');
 DB = tStruct.DB;
 assertTrue(isvalid(DB));
-load('EEG.mat');
+load eeglab_data_ch.mat;
 assertTrue(isstruct(EEG));
 assertTrue(~isempty(EEG));
 d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload

@@ -1,4 +1,4 @@
-function test_suite = testDeletedb %#ok<STOUT>
+function test_suite = testdeletedb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -14,13 +14,13 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
-function testDeletedbExist(tStruct) %#ok<DEFNU>
+function testdeletedbExist(tStruct) %#ok<DEFNU>
 fprintf('\nIt should delete a database that exists\n');
 tStruct.DB.close();
 Mobbed.deletedb(tStruct.name, tStruct.hostname, tStruct.user, ...
     tStruct.password);
 
-function testDeleteddbNotExist(tStruct) %#ok<DEFNU>
+function testdeletedbNotExist(tStruct) %#ok<DEFNU>
 fprintf(['\nIt should throw an exception when deleting a database that' ...
     ' does not exist']);
 tStruct.DB.close();

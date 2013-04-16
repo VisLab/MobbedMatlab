@@ -38,7 +38,7 @@ end
 function testEEGChanlocsAndEvents(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset with chanlocs and events\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'EEG - chanlocs and events';
 s1.data = EEG; 
@@ -50,7 +50,7 @@ assertTrue(isequal(s1.data,s2.data));
 function testEEGNoChanlocs(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset with no chanlocs\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB); 
 s1.dataset_name = 'EEG - no chanlocs';
 s1.data = EEG;
@@ -64,7 +64,7 @@ assertTrue(isempty(s2.data.chanlocs));
 function testEEGNoEvents(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset with no events\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB); 
 s1.dataset_name = 'EEG - no events';
 s1.data = EEG;
@@ -78,7 +78,7 @@ assertTrue(isempty(s2.data.event));
 function testEEGModalityName(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset using the modality name\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'EEG - modality name';
 s1.data = EEG; 
@@ -90,7 +90,7 @@ assertTrue(isequal(s1.data,s2.data));
 function testEEGDefaultModality(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset using the default EEG modality\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'EEG - default modality';
 s1.data = EEG; 
@@ -101,7 +101,7 @@ assertTrue(isequal(s1.data,s2.data));
 function testEEGNoUniqueEventTypes(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset that reuses event types\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB); 
 s1.dataset_name = 'EEG - original event types';
 s1.data = EEG;
@@ -117,7 +117,7 @@ assertTrue(isequal(length(uniqueEvents1), length(uniqueEvents2)));
 function testEEGUniqueEventTypes(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a EEG dataset that has unique event types\n');
 DB = tStruct.DB;
-load('EEG.mat');
+load eeglab_data_ch.mat;
 s1 = db2mat(DB); 
 s1.dataset_name = 'EEG - original event types';
 s1.data = EEG;

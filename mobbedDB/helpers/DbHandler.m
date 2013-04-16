@@ -73,20 +73,27 @@ classdef DbHandler
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
         end % extractValues
         
-        function outModality = getModality(DB, modalityUUID)
-            % Gets the modality by name or uuid
-            expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
-                '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'];
-            if isempty(regexpi(modalityUUID,expr))
-                inModality.modality_name = modalityUUID;
+        function [mName, mUUID] = getModality(DB, modalityUUID)
+            % Check the dataset modality
+            if ~isempty(modalityUUID)
+                expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
+                    '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
+                    '[0-9a-fA-F]{12}$'];
+                if isempty(regexpi(modalityUUID, expr))
+                    inModality.modality_name = modalityUUID;
+                else
+                    inModality.modality_uuid = modalityUUID;
+                end
+                outModality = getdb(DB, 'modalities', 1, inModality);
+                if isempty(outModality)
+                    throw(MException('getModality:inValidModality', ...
+                        'Modality does not exist'));
+                end
+                mName = outModality.modality_name;
+                mUUID = outModality.modality_uuid;
             else
-                inModality.modality_uuid = modalityUUID;
-            end
-            outModality = DbHandler.retrieveRows(DB, ...
-                'modalities', 1, 'off', inModality);
-            if isempty(outModality)
-                throw(MException('getModality:inValidModality', ...
-                    'Modality does not exist'));
+                mName = 'EEG';
+                mUUID =  [];
             end
         end % getModality
               
