@@ -40,7 +40,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with single tag';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', 'single tag');
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', 'single tag');
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', inf, 'Tags', {{'single tag'}});
 assertTrue(isstruct(sNew2));
@@ -56,7 +56,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with single tag - wildcards';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', 'singlewildcardtag');
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', 'singlewildcardtag');
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'singlewild*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
@@ -72,7 +72,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - wildcards';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multiplewildcardtag1', 'multiplewildcardtag2'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multiplewildcardtag1', 'multiplewildcardtag2'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multiplewildcard*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
@@ -88,7 +88,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - and operator';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleandtag1','multipleandtag2'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleandtag1','multipleandtag2'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag1','multipleandtag2'}});
 assertTrue(isstruct(sNew2));
@@ -104,7 +104,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - or operator';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleortag1','multipleortag2'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleortag1','multipleortag2'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleortag1'},{'multipleortag2'}});
 assertTrue(isstruct(sNew2));
@@ -120,7 +120,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - and operator and or operator';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleandtag3', 'multipleandtag4','multipleortag3','multipleortag4'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleandtag3', 'multipleandtag4','multipleortag3','multipleortag4'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag3'},{'multipleortag3','multipleortag4'}});
 assertTrue(isstruct(sNew2));
@@ -136,7 +136,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - and operator and wildcards';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleandtag5', 'multipleandwildcardtag'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleandtag5', 'multipleandwildcardtag'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag5','multipleandwild*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
@@ -152,7 +152,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - or operator and wildcards';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleortag5', 'multipleorwildcardtag'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleortag5', 'multipleorwildcardtag'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleortag5','multipleorwildcard*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
@@ -168,7 +168,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - and operator, or operator, and wildcards';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'multipleandtag6','multipleortag6', 'multipleandorwildcardtag'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'multipleandtag6','multipleortag6', 'multipleandorwildcardtag'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag6'}, {'multipleortag6','multipleandor*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));
@@ -184,7 +184,7 @@ d1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
 d1.dataset_name = 'Dataset with multiple tags - regular expression';
 d1.data = EEG;
 d1.dataset_modality_uuid = tStruct.mUUID;
-sNew1 = mat2db(DB, d1, false, 'Tags', {'regexptag1','regexptag2', 'regexptag3'});
+sNew1 = mat2db(DB, d1, 'IsUnique', false, 'Tags', {'regexptag1','regexptag2', 'regexptag3'});
 assertTrue(iscellstr(sNew1));
 sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'regexptag*'}}, 'RegExp', 'on');
 assertTrue(isstruct(sNew2));

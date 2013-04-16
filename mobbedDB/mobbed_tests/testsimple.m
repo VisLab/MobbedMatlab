@@ -43,7 +43,7 @@ s1 = getdb(DB, 'datasets', 0);
 s1.dataset_name = 'simple - modality uuid';
 s1.data = EEG; 
 s1.dataset_modality_uuid = tStruct.mUUID;
-UUIDs = mat2db(DB, s1, false); 
+UUIDs = mat2db(DB, s1, 'IsUnique', false); 
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
@@ -56,6 +56,6 @@ s1 = getdb(DB, 'datasets', 0);
 s1.dataset_name = 'simple - modality name';
 s1.data = EEG; 
 s1.dataset_modality_uuid = 'simple';
-UUIDs = mat2db(DB, s1, false); 
+UUIDs = mat2db(DB, s1, 'IsUnique', false); 
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));

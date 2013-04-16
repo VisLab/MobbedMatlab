@@ -36,7 +36,7 @@ s1 = db2mat(DB);
 s1.dataset_name = 'GENERIC - elements only';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, false);
+sUUID = mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
@@ -48,7 +48,7 @@ s1 = db2mat(DB);
 s1.dataset_name = 'GENERIC - elements and events';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, false);
+sUUID = mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
@@ -60,7 +60,7 @@ s1 = db2mat(DB);
 s1.dataset_name = 'GENERIC - elements and events';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, false);
+sUUID = mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 
@@ -72,7 +72,7 @@ s1 = db2mat(DB);
 s1.dataset_name = 'GENERIC - elements and events';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, false);
+sUUID = mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB, sUUID);
 assertTrue(isequal(s1.data,s2.data));
 

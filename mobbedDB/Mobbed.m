@@ -267,7 +267,7 @@ classdef Mobbed < hgsetget
             % Insert dataset(s) in the dataset table of DB, returning UUIDs
             parser = inputParser();
             parser.addRequired('datasets', @isstruct);
-            parser.addOptional('isUnique', true, @islogical);
+            parser.addParamValue('IsUnique', true, @islogical);
             parser.addParamValue('Tags', {}, @(x) ischar(x) || ...
                 iscellstr(x));
             parser.addParamValue('EventTypes', {}, ...
