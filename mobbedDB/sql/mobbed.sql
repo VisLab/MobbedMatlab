@@ -1,12 +1,14 @@
 CREATE TABLE attributes
 (
-  attribute_uuid uuid NOT NULL,
+  attribute_uuid uuid,
   attribute_entity_uuid uuid,
+  attribute_entity_class character varying, 
   attribute_organizational_uuid uuid,
+  attribute_organizational_class character varying, 
   attribute_structure_uuid uuid,
   attribute_numeric_value double precision, 
   attribute_value character varying,
-  CONSTRAINT attributes_pk PRIMARY KEY (attribute_uuid)
+  PRIMARY KEY (attribute_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -14,9 +16,10 @@ WITH (
 
 CREATE TABLE collections
 (
-  collection_uuid uuid NOT NULL,
+  collection_uuid uuid,
   collection_entity_uuid uuid,
-  CONSTRAINT collections_pkey PRIMARY KEY (collection_uuid, collection_entity_uuid)
+  collection_entity_class character varying, 
+  PRIMARY KEY (collection_uuid, collection_entity_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -24,13 +27,13 @@ WITH (
 
 CREATE TABLE comments
 (
-  comment_uuid uuid NOT NULL,
+  comment_uuid uuid,
   comment_entity_uuid uuid,
   comment_entity_class character varying,
   comment_contact_uuid uuid,
   comment_time timestamp without time zone DEFAULT LOCALTIMESTAMP,
   comment_value character varying,
-  CONSTRAINT comments_pkey PRIMARY KEY (comment_uuid)
+  PRIMARY KEY (comment_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -38,7 +41,7 @@ WITH (
 
 CREATE TABLE contacts
 (
-  contact_uuid uuid NOT NULL,
+  contact_uuid uuid,
   contact_first_name character varying,
   contact_last_name character varying,
   contact_middle_initial character varying,
@@ -50,7 +53,7 @@ CREATE TABLE contacts
   contact_postal_code character varying,
   contact_telephone character varying,
   contact_email character varying,
-  CONSTRAINT contacts_pk PRIMARY KEY (contact_uuid)
+  PRIMARY KEY (contact_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -58,13 +61,13 @@ WITH (
 
  CREATE TABLE datadefs
 (
-  datadef_uuid uuid NOT NULL,
+  datadef_uuid uuid,
   datadef_format character varying,
-  datadef_sampling_rate double precision,
+  datadef_sampling_rate double precision CHECK (datadef_sampling_rate = -1 OR datadef_sampling_rate > 0),
   datadef_timestamps double precision[],
   datadef_oid oid,
   datadef_description character varying, 
-  CONSTRAINT datadefs_pk PRIMARY KEY (datadef_uuid)
+  PRIMARY KEY (datadef_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -77,7 +80,7 @@ WITH (
   datamap_entity_class character varying, 
   datamap_structure_uuid uuid,
   datamap_structure_path character varying, 
-  CONSTRAINT datamaps_pk PRIMARY KEY (datamap_def_uuid, datamap_entity_uuid)
+  PRIMARY KEY (datamap_def_uuid, datamap_entity_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -88,16 +91,16 @@ WITH (
   dataset_uuid uuid,
   dataset_session_uuid uuid,  
   dataset_namespace character varying DEFAULT 'mobbed',
-  dataset_name character varying,
-  dataset_version integer,
+  dataset_name character varying NOT NULL,
+  dataset_version integer CHECK (dataset_version > 0),
   dataset_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_creation_date timestamp without time zone DEFAULT LOCALTIMESTAMP,
   dataset_description character varying,
   dataset_parent_uuid uuid,
-  dataset_modality_uuid uuid DEFAULT '791df7dd-ce3e-47f8-bea5-6a632c6fcccb',
+  dataset_modality_uuid uuid  DEFAULT '791df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_oid oid,
-  CONSTRAINT datasets_pk PRIMARY KEY (dataset_uuid),
-  CONSTRAINT "DATASETS_NAME_UK" UNIQUE (dataset_namespace, dataset_name, dataset_version)
+  PRIMARY KEY (dataset_uuid),
+  UNIQUE (dataset_namespace, dataset_name, dataset_version)
 )
 WITH (
   OIDS=FALSE
@@ -105,10 +108,10 @@ WITH (
  
   CREATE TABLE devices
 (
-  device_uuid uuid NOT NULL,
+  device_uuid uuid,
   device_contact_uuid uuid,
   device_description character varying,
-  CONSTRAINT devices_pk PRIMARY KEY (device_uuid)
+  PRIMARY KEY (device_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -116,12 +119,14 @@ WITH (
  
  CREATE TABLE elements
 (
-  element_uuid uuid NOT NULL,
+  element_uuid uuid,
   element_label character varying,
+  element_organizational_uuid uuid,
+  element_organizational_class character varying, 
   element_parent_uuid uuid,  
-  element_position bigint,
+  element_position bigint CHECK (element_position = -1 OR element_position > 0),
   element_description character varying,
-	  CONSTRAINT elements_pk PRIMARY KEY (element_uuid)
+  PRIMARY KEY (element_uuid)
 )
 	WITH (
 	  OIDS=FALSE
@@ -129,10 +134,10 @@ WITH (
  
 CREATE TABLE event_types
 (
-  event_type_uuid uuid NOT NULL,
+  event_type_uuid uuid,
   event_type character varying,
   event_type_description character varying,
-  CONSTRAINT event_types_pk PRIMARY KEY (event_type_uuid )
+  PRIMARY KEY (event_type_uuid )
 )
 WITH (
   OIDS=FALSE
@@ -142,14 +147,15 @@ WITH (
  
 CREATE TABLE events
 (
-  event_uuid uuid NOT NULL,
+  event_uuid uuid,
   event_entity_uuid uuid,
+  event_entity_class character varying, 
   event_type_uuid uuid,
-  event_start_time double precision,
-  event_end_time double precision,
-  event_position bigint,
-  event_certainty double precision,
-  CONSTRAINT events_pk PRIMARY KEY (event_uuid )
+  event_start_time double precision CHECK (event_start_time >= 0),
+  event_end_time double precision CHECK (event_end_time >= 0),
+  event_position bigint CHECK (event_position > 0),
+  event_certainty double precision CHECK (event_certainty > 0 AND event_certainty < 1), 
+  PRIMARY KEY (event_uuid )
 )
 WITH (
   OIDS=FALSE
@@ -157,11 +163,12 @@ WITH (
  
 CREATE TABLE modalities
 (
-  modality_uuid uuid NOT NULL,
+  modality_uuid uuid,
   modality_name character varying,
   modality_platform character varying,
   modality_description character varying,
-  CONSTRAINT modality_pk PRIMARY KEY (modality_uuid)
+  PRIMARY KEY (modality_uuid),
+  UNIQUE (modality_name)
 )
 WITH (
   OIDS=FALSE
@@ -169,9 +176,9 @@ WITH (
  
 CREATE TABLE numeric_values
 (
-  numeric_value_def_uuid uuid NOT NULL,  
+  numeric_value_def_uuid uuid,  
   numeric_value double precision[],
-  CONSTRAINT numeric_values_pk PRIMARY KEY (numeric_value_def_uuid)
+  PRIMARY KEY (numeric_value_def_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -179,11 +186,11 @@ WITH (
 
 CREATE TABLE numeric_streams
 (
-  numeric_stream_def_uuid uuid NOT NULL,  
-  numeric_stream_record_position bigint NOT NULL,
-  numeric_stream_record_time double precision,
+  numeric_stream_def_uuid uuid,  
+  numeric_stream_record_position bigint CHECK (numeric_stream_record_position > 0),
+  numeric_stream_record_time double precision CHECK (numeric_stream_record_time >= 0),
   numeric_stream_data_value double precision[],
-  CONSTRAINT numeric_stream_pk PRIMARY KEY (numeric_stream_def_uuid, numeric_stream_record_position)
+  PRIMARY KEY (numeric_stream_def_uuid, numeric_stream_record_position)
 )
 WITH (
   OIDS=FALSE
@@ -191,11 +198,11 @@ WITH (
 
 CREATE TABLE structures
 (
-  structure_uuid uuid NOT NULL,
+  structure_uuid uuid,
   structure_name character varying,
   structure_parent_uuid uuid,
   structure_path character varying, 
-  CONSTRAINT structures_pk PRIMARY KEY (structure_uuid)
+  PRIMARY KEY (structure_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -203,9 +210,9 @@ WITH (
 
 CREATE TABLE subjects
 (
-  subject_uuid uuid NOT NULL,
+  subject_uuid uuid,
   subject_description character varying,
-  CONSTRAINT subjects_pk PRIMARY KEY (subject_uuid)
+  PRIMARY KEY (subject_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -216,7 +223,7 @@ CREATE TABLE tags
   tag_name character varying,
   tag_entity_uuid uuid,
   tag_entity_class character varying,
-  CONSTRAINT tags_pk PRIMARY KEY (tag_name, tag_entity_uuid)
+  PRIMARY KEY (tag_name, tag_entity_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -224,11 +231,11 @@ WITH (
 
 CREATE TABLE transforms
 (
-  transform_uuid uuid NOT NULL,
-  transform_string character varying,
+  transform_uuid uuid,
+  transform_string character varying NOT NULL,
   transform_md5_hash character varying,
   transform_description character varying,
-  CONSTRAINT transforms_pk PRIMARY KEY (transform_uuid )
+  PRIMARY KEY (transform_uuid )
 )
 WITH (
   OIDS=FALSE
@@ -236,9 +243,9 @@ WITH (
 
 CREATE TABLE xml_values
 (
-  xml_value_def_uuid uuid NOT NULL,
+  xml_value_def_uuid uuid,
   xml_value character varying,
-  CONSTRAINT xml_values_pk PRIMARY KEY (xml_value_def_uuid)
+  PRIMARY KEY (xml_value_def_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -246,15 +253,30 @@ WITH (
 
 CREATE TABLE xml_streams
 (
-  xml_stream_def_uuid uuid NOT NULL,
-  xml_stream_record_position bigint NOT NULL,
-  xml_stream_record_time double precision,
+  xml_stream_def_uuid uuid,
+  xml_stream_record_position bigint CHECK (xml_stream_record_position > 0),
+  xml_stream_record_time double precision CHECK (xml_stream_record_time >= 0) ,
   xml_stream_data_value double precision[],
-  CONSTRAINT xml_streams_pk PRIMARY KEY (xml_stream_def_uuid, xml_stream_record_position)
+  PRIMARY KEY (xml_stream_def_uuid, xml_stream_record_position)
 )
 WITH (
   OIDS=FALSE
 ); 
+
+ALTER TABLE attributes ADD FOREIGN KEY (attribute_organizational_uuid) REFERENCES datasets (dataset_uuid);
+ALTER TABLE attributes ADD FOREIGN KEY (attribute_structure_uuid) REFERENCES structures (structure_uuid);
+ALTER TABLE comments ADD FOREIGN KEY (comment_contact_uuid) REFERENCES contacts (contact_uuid);
+ALTER TABLE datamaps ADD FOREIGN KEY (datamap_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE datamaps ADD FOREIGN KEY (datamap_structure_uuid) REFERENCES structures (structure_uuid);
+ALTER TABLE datasets ADD FOREIGN KEY (dataset_contact_uuid) REFERENCES contacts (contact_uuid);
+ALTER TABLE devices ADD FOREIGN KEY (device_contact_uuid) REFERENCES contacts (contact_uuid);
+ALTER TABLE events ADD FOREIGN KEY (event_type_uuid) REFERENCES event_types (event_type_uuid);
+ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE structures ADD FOREIGN KEY (structure_parent_uuid) REFERENCES structures (structure_uuid);
+ALTER TABLE transforms ADD FOREIGN KEY (transform_uuid) REFERENCES datasets (dataset_uuid);
+ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
 
 INSERT INTO CONTACTS (CONTACT_UUID, CONTACT_FIRST_NAME, CONTACT_LAST_NAME) 
 VALUES ('691df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'System', 'User');
