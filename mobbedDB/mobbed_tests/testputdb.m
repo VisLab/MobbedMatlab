@@ -12,6 +12,23 @@ catch ME %#ok<NASGU>
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, false);
+    
+    % Create reference tables   
+    d = gedb(DB, 'datasets', 0);
+    d.name = 'reference dataset';
+    d.name = 'reference dataset description ';
+    tStruct.dataset_uuid = putdb(DB, 'datasets', d);
+    
+    e = gedb(DB, 'event_types', 0);
+    e.event_type = 'referece type';
+    e.event_type_description = 'referece type description';
+    tStruct.event_type_uuid = putdb(DB, 'datasets', d);
+  
+    s = gedb(DB, 'structures', 0);
+    s.structure_name = 'parent';
+    s.structure_path = '/EEG';
+    tStruct.structure_uuid = putdb(DB, 'datasets', d);
+       
 end
 tStruct.DB = DB;
 
@@ -25,6 +42,7 @@ end
 function testputdbAttributes(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a attribute\n');
 DB = tStruct.DB;
+% Create 
 a1 = getdb(DB, 'attributes', 0);
 a1.attribute_entity_uuid = randomTestClass.generateRandomUUID;
 a1.attribute_entity_class = randomTestClass.generateRandomUUID;

@@ -30,7 +30,7 @@ CREATE TABLE comments
   comment_uuid uuid,
   comment_entity_uuid uuid,
   comment_entity_class character varying,
-  comment_contact_uuid uuid,
+  comment_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   comment_time timestamp without time zone DEFAULT LOCALTIMESTAMP,
   comment_value character varying,
   PRIMARY KEY (comment_uuid)
@@ -109,7 +109,7 @@ WITH (
   CREATE TABLE devices
 (
   device_uuid uuid,
-  device_contact_uuid uuid,
+  device_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   device_description character varying,
   PRIMARY KEY (device_uuid)
 )
