@@ -154,7 +154,7 @@ CREATE TABLE events
   event_start_time double precision CHECK (event_start_time >= 0),
   event_end_time double precision CHECK (event_end_time >= 0),
   event_position bigint CHECK (event_position > 0),
-  event_certainty double precision CHECK (event_certainty > 0 AND event_certainty < 1), 
+  event_certainty double precision CHECK (event_certainty >= 0 AND event_certainty <= 1), 
   PRIMARY KEY (event_uuid )
 )
 WITH (
@@ -263,7 +263,6 @@ WITH (
   OIDS=FALSE
 ); 
 
-ALTER TABLE attributes ADD FOREIGN KEY (attribute_organizational_uuid) REFERENCES datasets (dataset_uuid);
 ALTER TABLE attributes ADD FOREIGN KEY (attribute_structure_uuid) REFERENCES structures (structure_uuid);
 ALTER TABLE comments ADD FOREIGN KEY (comment_contact_uuid) REFERENCES contacts (contact_uuid);
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_def_uuid) REFERENCES datadefs (datadef_uuid);

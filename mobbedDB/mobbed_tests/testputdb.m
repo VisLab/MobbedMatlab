@@ -27,10 +27,12 @@ fprintf('\nIt should save a attribute\n');
 DB = tStruct.DB;
 a1 = getdb(DB, 'attributes', 0);
 a1.attribute_entity_uuid = randomTestClass.generateRandomUUID;
+a1.attribute_entity_class = randomTestClass.generateRandomUUID;
 a1.attribute_organizational_uuid = randomTestClass.generateRandomUUID;
+a1.attribute_organizational_class = 'datasets';
 a1.attribute_structure_uuid = randomTestClass.generateRandomUUID;
 a1.attribute_numeric_value = 1;
-a1.attribute_value = 'attribute value: attribute 1';
+a1.attribute_value = '1';
 putdb(DB, 'attributes', a1);
 DB.commit();
 
@@ -87,7 +89,7 @@ function testputdbElements(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a element\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'elements', 0);
-e1.element_label = 'element label: element 1';
+e1.element_label = 'group label';
 e1.element_parent_uuid = randomTestClass.generateRandomUUID;
 e1.element_position = 1;
 e1.element_description = 'element description: element 1';
