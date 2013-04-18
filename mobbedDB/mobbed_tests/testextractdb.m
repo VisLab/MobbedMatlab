@@ -36,11 +36,16 @@ e4.event_type = 'event type 4';
 e4.event_type_description = 'event type description: event type 4';
 uuid4 = putdb(DB, 'event_types', e4);
 
-datasetUuid = randomTestClass.generateRandomUUID;
+d = getdb(DB, 'datasets', 0);
+d.dataset_name = 'reference dataset';
+d.dataset_description = 'reference dataset description ';
+d.dataset_uuid = putdb(DB, 'datasets', d);
+datasetUuid = d.dataset_uuid{1};
 
 % Create events
 e1 = getdb(DB, 'events', 0);
 e1.event_entity_uuid = datasetUuid;
+e1.event_entity_class = 'datasets';
 e1.event_type_uuid = uuid1{1};
 e1.event_start_time = 1;
 e1.event_end_time = 1;
@@ -50,6 +55,7 @@ putdb(DB, 'events', e1);
 
 e2 = getdb(DB, 'events', 0);
 e2.event_entity_uuid = datasetUuid;
+e2.event_entity_class = 'datasets';
 e2.event_type_uuid = uuid2{1};
 e2.event_start_time = 2;
 e2.event_end_time = 2;
@@ -59,6 +65,7 @@ putdb(DB, 'events', e2);
 
 e3 = getdb(DB, 'events', 0);
 e3.event_entity_uuid = datasetUuid;
+e3.event_entity_class = 'datasets';
 e3.event_type_uuid = uuid3{1};
 e3.event_start_time = 3;
 e3.event_end_time = 3;
@@ -68,6 +75,7 @@ putdb(DB, 'events', e3);
 
 e4 = getdb(DB, 'events', 0);
 e4.event_entity_uuid = randomTestClass.generateRandomUUID;
+e4.event_entity_class = 'datasets';
 e4.event_type_uuid = uuid4{1};
 e4.event_start_time = 1;
 e4.event_end_time = 1;
