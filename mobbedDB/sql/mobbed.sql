@@ -117,7 +117,7 @@ WITH (
   OIDS=FALSE
 );
  
- CREATE TABLE elements
+CREATE TABLE elements
 (
   element_uuid uuid,
   element_label character varying,
@@ -131,20 +131,7 @@ WITH (
 	WITH (
 	  OIDS=FALSE
 	);  
- 
-CREATE TABLE event_types
-(
-  event_type_uuid uuid,
-  event_type character varying,
-  event_type_description character varying,
-  PRIMARY KEY (event_type_uuid )
-)
-WITH (
-  OIDS=FALSE
-);
- 
-
- 
+	
 CREATE TABLE events
 (
   event_uuid uuid,
@@ -161,6 +148,17 @@ WITH (
   OIDS=FALSE
 );
  
+CREATE TABLE event_types
+(
+  event_type_uuid uuid,
+  event_type character varying,
+  event_type_description character varying,
+  PRIMARY KEY (event_type_uuid )
+)
+WITH (
+  OIDS=FALSE
+);
+  
 CREATE TABLE modalities
 (
   modality_uuid uuid,
@@ -264,6 +262,7 @@ WITH (
 ); 
 
 ALTER TABLE attributes ADD FOREIGN KEY (attribute_structure_uuid) REFERENCES structures (structure_uuid);
+ALTER TABLE collections ADD FOREIGN KEY (collection_uuid) REFERENCES datasets (dataset_uuid);
 ALTER TABLE comments ADD FOREIGN KEY (comment_contact_uuid) REFERENCES contacts (contact_uuid);
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_def_uuid) REFERENCES datadefs (datadef_uuid);
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_structure_uuid) REFERENCES structures (structure_uuid);

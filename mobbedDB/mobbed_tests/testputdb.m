@@ -72,6 +72,16 @@ a1.attribute_value = '1';
 putdb(DB, 'attributes', a1);
 DB.commit();
 
+function testputdbCollections(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a collection\n');
+DB = tStruct.DB;
+c1 = getdb(DB, 'collections', 0);
+c1.collection_uuid = tStruct.dataset_uuid; 
+c1.collection_entity_uuid = tStruct.element_uuid;
+c1.collection_entity_class = 'elements';
+putdb(DB, 'collections', c1);
+DB.commit();
+
 function testputdbComments(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a comment\n');
 DB = tStruct.DB;
@@ -121,6 +131,23 @@ d1.datamap_structure_uuid = tStruct.structure_uuid;
 putdb(DB, 'datamaps', d1);
 DB.commit();
 
+function testputdbDatasets(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a dataset\n');
+DB = tStruct.DB;
+d1 = getdb(DB, 'datasets', 0);
+d1.dataset_name = 'reference dataset';
+d1.dataset_description = 'reference dataset description ';
+putdb(DB, 'datasets', d1);
+DB.commit();
+
+function testputdbDevices(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a device\n');
+DB = tStruct.DB;
+d1 = getdb(DB, 'devices', 0);
+d1.device_description = 'test device description';
+putdb(DB, 'devices', d1);
+DB.commit();
+
 function testputdbElements(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a element\n');
 DB = tStruct.DB;
@@ -165,6 +192,23 @@ m1.modality_description = 'test modality description';
 putdb(DB, 'modalities', m1);
 DB.commit();
 
+function testputdbStructures(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a structure\n');
+DB = tStruct.DB;
+s1 = getdb(DB, 'structures', 0);
+s1.structure_name = 'parent';
+s1.structure_path = '/EEG';
+putdb(DB, 'structures', s1);
+DB.commit();
+
+function testputdbSubjects(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a subject\n');
+DB = tStruct.DB;
+s1 = getdb(DB, 'subjects', 0);
+s1.subject_description = 'test subject description';
+putdb(DB, 'subjects', s1);
+DB.commit();
+
 function testputdbTags(tStruct) %#ok<DEFNU>
 fprintf('\nIt should save a tag\n');
 DB = tStruct.DB;
@@ -174,3 +218,15 @@ t1.tag_entity_uuid = tStruct.dataset_uuid;
 t1.tag_entity_class = 'datasets';
 putdb(DB, 'tags', t1);
 DB.commit();
+
+function testputdbTransforms(tStruct) %#ok<DEFNU>
+fprintf('\nIt should save a transform\n');
+DB = tStruct.DB;
+t1 = getdb(DB, 'transforms', 0);
+t1.transform_uuid = tStruct.dataset_uuid;
+t1.transform_string = randseq(20);
+t1.transform_description = 'test transform description';
+putdb(DB, 'transforms', t1);
+DB.commit();
+
+
