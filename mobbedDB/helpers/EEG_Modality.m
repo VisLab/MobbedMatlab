@@ -14,20 +14,20 @@ classdef EEG_Modality
                 fprintf('Channels saved: %f seconds \n', toc(tStart));
             end
             
+            % Store the urevents
+            EEG_Modality.storeEvents(DB, datasetUuid, data.urevent, ...
+                eventUuids);
+            if DB.Verbose
+                fprintf('Original events saved: %f seconds \n', toc(tStart));
+            end
+            
             % Store the events
             uniqueEvents = EEG_Modality.storeEvents(DB, datasetUuid, ...
                 data.event, eventUuids);
             if DB.Verbose
                 fprintf('Events saved: %f seconds \n', toc(tStart));
             end
-            
-            % Store the urevents
-            EEG_Modality.storeEvents(DB, datasetUuid, data.urevent, ...
-                eventUuids);
-            if DB.Verbose
-                fprintf('UREvents saved: %f seconds \n', toc(tStart));
-            end
-            
+                        
             % Store as file 
             DbHandler.storeFile(DB, datasetUuid, data, ...
                 true);
