@@ -96,7 +96,7 @@ WITH (
   dataset_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_creation_date timestamp without time zone DEFAULT LOCALTIMESTAMP,
   dataset_description character varying,
-  dataset_parent_uuid uuid,
+  dataset_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_modality_uuid uuid  DEFAULT '791df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_oid oid,
   PRIMARY KEY (dataset_uuid),
@@ -123,7 +123,7 @@ CREATE TABLE elements
   element_label character varying,
   element_organizational_uuid uuid,
   element_organizational_class character varying, 
-  element_parent_uuid uuid,  
+  element_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',  
   element_position bigint CHECK (element_position = -1 OR element_position > 0),
   element_description character varying,
   PRIMARY KEY (element_uuid)
@@ -138,6 +138,7 @@ CREATE TABLE events
   event_entity_uuid uuid,
   event_entity_class character varying, 
   event_type_uuid uuid,
+  event_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb', 
   event_start_time double precision CHECK (event_start_time >= 0),
   event_end_time double precision CHECK (event_end_time >= 0),
   event_position bigint CHECK (event_position > 0),
@@ -198,7 +199,7 @@ CREATE TABLE structures
 (
   structure_uuid uuid,
   structure_name character varying,
-  structure_parent_uuid uuid,
+  structure_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   structure_path character varying, 
   PRIMARY KEY (structure_uuid)
 )
@@ -271,7 +272,6 @@ ALTER TABLE devices ADD FOREIGN KEY (device_contact_uuid) REFERENCES contacts (c
 ALTER TABLE events ADD FOREIGN KEY (event_type_uuid) REFERENCES event_types (event_type_uuid);
 ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_def_uuid) REFERENCES datadefs (datadef_uuid);
 ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
-ALTER TABLE structures ADD FOREIGN KEY (structure_parent_uuid) REFERENCES structures (structure_uuid);
 ALTER TABLE transforms ADD FOREIGN KEY (transform_uuid) REFERENCES datasets (dataset_uuid);
 ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_def_uuid) REFERENCES datadefs (datadef_uuid);
 ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_def_uuid) REFERENCES datadefs (datadef_uuid);

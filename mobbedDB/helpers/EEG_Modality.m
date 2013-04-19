@@ -1,12 +1,12 @@
 classdef EEG_Modality
     
     methods(Static)
-               
+        
         function uniqueEvents = store(DB, datasetUuid, data, eventUuids)
             % Store EEG data in database
             
             tStart = tic;
-           
+            
             % Store the channels
             EEG_Modality.storeElements(DB, datasetUuid, ...
                 size(data.data, 1), data.chanlocs);
@@ -15,20 +15,21 @@ classdef EEG_Modality
             end
             
             % Store the urevents
-            EEG_Modality.storeEvents(DB, datasetUuid, data.urevent, ...
-                eventUuids);
+            [uniqueEvents, orignalEventUuids] = ...
+                EEG_Modality.storeOriginalEvents(DB, datasetUuid, ...
+                data.urevent, eventUuids);
             if DB.Verbose
                 fprintf('Original events saved: %f seconds \n', toc(tStart));
             end
             
             % Store the events
             uniqueEvents = EEG_Modality.storeEvents(DB, datasetUuid, ...
-                data.event, eventUuids);
+                data.event, uniqueEvents, orignalEventUuids);
             if DB.Verbose
                 fprintf('Events saved: %f seconds \n', toc(tStart));
             end
-                        
-            % Store as file 
+            
+            % Store as file
             DbHandler.storeFile(DB, datasetUuid, data, ...
                 true);
             if DB.Verbose
@@ -41,7 +42,7 @@ classdef EEG_Modality
     
     
     methods (Static, Access = private)
-                      
+        
         function storeElements(DB, datasetUuid, numChans, chanlocs)
             % Store the elements for EEG dataset
             position = (1:numChans)';
@@ -88,7 +89,8 @@ classdef EEG_Modality
         end % storeElements
         
         
-        function uniqueEvents = storeEvents(DB, datasetUuid, event, eventUuids)
+        function uniqueEvents = storeEvents(DB, datasetUuid, event, ...
+                eventUuids, orignalEventUuids)
             % Store the events for EEG dataset
             if isempty(event)
                 uniqueEvents = {};
@@ -105,8 +107,10 @@ classdef EEG_Modality
             uniqueTypes = unique(types);
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset(datasetUuid, 'event', [], uniqueTypes, types, ...
-                positions, startTimes, endTimes, certainties, eventUuids);
-            uniqueEvents = cell(jEvent.addEvents())';
+                positions, startTimes, endTimes, certainties, ...
+                eventUuids, orignalEventUuids);
+            uniqueEvents = cell(jEvent.addNewTypes());
+            jEvent.addEvents();
             for a = 1:length(otherFields)
                 values = cellfun(@(x) num2str(x, 16), ...
                     {event.(otherFields{a})}', 'UniformOutput', false);
@@ -127,6 +131,32 @@ classdef EEG_Modality
             end
             jEvent.save();
         end % storeEvents
+        
+        function [uniqueEvents, orignalEventUuids] = ...
+                storeOriginalEvents(DB, datasetUuid, urevent, eventUuids)
+            % Store the original events for EEG dataset
+            if isempty(urevent)
+                uniqueEvents = {};
+                return;
+            end
+            [startTimes, endTimes] = ...
+                deal(arrayfun(@(x) x.latency/1000, urevent));
+            types = cellfun(@num2str, {urevent.type}', ...
+                'UniformOutput', false);
+            certainties = ones(1, length(urevent));
+            positions = int64(1:length(types))';
+            parentUuids = cell(1, length(urevent));
+            [parentUuids{:}] = ...
+                deal(char(edu.utsa.mobbed.ManageDB.noParentUuid));
+            uniqueTypes = unique(types);
+            jEvent = edu.utsa.mobbed.Events(DB.getConnection());
+            jEvent.reset(datasetUuid, 'event', [], uniqueTypes, types, ...
+                positions, startTimes, endTimes, certainties, ...
+                eventUuids, parentUuids);
+            uniqueEvents = cell(jEvent.addNewTypes());
+            orignalEventUuids = cell(jEvent.addEvents());
+            jEvent.save();
+        end % storeOriginalEvents
         
     end % private static methods
     

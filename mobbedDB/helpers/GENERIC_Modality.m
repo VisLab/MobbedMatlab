@@ -93,14 +93,19 @@ classdef GENERIC_Modality
             startTimes = cell2mat({event.stime}');
             endTimes = cell2mat({event.etime}');
             certainties = cell2mat({event.certainty}');
+            parentUuids = cell(1, length(event));
+            [parentUuids{:}] = ...
+                deal(char(edu.utsa.mobbed.ManageDB.noParentUuid));
             uniqueTypes = unique(types);
             otherFields = setdiff(fieldnames(event), ...
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset(datasetUuid, 'event', [], uniqueTypes, types, ...
-                positions, startTimes, endTimes, certainties, eventUuids);
-            uniqueEvents = cell(jEvent.addEvents())';
+                positions, startTimes, endTimes, certainties, ...
+                eventUuids, parentUuids);
+            uniqueEvents = cell(jEvent.addNewTypes());
+            jEvent.addEvents();
             for a = 1:length(otherFields)
                 values = cellfun(@num2str, {event.(otherFields{a})}', ...
                     'UniformOutput', false);
