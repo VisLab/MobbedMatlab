@@ -1,3 +1,4 @@
+-- execute
 CREATE TABLE attributes
 (
   attribute_uuid uuid,
@@ -14,6 +15,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE collections
 (
   collection_uuid uuid,
@@ -25,6 +27,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE comments
 (
   comment_uuid uuid,
@@ -39,6 +42,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE contacts
 (
   contact_uuid uuid,
@@ -59,6 +63,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
  CREATE TABLE datadefs
 (
   datadef_uuid uuid,
@@ -72,7 +77,8 @@ WITH (
 WITH (
   OIDS=FALSE
 );
- 
+
+-- execute 
  CREATE TABLE datamaps
 (
   datamap_def_uuid uuid,
@@ -85,7 +91,8 @@ WITH (
 WITH (
   OIDS=FALSE
 );
-  
+
+-- execute  
   CREATE TABLE datasets
 (
   dataset_uuid uuid,
@@ -106,6 +113,7 @@ WITH (
   OIDS=FALSE
 );
  
+-- execute 
   CREATE TABLE devices
 (
   device_uuid uuid,
@@ -116,7 +124,8 @@ WITH (
 WITH (
   OIDS=FALSE
 );
- 
+
+-- execute 
 CREATE TABLE elements
 (
   element_uuid uuid,
@@ -131,7 +140,8 @@ CREATE TABLE elements
 	WITH (
 	  OIDS=FALSE
 	);  
-	
+
+-- execute	
 CREATE TABLE events
 (
   event_uuid uuid,
@@ -148,7 +158,8 @@ CREATE TABLE events
 WITH (
   OIDS=FALSE
 );
- 
+
+-- execute 
 CREATE TABLE event_types
 (
   event_type_uuid uuid,
@@ -159,7 +170,8 @@ CREATE TABLE event_types
 WITH (
   OIDS=FALSE
 );
-  
+
+-- execute  
 CREATE TABLE modalities
 (
   modality_uuid uuid,
@@ -172,7 +184,8 @@ CREATE TABLE modalities
 WITH (
   OIDS=FALSE
 );
- 
+
+-- execute 
 CREATE TABLE numeric_values
 (
   numeric_value_def_uuid uuid,  
@@ -183,6 +196,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE numeric_streams
 (
   numeric_stream_def_uuid uuid,  
@@ -195,6 +209,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE structures
 (
   structure_uuid uuid,
@@ -207,6 +222,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE subjects
 (
   subject_uuid uuid,
@@ -217,6 +233,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE tags
 (
   tag_name character varying,
@@ -228,6 +245,7 @@ WITH (
   OIDS=FALSE
 );
 
+-- execute
 CREATE TABLE transforms
 (
   transform_uuid uuid,
@@ -240,6 +258,7 @@ WITH (
   OIDS=FALSE
 ); 
 
+-- execute
 CREATE TABLE xml_values
 (
   xml_value_def_uuid uuid,
@@ -250,6 +269,7 @@ WITH (
   OIDS=FALSE
 ); 
 
+-- execute
 CREATE TABLE xml_streams
 (
   xml_stream_def_uuid uuid,
@@ -262,28 +282,74 @@ WITH (
   OIDS=FALSE
 ); 
 
+-- execute
 ALTER TABLE attributes ADD FOREIGN KEY (attribute_structure_uuid) REFERENCES structures (structure_uuid);
+-- execute
 ALTER TABLE collections ADD FOREIGN KEY (collection_uuid) REFERENCES datasets (dataset_uuid);
+-- execute
 ALTER TABLE comments ADD FOREIGN KEY (comment_contact_uuid) REFERENCES contacts (contact_uuid);
+-- execute
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_def_uuid) REFERENCES datadefs (datadef_uuid);
+-- execute
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_structure_uuid) REFERENCES structures (structure_uuid);
+-- execute
 ALTER TABLE datasets ADD FOREIGN KEY (dataset_contact_uuid) REFERENCES contacts (contact_uuid);
+-- execute
 ALTER TABLE devices ADD FOREIGN KEY (device_contact_uuid) REFERENCES contacts (contact_uuid);
+-- execute
 ALTER TABLE events ADD FOREIGN KEY (event_type_uuid) REFERENCES event_types (event_type_uuid);
+-- execute
 ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+-- execute
 ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
+-- execute
 ALTER TABLE transforms ADD FOREIGN KEY (transform_uuid) REFERENCES datasets (dataset_uuid);
+-- execute
 ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+-- execute
 ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
 
+-- execute
 INSERT INTO CONTACTS (CONTACT_UUID, CONTACT_FIRST_NAME, CONTACT_LAST_NAME) 
 VALUES ('691df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'System', 'User');
 
+-- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
 VALUES ('791df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'EEG', 'MATLAB', 'default EEGLAB EEG modality');
 
+-- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
 VALUES ('891df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'GENERIC', 'MATLAB', 'default generic modality');
 
+-- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
 VALUES ('991df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'SIMPLE', 'MATLAB', 'default simple modality');
+
+-- execute
+CREATE OR REPLACE FUNCTION extractRange(inQuery varchar, outQuery varchar, lower double precision,
+			upper double precision) RETURNS SETOF RECORD AS $$
+			DECLARE
+			inevent EVENTS;
+			outevent EVENTS;
+			founduuids uuid[];
+			i integer := 1;
+			BEGIN
+			FOR inevent in EXECUTE inQuery
+			LOOP
+			FOR outevent in EXECUTE outQuery ||
+			' INTERSECT SELECT * FROM EVENTS
+			WHERE EVENT_UUID <> $1 AND EVENT_ENTITY_UUID = $2 AND EVENT_START_TIME BETWEEN $3 + $5 AND $4 + $6'
+			USING inevent.event_uuid, inevent.event_entity_uuid, inevent.event_start_time, inevent.event_end_time, lower, upper
+			Loop
+			founduuids[i] := outevent.event_uuid;
+			i := i+1;
+			END LOOP;
+			IF outevent IS NOT NULL THEN
+			RETURN QUERY SELECT *, founduuids AS FOUND_UUIDS FROM EVENTS WHERE EVENT_UUID = inevent.event_uuid;
+			END IF;
+			i := 1;
+			founduuids := NULL;
+			END LOOP;
+			RETURN;
+			END;
+			$$ LANGUAGE plpgsql;
