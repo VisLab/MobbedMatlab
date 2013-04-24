@@ -115,17 +115,20 @@ classdef Mobbed < hgsetget
         function ddef = db2data(DB, varargin)
             % Retrieve additional data by data def uuid from DB
             parser = inputParser();
-            parser.addOptional('UUIDs', {}, @(x) isstruct(x) || ...
-                DbHandler.validateUUIDs(x));
+            parser.addOptional('UUIDs', {}, @(x) ...
+            isstruct(x) && isfield(x, 'datamap_def_uuid') && ...
+            DbHandler.validateUUIDs({x.datamap_def_uuid}) || ...   
+            DbHandler.validateUUIDs(x));
             parser.parse(varargin{:});
             ddef = getdb(DB, 'datadefs', 0);
             ddef.data = [];
             if ~isempty(parser.Results.UUIDs)
-                if iscellstr(parser.Results.UUIDs)
+                if ischar(parser.Results.UUIDs)
                     UUIDs = ...
                         DbHandler.reformatString(parser.Results.UUIDs);
-                end
-                if isstruct(parser.Results.UUIDs)
+                elseif iscellstr(parser.Results.UUIDs)
+                    UUIDs = parser.Results.UUIDs;
+                else
                     UUIDs = {parser.Results.UUIDs.datamap_def_uuid};
                 end
                 numUUIDs = length(UUIDs);

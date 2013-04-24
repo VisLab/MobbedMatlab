@@ -6,7 +6,7 @@ if ~isempty(fUUIDs)
     for k = 1:length(fUUIDs)
         smap.datamap_entity_uuid = fUUIDs{k};
         dmap = getdb(DB, 'datamaps', inf, smap);
-        data = db2data(DB, dmap.datamap_def_uuid); %#ok<NASGU> % get the data
+        data = db2data(DB, dmap); %#ok<NASGU> % get the data
     end
     close(DB);
 end

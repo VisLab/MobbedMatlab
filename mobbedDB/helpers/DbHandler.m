@@ -228,11 +228,11 @@ classdef DbHandler
                 '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'];
             if any(cellfun('isempty', (regexpi(UUIDs,expr))))
                 throw(MException('validateUUID:InvalidFormat', ...
-                    'UUID is incorrectly formatted'));
+                    'UUIDs is incorrectly formatted'));
             end
             if any(cellfun('isempty', UUIDs))
                 throw(MException('validateUUID:InvalidType', ...
-                    'UUID must be a string or cellstr'));
+                    'UUIDs can not be empty'));
             end
             success = true;
         end % validateUUID

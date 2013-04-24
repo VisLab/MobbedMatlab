@@ -67,7 +67,7 @@ WITH (
  CREATE TABLE datadefs
 (
   datadef_uuid uuid,
-  datadef_format character varying CHECK (upper(datadef_format) = 'NUMERIC' OR upper(datadef_format) = 'NUMERIC_STREAM' OR upper(datadef_format) = 'XML' OR upper(datadef_format) = 'XML_STREAM' OR upper(datadef_format) = 'EXTERNAL' ),
+  datadef_format character varying CHECK (upper(datadef_format) = 'NUMERIC_VALUE' OR upper(datadef_format) = 'NUMERIC_STREAM' OR upper(datadef_format) = 'XML_VALUE' OR upper(datadef_format) = 'XML_STREAM' OR upper(datadef_format) = 'EXTERNAL' ),
   datadef_sampling_rate double precision CHECK (datadef_sampling_rate = -1 OR datadef_sampling_rate > 0),
   datadef_timestamps double precision[],
   datadef_oid oid,

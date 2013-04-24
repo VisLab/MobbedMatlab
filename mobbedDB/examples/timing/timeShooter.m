@@ -3,7 +3,7 @@ hostName = 'localhost';
 userName = 'postgres';
 password = 'admin';
 dbScript = 'mobbed.sql';
-inDir = 'C:\Users\JCockfield\Desktop\MatData\ShooterMat2';
+inDir = 'C:\Users\JCockfield\Documents\MatData\ShooterMat2\0131';
 dataName = 'shooter';
 nameSpace = 'edu.utsa.cs.vislab';
 modality = 'eeg';
@@ -13,7 +13,7 @@ fprintf('\n\nTiming with no thread pool\n');
 threads = 0;
 dbName = [dataName num2str(threads)];
 timeParallel(dbName, hostName, userName, password, dbScript, ...
-             inDir, nameSpace, dataName, modality, threads)
+    inDir, nameSpace, dataName, modality, threads)
 
 %% Threading with 1 thread
 fprintf('\n\nTiming with 1 thread in pool\n');
@@ -21,7 +21,7 @@ threads = 1;
 dbName = [dataName num2str(threads)];
 matlabpool 1;
 timeParallel(dbName, hostName, userName, password, dbScript, ...
-             inDir, nameSpace, dataName, modality, threads)
+    inDir, nameSpace, dataName, modality, threads)
 matlabpool close
 
 %% Threading with 2 threads
@@ -30,5 +30,5 @@ threads = 2;
 dbName = [dataName num2str(threads)];
 matlabpool 2;
 timeParallel(dbName, hostName, userName, password, dbScript, ...
-             inDir, nameSpace, dataName, modality, threads)
-matlabpool close 
+    inDir, nameSpace, dataName, modality, threads)
+matlabpool close
