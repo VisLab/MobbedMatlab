@@ -170,7 +170,7 @@ sdefUUID = data2db(DB, sdef);              % store individual frames in database
 commit(DB);                                  % well, it never hurts
 smap = getdb(DB, 'datamaps', 0);             % get the template
 smap.datamap_def_uuid = sdefUUID{1};            % UUID of data from Example 14.2
-smap.datamap_structure_path = '/EEG/dataEx'; % load destination
+smap.datamap_path = '/EEG/dataEx'; % load destination
 for k = 1:length(UUIDs)
     smap.datamap_entity_uuid = UUIDs{k};
     smap.datamap_entity_class = 'datasets';

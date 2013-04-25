@@ -127,7 +127,7 @@ d1 = getdb(DB, 'datamaps', 0);
 d1.datamap_def_uuid = tStruct.datadef_uuid;
 d1.datamap_entity_uuid = tStruct.dataset_uuid;
 d1.datamap_entity_class = 'datasets';
-d1.datamap_structure_uuid = tStruct.structure_uuid;
+d1.datamap_path = 'test path';
 putdb(DB, 'datamaps', d1);
 DB.commit();
 

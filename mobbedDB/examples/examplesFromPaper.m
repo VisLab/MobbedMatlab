@@ -76,7 +76,7 @@ sdefUUID = data2db(DB, sdef);       % store frames in database
 %% 4.6 Associating exploded frames with multiple datasets.
 smap = getdb(DB, 'datamaps', 0);
 smap.datamap_def_uuid = sdefUUID{1};
-smap.datamap_structure_path = '/EEG/dataEx'; % load destination
+smap.datamap_path = '/EEG/dataEx'; % load destination
 for k = 1:10
     smap.datamap_entity_uuid = UUIDs{k};
     smap.datamap_entity_class = 'datasets';
