@@ -101,7 +101,7 @@ WITH (
   dataset_session_uuid uuid DEFAULT uuid_generate_v4(),  
   dataset_namespace character varying DEFAULT 'mobbed',
   dataset_name character varying NOT NULL,
-  dataset_version integer CHECK (dataset_version > 0),
+  dataset_version integer CHECK (dataset_version > 0) DEFAULT 1,
   dataset_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_creation_date timestamp without time zone DEFAULT LOCALTIMESTAMP,
   dataset_description character varying,

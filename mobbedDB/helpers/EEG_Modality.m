@@ -8,25 +8,31 @@ classdef EEG_Modality
             tStart = tic;
             
             % Store the channels
-            EEG_Modality.storeElements(DB, datasetUuid, ...
-                size(data.data, 1), data.chanlocs);
-            if DB.Verbose
-                fprintf('Channels saved: %f seconds \n', toc(tStart));
+            if isfield(data, 'chanlocs')
+                EEG_Modality.storeElements(DB, datasetUuid, ...
+                    size(data.data, 1), data.chanlocs);
+                if DB.Verbose
+                    fprintf('Channels saved: %f seconds \n', toc(tStart));
+                end
             end
             
             % Store the urevents
-            [uniqueEvents, orignalEventUuids] = ...
-                EEG_Modality.storeOriginalEvents(DB, datasetUuid, ...
-                data.urevent, eventUuids);
-            if DB.Verbose
-                fprintf('Original events saved: %f seconds \n', toc(tStart));
+            if isfield(data, 'urevent')
+                [uniqueEvents, orignalEventUuids] = ...
+                    EEG_Modality.storeOriginalEvents(DB, datasetUuid, ...
+                    data.urevent, eventUuids);
+                if DB.Verbose
+                    fprintf('Original events saved: %f seconds \n', toc(tStart));
+                end
             end
             
             % Store the events
-            uniqueEvents = EEG_Modality.storeEvents(DB, datasetUuid, ...
-                data.event, uniqueEvents, orignalEventUuids);
-            if DB.Verbose
-                fprintf('Events saved: %f seconds \n', toc(tStart));
+            if isfield(data, 'event')
+                uniqueEvents = EEG_Modality.storeEvents(DB, datasetUuid, ...
+                    data.event, uniqueEvents, orignalEventUuids);
+                if DB.Verbose
+                    fprintf('Events saved: %f seconds \n', toc(tStart));
+                end
             end
             
             % Store as file

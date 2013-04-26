@@ -33,7 +33,7 @@ s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s);               %#ok<NASGU> % store in database DB
 
 %% 4.3 Upload datasets to the database (optional parameters)
-sUUID = mat2db(DB, s, 'IsUnique', true, 'Tags', {'EyeTrack', 'VisualTarget', 'AudioLeft'});
+sUUID = mat2db(DB, s, 'IsUnique', false, 'Tags', {'EyeTrack', 'VisualTarget', 'AudioLeft'});
 
 %% 4.4 Search for datasets from the database (get all rows)
 s = getdb(DB, 'datasets', inf); %#ok<NASGU> all rows in datasets table

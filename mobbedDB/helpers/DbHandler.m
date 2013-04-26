@@ -73,28 +73,23 @@ classdef DbHandler
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
         end % extractValues
         
-        function [mName, mUUID] = getModality(DB, modalityUUID)
+        function [mName, mUUID] = checkModality(DB, modalityUUID)
             % Check the dataset modality
-            if ~isempty(modalityUUID)
-                expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
-                    '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
-                    '[0-9a-fA-F]{12}$'];
-                if isempty(regexpi(modalityUUID, expr))
-                    inModality.modality_name = modalityUUID;
-                else
-                    inModality.modality_uuid = modalityUUID;
-                end
-                outModality = getdb(DB, 'modalities', 1, inModality);
-                if isempty(outModality)
-                    throw(MException('getModality:inValidModality', ...
-                        'Modality does not exist'));
-                end
-                mName = outModality.modality_name;
-                mUUID = outModality.modality_uuid;
+            expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
+                '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
+                '[0-9a-fA-F]{12}$'];
+            if isempty(regexpi(modalityUUID, expr))
+                inModality.modality_name = modalityUUID;
             else
-                mName = 'EEG';
-                mUUID =  [];
+                inModality.modality_uuid = modalityUUID;
             end
+            outModality = getdb(DB, 'modalities', 1, inModality);
+            if isempty(outModality)
+                throw(MException('getModality:inValidModality', ...
+                    'Modality does not exist'));
+            end
+            mName = outModality.modality_name;
+            mUUID = outModality.modality_uuid;
         end % getModality
               
         function string = reformatString(string)
@@ -103,6 +98,7 @@ classdef DbHandler
         end % reformatString
         
         function data = retrieveDataDef(DB, datadef, isAdditionalData)
+           % Retrieves the data associated with a data def 
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 data = DbHandler.retrieveFile(DB, ...
                     datadef.datadef_uuid, isAdditionalData);
@@ -153,12 +149,13 @@ classdef DbHandler
             end
         end % retrieveNumericStream
         
-        function storeFile(DB, entityUuid, data, backing) %#ok<INUSL>
+        function storeFile(DB, entityUuid, data, isAdditionalData) %#ok<INUSL>
             % Store data in a external file
             fileName = [tempname '.mat'];
             save(fileName, 'data', '-v7.3');
-            edu.utsa.mobbed.Datadefs.storeBlob(DB.getConnection(), fileName, ...
-                entityUuid, backing);
+            edu.utsa.mobbed.Datadefs.storeBlob(DB.getConnection(), ...
+                fileName, ...
+                entityUuid, isAdditionalData);
             delete(fileName);
         end % storeExternal
         

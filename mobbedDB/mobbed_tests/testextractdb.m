@@ -37,7 +37,7 @@ e4.event_type_description = 'event type description: event type 4';
 uuid4 = putdb(DB, 'event_types', e4);
 
 d = getdb(DB, 'datasets', 0);
-d.dataset_name = 'reference dataset';
+d.dataset_name = randseq(20);
 d.dataset_description = 'reference dataset description ';
 d.dataset_uuid = putdb(DB, 'datasets', d);
 datasetUuid = d.dataset_uuid{1};
@@ -90,7 +90,7 @@ function teardown(tStruct) %#ok<DEFNU>
 tStruct.DB.close();
 
 function testextractdbRange(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test extractdb function with Range:\n');
+fprintf('\nUnit test for extractdb with Range:\n');
 
 fprintf('\nIt should extract all events within default range ([0,1]) with no search qulifications and no limit \n');
 DB = tStruct.DB;
