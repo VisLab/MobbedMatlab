@@ -1,5 +1,5 @@
 % storeTemporary   store a list of files as temporary files 
-function [names, tElapsed] = storeTemporary(fPaths)
+function [names, tElapsed] = storetemp(fPaths)
     tStart = tic;
     if ~isempty(fPaths)
         names = cell(length(fPaths));

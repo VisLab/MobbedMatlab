@@ -1,4 +1,4 @@
-function [fPaths, tElapsed] = getFileList(inDir)
+function [fPaths, tElapsed] = getfilelist(inDir)
 % Get a list of the files in a directory tree
 %
 % Parameters:

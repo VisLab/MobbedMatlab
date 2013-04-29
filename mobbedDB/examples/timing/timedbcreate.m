@@ -1,4 +1,4 @@
-function tElapsed = createDbs(dbNames, hostName, userName, password, dbScript)
+function tElapsed = timedbcreate(dbNames, hostName, userName, password, dbScript)
 % Create the specified number of databases and return the time elapsed
 %
 % Parameters

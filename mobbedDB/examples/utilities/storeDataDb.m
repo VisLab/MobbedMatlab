@@ -9,7 +9,7 @@
 %  Files must be readable by MATLAB load and contain
 %
 %  TODO:  This function needs to be generalized.
-function [fUUIDs, tElapsed] = storeDataDb(DB, fPaths, modality, dataType, uniqueEvents)
+function [fUUIDs, tElapsed] = storedatadb(DB, fPaths, modality, dataType, uniqueEvents)
 
 tStart = tic;
 
@@ -46,7 +46,7 @@ for k = 1:length(fPaths)
     sdefUUID = data2db(DB, sdef);
     smap = getdb(DB, 'datamaps', 0);
     smap.datamap_def_uuid = sdefUUID{1};
-    smap.datamap_structure_path = '/EEG/dataEx'; % where to put on retrieval
+    smap.datamap_path = '/EEG/dataEx'; % where to put on retrieval
     smap.datamap_entity_uuid = fUUIDs{k};
     putdb(DB, 'datamaps', smap);
 end

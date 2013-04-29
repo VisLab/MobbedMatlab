@@ -1,5 +1,5 @@
 % getEvents   retrieve events of specified types from database
-function [eventTypes, eventCounts, tElapsed] = getEvents(DB, eventTypes)
+function [eventTypes, eventCounts, tElapsed] = getevents(DB, eventTypes)
     tStart = tic;
     sEvents = getdb(DB, 'events', 0);
     eventCounts = cell(length(eventTypes), 1);

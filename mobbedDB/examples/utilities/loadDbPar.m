@@ -1,5 +1,5 @@
 % loadDbPar       wrapper to allow db2mat to be called by worker threads
-function [fUUIDs, tElapsed] = loadDbPar(dbName, hostName,  ...
+function [fUUIDs, tElapsed] = loaddbpar(dbName, hostName,  ...
                               userName, password, fUUIDs)
   tStart = tic;
   if ~isempty(fUUIDs)

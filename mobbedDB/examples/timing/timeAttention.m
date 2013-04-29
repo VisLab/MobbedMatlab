@@ -2,8 +2,8 @@
 hostName = 'localhost';
 userName = 'postgres';
 password = 'admin';
-dbScript = 'mobbed.xml';
-inDir = 'G:\NeuroErgonomicsData\AttentionShift\AttentionShiftMat';
+dbScript = 'mobbed.sql';
+inDir = '/path/to/Attention';
 dataName = 'attention';
 nameSpace = 'edu.utsa.cs.vislab';
 modality = 'eeg';
@@ -12,7 +12,7 @@ modality = 'eeg';
 fprintf('\n\nTiming with no thread pool\n');
 threads = 0;
 dbName = [dataName num2str(threads)];
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 
 %% Threading with 1 thread
@@ -20,7 +20,7 @@ fprintf('\n\nTiming with 1 thread in pool\n');
 threads = 1;
 dbName = [dataName num2str(threads)];
 matlabpool 1;
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 matlabpool close
 
@@ -29,7 +29,7 @@ fprintf('\n\nTiming with 2 threads in pool\n');
 threads = 2;
 dbName = [dataName num2str(threads)];
 matlabpool 2;
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 matlabpool close 
 
@@ -38,6 +38,6 @@ fprintf('\n\nTiming with 4 threads in pool\n');
 threads = 4;
 dbName = [dataName num2str(threads)];
 matlabpool 4;
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 matlabpool close 

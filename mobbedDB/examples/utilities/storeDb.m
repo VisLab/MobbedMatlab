@@ -9,7 +9,7 @@
 %    uniqueEvents (output) cell array of UUIDs of unique events
 %
 
-function [fUUIDs, uniqueEvents, tElapsed] = storeDb(DB, fPaths, ...
+function [fUUIDs, uniqueEvents, tElapsed] = storedb(DB, fPaths, ...
                              modality, nameSpace, namePrefix, uniqueEvents)
 
     tStart = tic;

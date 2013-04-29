@@ -9,7 +9,7 @@
 %    hostName 
 
 
-function timeParallel(dbName, hostName, userName, password, dbScript, ...
+function timepar(dbName, hostName, userName, password, dbScript, ...
     inDir, nameSpace, dataName, modality, threads)
 
 fprintf('Timing script %s with %g threads...\n', dbName, threads);
@@ -17,7 +17,7 @@ fprintf('Timing script %s with %g threads...\n', dbName, threads);
 
 %% Get the pathnames of files in the inDir directory tree
 fprintf('Creating a list of files for %s tree...\n', inDir);
-[fPaths, tElapsed] = getFileList(inDir);
+[fPaths, tElapsed] = getfilelist(inDir);
 fprintf('\tTotal files: %g took %g s (%g s average)\n', length(fPaths), ...
     tElapsed, tElapsed/length(fPaths));
 
@@ -40,11 +40,11 @@ tElapsedFiles = zeros(workers, 1);
 % Do the workers
 if isempty(threads) || threads == 0
     for k = 1:workers
-        [~, tElapsedFiles(k)] = storeTemporary(fPathGroups{k}) ;
+        [~, tElapsedFiles(k)] = storetemp(fPathGroups{k}) ;
     end
 else
     parfor k = 1:workers
-        [~, tElapsedFiles(k)] = storeTemporary(fPathGroups{k}) ;
+        [~, tElapsedFiles(k)] = storetemp(fPathGroups{k}) ;
     end
 end
 tElapsed = toc(tStart);
@@ -103,13 +103,13 @@ tElapsedStore = zeros(workers, 1);
 if isempty(threads) || threads == 0
     for k = 1:workers
         [fUUIDsThread{k}, uniqueEventsThread{k}, tElapsedStore(k)] = ...
-            storeDbPar(dbName, hostName, userName, password, ...
+            storedbpar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, nameSpace, dataName, uniqueEvents);
     end
 else
     parfor k = 1:workers
         [fUUIDsThread{k}, uniqueEventsThread{k}, tElapsedStore(k)] = ...
-            storeDbPar(dbName, hostName, userName, password, ...
+            storedbpar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, nameSpace, dataName, uniqueEvents);  %#ok<PFOUS>
     end
 end
@@ -129,7 +129,7 @@ tElapsedLoad = zeros(workers, 1);
 fUUIDGroups = cell(workers, 1);
 tStart = tic;
 parfor k = 1:workers
-    [fUUIDGroups{k}, tElapsedLoad(k)] = loadDbPar(dbName, hostName,  ...
+    [fUUIDGroups{k}, tElapsedLoad(k)] = loaddbpar(dbName, hostName,  ...
         userName, password, fUUIDsThread{k});
 end
 tElapsed = toc(tStart);
@@ -154,7 +154,7 @@ for k = 1:workers;
 end;
 for k = 1:workers
     [eventTypes{k}, eventCounts{k}, tElapsedEvents(k)] = ...
-        getEventsPar(dbName, hostName,  ...
+        geteventspar(dbName, hostName,  ...
         userName, password, eventGroups{k});
 end
 tElapsed = toc(tStart);
@@ -184,13 +184,13 @@ tElapsedStoreData = zeros(workers, 1);
 if isempty(threads) || threads == 0
     for k = 1:workers
         [fUUIDsData{k}, tElapsedStore(k)] = ...
-            storeDataDbPar(dbName, hostName, userName, password, ...
+            storedatadbpar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, 'NUMERIC_STREAM', uniqueEvents);
     end
 else
     parfor k = 1:workers
         [fUUIDsData{k}, tElapsedStoreData(k)] = ...
-            storeDataDbPar(dbName, hostName, userName, password, ...
+            storedatadbpar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, 'NUMERIC_STREAM', uniqueEvents);
     end
 end
@@ -208,7 +208,7 @@ fprintf('Retrieving exploded data from %s...\n', dbName);
 tElapsedLoadData = zeros(workers, 1);
 tStart = tic;
 parfor k = 1:workers
-    [fUUIDsData{k}, tElapsedLoadData(k)] = loadDataDbPar(dbName, hostName,  ...
+    [fUUIDsData{k}, tElapsedLoadData(k)] = loaddatadbpar(dbName, hostName,  ...
         userName, password, fUUIDsData{k});
 end
 tElapsed = toc(tStart);

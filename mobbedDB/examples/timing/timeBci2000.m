@@ -2,8 +2,8 @@
 hostName = 'localhost';
 userName = 'postgres';
 password = 'admin';
-dbScript = 'mobbed.xml';
-inDir = 'H:\BCIProcessing\BCI2000Mat';
+dbScript = 'mobbed.sql';
+inDir = '/path/to/Bci2000';
 dataName = 'bci2000';
 nameSpace = 'edu.utsa.cs.vislab';
 modality = 'eeg';
@@ -12,7 +12,7 @@ modality = 'eeg';
 fprintf('\n\nTiming with no thread pool\n');
 threads = 0;
 dbName = [dataName num2str(threads)];
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 
 %% Threading with 1 thread
@@ -20,7 +20,7 @@ fprintf('\n\nTiming with 1 thread in pool\n');
 threads = 1;
 dbName = [dataName num2str(threads)];
 matlabpool 1;
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 matlabpool close
 
@@ -29,6 +29,6 @@ fprintf('\n\nTiming with 2 threads in pool\n');
 threads = 2;
 dbName = [dataName num2str(threads)];
 matlabpool 2;
-timeParallel(dbName, hostName, userName, password, dbScript, ...
+timepar(dbName, hostName, userName, password, dbScript, ...
              inDir, nameSpace, dataName, modality, threads)
 matlabpool close 
