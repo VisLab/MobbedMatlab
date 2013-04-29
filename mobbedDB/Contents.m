@@ -4,27 +4,27 @@
 % Requires PostgreSQL to be installed.
 %
 % Mobbed top-level methods
-%   data2db           - create a new data definition and store data in database
-%   db2data	          - retrieve a data definition from the database
-%   db2mat            - retrieve a dataset from the database 
-%   extractdb	      - retrieve inter-related items such as events
-%   getdb             - retrieve rows from a single table
-%   mat2db            - eegBrowse GUI for selecting files for visualization
-%   putdb	          - create or update rows from a single table
+%   data2db            - create a data definition and store corresponding data in database
+%   db2data	           - retrieve a data definition and associated data from the database
+%   db2mat             - retrieve a dataset from the database 
+%   extractdb	       - retrieve inter-related items such as events from more complex scenarios
+%   getdb              - retrieve rows from a single table
+%   mat2db             - create and store a dataset in the database
+%   putdb	           - create or update rows from a single table
 %
 %
 % Mobbed utility methods
-%   close	          - close the database descriptor 
-%   commit	          - commit the current database transaction, if uncommitted
-%   rollback	      - back out of the current transaction if any is uncommitted
-%   setAutocommit	  - determines whether the database automatically commits each transaction
+%   close	           - close the database descriptor 
+%   commit	           - commit the current database transaction, if uncommitted
+%   rollback	       - rollback the current transaction if any is uncommitted
+%   setAutocommit	   - Set or clear flag indicating whether to automatically commit transactions
 %
 % Mobbed static methods
-%   createCredentials -
-%   createdb          - create a database using username and password
-%   createdbc         - create a database using a credentials file
-%   deletedb          - delete a database using username and password
-%   deletedbc         - delete a database using a credentials file
+%   createCredentials  -
+%   createdb           - create a database using username and password
+%   createdbc          - create a database using a credentials file
+%   deletedb           - delete a database using username and password
+%   deletedbc          - delete a database using a credentials file
 %   getFromCredentials - get an open database connection given credentials
 %
 % Kay A. Robbins and Jeremy Cockfield

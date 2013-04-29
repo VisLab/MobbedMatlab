@@ -81,17 +81,17 @@ classdef Mobbed < hgsetget
         end % Mobbed
         
         function close(DB)
-            % Close the connection to database DB
+            % Close the database descriptor 
             DB.DbManager.close();
         end % close
         
         function commit(DB)
-            % Commit pending transaction(s) in database DB
+            % Commit the current database transaction, if uncommitted
             DB.DbManager.commit();
         end % commit
         
         function UUIDs = data2db(DB, datadefs)
-            % Store data definitions specified by datadefs and return UUIDs
+            % Create a data definition and store corresponding data in database
             parser = inputParser();
             parser.addRequired('datadefs', @isstruct);
             parser.parse(datadefs);
@@ -113,7 +113,7 @@ classdef Mobbed < hgsetget
         end % data2db
         
         function ddef = db2data(DB, varargin)
-            % Retrieve additional data by data def uuid from DB
+            % Retrieve a data definition and associated data from the database
             parser = inputParser();
             parser.addOptional('UUIDs', {}, @(x) ...
                 isstruct(x) && isfield(x, 'datamap_def_uuid') && ...
@@ -146,7 +146,7 @@ classdef Mobbed < hgsetget
         end % db2data
         
         function datasets = db2mat(DB, varargin)
-            % Retrieve dataset(s) identified by UUIDs from DB
+            % Retrieve a dataset from the database
             parser = inputParser();
             parser.addOptional('UUIDs', {}, @DbHandler.validateUUIDs);
             parser.parse(varargin{:});
@@ -174,7 +174,7 @@ classdef Mobbed < hgsetget
         end %
         
         function outS = getdb(DB, table, limit, varargin)
-            % Retrieve up to limit row(s) from table of DB
+            % Retrieve rows from a single table
             parser = inputParser();
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('limit', @(x) isnumeric(x) && ...
@@ -218,6 +218,7 @@ classdef Mobbed < hgsetget
         
         function [mStructure, extStructure] = extractdb(DB, inType, ...
                 inS, outType, outS, limit, varargin)
+            % Retrieve inter-related items such as events from more complex scenarios
             parser = inputParser();
             parser.addRequired('inType', @ischar);
             parser.addRequired('inS', @(x) isempty(x) || isstruct(x) && ...
@@ -267,7 +268,7 @@ classdef Mobbed < hgsetget
         
         
         function [UUIDs, uniqueEvents] = mat2db(DB, datasets, varargin)
-            % Insert dataset(s) in the dataset table of DB, returning UUIDs
+            % Create and store a dataset in the database
             parser = inputParser();
             parser.addRequired('datasets', @(x) isstruct(x) && ...
                 isfield(x, 'dataset_name') && ~isempty(x.dataset_name) ...
@@ -347,7 +348,7 @@ classdef Mobbed < hgsetget
         end % mat2db
         
         function UUIDs = putdb(DB, table, inS)
-            % Insert or update row(s) in specified table of database DB
+            % Create or update rows from a single table
             parser = inputParser();
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('inS', @(x) isstruct(x) && ...
@@ -363,12 +364,12 @@ classdef Mobbed < hgsetget
         end % putdb
         
         function rollback(DB)
-            % Rollback transaction(s) in database DB
+            % Rollback the current transaction if any is uncommitted
             DB.DbManager.rollback();
         end % rollback
         
         function setAutoCommit(DB, autoCommit)
-            % Set auto commit to true or false for database DB
+            % Set or clear flag indicating whether to automatically commit transactions
             parser = inputParser();
             parser.addRequired('autoCommit', @islogical);
             parser.parse(autoCommit);

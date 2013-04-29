@@ -18,6 +18,7 @@ classdef DbHandler
         end % addJavaPath
         
         function jArray = createJaggedArray(array)
+            % Creates a jagged java array 
             if isempty(array)
                 jArray = [];
                 return;
@@ -49,6 +50,7 @@ classdef DbHandler
                
         function [values, doubleValues] = extractValues(structure, ...
                 doubleColumns)
+            % extracts values from a structure array 
             numStructs = length(structure);
             numColumns = length(doubleColumns);
             if numColumns < 1
@@ -74,7 +76,7 @@ classdef DbHandler
         end % extractValues
         
         function [mName, mUUID] = checkModality(DB, modalityUUID)
-            % Check the dataset modality
+            % Checks the given modality
             expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
                 '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
                 '[0-9a-fA-F]{12}$'];
@@ -98,7 +100,7 @@ classdef DbHandler
         end % reformatString
         
         function data = retrieveDataDef(DB, datadef, isAdditionalData)
-           % Retrieves the data associated with a data def 
+            % Retrieves the data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 data = DbHandler.retrieveFile(DB, ...
                     datadef.datadef_uuid, isAdditionalData);
@@ -112,6 +114,8 @@ classdef DbHandler
             elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
                 data = char(edu.utsa.mobbed.Datadefs.retrieveXMLValue(...
                     DB.getConnection(), datadef.datadef_uuid));
+            else throw(MException('retrieveDataDef:InvalidFormat', ...
+                    'Datadef format is invalid'));
             end
         end % retrieveDataDef
         
@@ -130,12 +134,13 @@ classdef DbHandler
         end % retrieveExternal
         
         function data = retrieveNumericStream(DB, data_def_uuid)
-            % Retrieves numeric stream data from database
-            jNumericData = edu.utsa.mobbed.NumericStreams(DB.getConnection());
+            % Retrieves numeric stream from database
+            jNumericData = ...
+                edu.utsa.mobbed.NumericStreams(DB.getConnection());
             jNumericData.reset(data_def_uuid);
             numElements = ...
-                edu.utsa.mobbed.Elements.getElementCount(DB.getConnection(), ...
-                data_def_uuid);
+                edu.utsa.mobbed.Elements.getElementCount(...
+                DB.getConnection(), data_def_uuid);
             maxPosition = jNumericData.getMaxPosition();
             width = 10000;
             k = 1;
@@ -154,23 +159,20 @@ classdef DbHandler
             fileName = [tempname '.mat'];
             save(fileName, 'data', '-v7.3');
             edu.utsa.mobbed.Datadefs.storeBlob(DB.getConnection(), ...
-                fileName, ...
-                entityUuid, isAdditionalData);
+                fileName, entityUuid, isAdditionalData);
             delete(fileName);
         end % storeExternal
         
         function storeDataDef(DB, datadef)
-            % Save as file
+            % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 DbHandler.storeFile(DB, datadef.datadef_uuid, ...
-                    datadef.data, false)
-            end
-            % Save as numeric stream
-            if strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
+                    datadef.data, false)                
+            elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 if ~isfield(datadef, 'datadef_sampling_rate') && ...
                         ~isfield(datadef, 'datadef_timestamps')
-                    throw (MException(['EEG_Modality:' ...
-                        'EEGSampleRateInvalid'], ...
+                    throw (MException(['storeDataDef:' ...
+                        'InvalidSamplingRate'], ...
                         'sample rate and timestamps are not present'));
                 end
                 if  isfield(datadef, 'datadef_sampling_rate')
@@ -186,23 +188,21 @@ classdef DbHandler
                 end
                 DbHandler.storeNumericStream(DB, datadef.datadef_uuid, ...
                     datadef.data, times);
-            end
-            % Save as numeric value
-            if strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
+            elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
                 edu.utsa.mobbed.Datadefs.storeNumericValue(...
                     DB.getConnection(), datadef.datadef_uuid, ...
-                    datadef.data);
-            end
-            % Save as xml value
-            if strcmpi(datadef.datadef_format, 'XML_VALUE')
+                    datadef.data);                
+            elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
                 edu.utsa.mobbed.Datadefs.storeXMLValue(...
                     DB.getConnection(), datadef.datadef_uuid, ...
                     datadef.data);
+            else throw (MException('retrieveDataDef:InvalidFormat', ...
+                    'Datadef format is invalid'));
             end
-        end
+        end % storeDataDef
         
         function storeNumericStream(DB, dataDefUuid, data, times)
-            % Store EEG data in database
+            % Stores numeric stream 
             numFrames = length(data);
             jNumericStream = edu.utsa.mobbed.NumericStreams(...
                 DB.getConnection());
@@ -218,7 +218,7 @@ classdef DbHandler
         end % storeNumericStream
         
         function success = validateUUIDs(UUIDs)
-            % Validates UUIDs
+            % Validates a cellstr of UUIDs
             if isempty(UUIDs), success = true; return; end;
             UUIDs = DbHandler.reformatString(UUIDs);
             expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
