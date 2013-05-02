@@ -81,7 +81,7 @@ classdef Mobbed < hgsetget
         end % Mobbed
         
         function close(DB)
-            % Close the database descriptor 
+            % Close the database descriptor
             DB.DbManager.close();
         end % close
         
@@ -380,28 +380,8 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
-        function credentialPath = createCredentials()
-            credentialPath = [];
-            credentials = inputdlg({'Configuration filename', ...
-                'Database name', 'Host name', ...
-                'Port number', 'User name', 'Password'}, ...
-                'Database credentials', ...
-                [1 40; 1 40; 1 40; 1 12; 1 40; 1 40], ...
-                {'config.properties', 'mobbed', 'localhost', '5432', ...
-                'postgres', 'password'}, 'on');
-            if ~isempty(credentials)
-                directory = uigetdir();
-                if directory ~= 0
-                    if ~isempty(credentials{4})
-                        credentials{3} = [credentials{3} ':' ...
-                            credentials{4}];
-                    end
-                    credentialPath = [directory filesep credentials{1}];
-                    edu.utsa.mobbed.ManageDB.createCredentials(...
-                        credentialPath, credentials{2}, credentials{3}, ...
-                        credentials{5}, credentials{6});
-                end
-            end
+        function configPath = createCredentials()
+            configPath = inputdbcreds;
         end % createCredentials
         
         function createdb(dbname, hostname, username, password, script, ...
