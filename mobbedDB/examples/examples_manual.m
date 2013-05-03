@@ -132,9 +132,9 @@ commit(DB);
 % Store original dataset in the database
 load eeglab_data_ch.mat;             % load a previously saved EEG structure
 s = db2mat(DB);                      % get empty structure
-s.dataset_name = 'eeglab_data';      % dataset name is required
+s.dataset_name = 'original_eeglab_data';      % dataset name is required
 s.data = EEG;                        % set data to be stored
-sUUID = mat2db(DB, s, 'IsUnique', false);  % store original dataset
+sUUID = mat2db(DB, s);  % store original dataset
 
 % Filter the data and store kthe filtered dataset
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);         % filter an EEG dataset
