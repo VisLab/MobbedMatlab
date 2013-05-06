@@ -39,12 +39,12 @@ sdef.datadef_sampling_rate = EEG.srate;
 sdef.data = EEG.data;
 sdef.datadef_description = [EEG.setname ' ' EEG.filename ' numeric stream'];
 UUIDs = data2db(DB, sdef);
-fprintf('--It should return a cellstr containing one uuid\n');
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 sdef2 = db2data(DB, UUIDs);
 assertTrue(isstruct(sdef2));
-fprintf('--It should retrieve a datadef that is equal to the stored datadef\n');
+fprintf('--It should retrieve a datadef that is equal');
 assertElementsAlmostEqual(sdef.data, sdef2.data);
 
 function testNumericValue(tStruct) %#ok<DEFNU>
@@ -57,12 +57,12 @@ sdef.datadef_format = 'NUMERIC_VALUE';
 sdef.data = EEG.data(1,:);
 sdef.datadef_description = [EEG.setname ' ' EEG.filename ' numeric'];
 UUIDs = data2db(DB, sdef);
-fprintf('--It should return a cellstr containing one uuid\n');
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 sdef2 = db2data(DB, UUIDs);
 assertTrue(isstruct(sdef2));
-fprintf('--It should retrieve a datadef that is equal to the stored datadef\n');
+fprintf('--It should retrieve a datadef that is equal');
 assertElementsAlmostEqual(sdef.data, sdef2.data);
 
 function testExternal(tStruct) %#ok<DEFNU>
@@ -75,14 +75,14 @@ sdef.datadef_format = 'EXTERNAL';
 sdef.data = EEG.data;
 sdef.datadef_description = [EEG.setname ' ' EEG.filename ' external'];
 UUIDs = data2db(DB, sdef);
-fprintf('--It should return a cellstr containing one uuid\n');
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 sdef2 = db2data(DB, UUIDs);
 assertTrue(isstruct(sdef2));
 fprintf('--It should retrieve a datadef with an oid\n');
 assertTrue(~isempty(sdef2.datadef_oid));
-fprintf('--It should retrieve a datadef that is equal to the stored datadef\n');
+fprintf('--It should retrieve a datadef that is equal');
 assertTrue(isequal(sdef.data, sdef2.data));
 
 function testXMLValue(tStruct) %#ok<DEFNU>
@@ -94,10 +94,10 @@ sdef.datadef_format = 'XML_VALUE';
 sdef.data = xmlwrite(which('sample.xml'));
 sdef.datadef_description = 'xml';
 UUIDs = data2db(DB, sdef);
-fprintf('--It should return a cellstr containing one uuid\n');
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 sdef2 = db2data(DB, UUIDs);
-fprintf('--It should retrieve a datadef that is equal to the stored datadef\n');
+fprintf('--It should retrieve a datadef that is equal');
 assertTrue(isequal(sdef.data, sdef2.data));
 
