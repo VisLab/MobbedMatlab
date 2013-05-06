@@ -34,31 +34,33 @@ fprintf('It should store a duplicate dataset\n');
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db - duplicate';
-s1.data = EEG; 
+s1.dataset_name = 'mat2db duplicate dataset';
+s1.data = EEG;
 mat2db(DB, s1);
 s2 = db2mat(DB);
-s2.dataset_name = 'mat2db - duplicate';
-s2.data = EEG; 
+s2.dataset_name = 'mat2db duplicate dataset';
+s2.data = EEG;
 UUIDs = mat2db(DB, s2, 'IsUnique', false);
 s3 = db2mat(DB,UUIDs);
-fprintf('--It should have a version number greater than 1\n');
+fprintf('--It return a dataset with a version number greater than 1\n');
 assertTrue(s3.dataset_version > 1);
 
 
-function testmat2UniqueDataset(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with unique dataset\n');
-fprintf('It should throw an exception when storing a unique dataset that already exists\n');
+function testmat2UniqueDatasetException(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for mat2db with unique dataset exception\n');
+fprintf(['It should throw an exception when storing a unique dataset' ...
+    ' whose namespace and name combination already exist\n']);
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db - unique';
-s1.data = EEG; 
+s1.dataset_name = 'mat2db unique dataset';
+s1.data = EEG;
 mat2db(DB, s1);
 s2 = db2mat(DB);
-s2.dataset_name = 'mat2db - unique';
-s2.data = EEG; 
-assertExceptionThrown(@() error(mat2db(DB, s2)), 'MATLAB:Java:GenericException');
+s2.dataset_name = 'mat2db unique dataset';
+s2.data = EEG;
+assertExceptionThrown(@() error(mat2db(DB, s2)), ...
+    'MATLAB:Java:GenericException');
 
 function testmat2dbTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with tags:\n');
@@ -66,9 +68,10 @@ fprintf('It should store a dataset with tags\n');
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db - tags';
-s1.data = EEG; 
+s1.dataset_name = 'mat2db with tags';
+s1.data = EEG;
 mat2db(DB, s1, 'IsUnique', false, 'Tags', {'tag1', 'tag2'});
-fprintf('--It should retrieve a datasets by the tags that were associated with it\n');
+fprintf(['--It should retrieve a dataset by the tags that were' ...
+    ' associated with it\n']);
 s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
 assertTrue(~isempty(s2));
