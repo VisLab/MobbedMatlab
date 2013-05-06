@@ -55,7 +55,7 @@ load eeglab_data_ch.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'mat2db unique dataset';
 s1.data = EEG;
-mat2db(DB, s1);
+mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB);
 s2.dataset_name = 'mat2db unique dataset';
 s2.data = EEG;
@@ -75,3 +75,5 @@ fprintf(['--It should retrieve a dataset by the tags that were' ...
     ' associated with it\n']);
 s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
 assertTrue(~isempty(s2));
+
+

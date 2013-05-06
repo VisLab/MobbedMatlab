@@ -7,22 +7,14 @@ classdef genericTestClass < hgsetget
         data
     end % public properties
     
-    properties (Access = private)
-        featureTypes = {'numeric', 'numeric_stream', 'xml', 'xml_stream'};
-    end % public properties
-    
-    
     methods (Access = public)
         function obj = genericTestClass(numElements, numEvents, ...
-                numMeta, numExtra, featureType)
+                numMeta, numExtra)
             if numElements > 0
                 obj.setElements(numElements, numExtra);
             end
             if numEvents > 0
                 obj.setEvents(numEvents, numExtra);
-            end
-            if any(strcmpi(featureType, obj.featureTypes))
-                obj.setFeatures(featureType, numElements, numExtra);
             end
             if numMeta > 0
                 obj.setMetadata(numMeta);
@@ -66,33 +58,6 @@ classdef genericTestClass < hgsetget
             end
             obj.data.event = event;
         end % setElements
-        
-        function setFeatures(obj, featureType, numElements, numExtra)
-            feature.type = featureType;
-            feature.description = 'feature description';
-            if strcmpi(featureType, 'numeric_stream')
-                % create 2-d matrix from sample eeg data
-                load('EEG.mat');
-                feature.value.data = EEG.data(1:numElements, :);
-                feature.value.samplingrate = EEG.srate;
-            end
-            if strcmpi(featureType, 'numeric')
-                % create 1-d vector from sample eeg data
-                load('EEG.mat');
-                feature.value = EEG.data(1, :);
-            end
-            if strcmpi(featureType, 'xml')
-                % read from sample.xml file
-                feature.value = xmlwrite(which('sample.xml'));
-                feature.value = strrep(feature.value, ...
-                    '<?xml version="1.0" encoding="utf-8"?>', '');
-            end
-            for k = 1:numExtra
-                thisName = ['extra' num2str(k)];
-                feature.(thisName) = [thisName ': ' feature.type];
-            end
-            obj.data.feature = feature;
-        end
         
         function setMetadata(obj, numMeta)
             % Set the metadata structure

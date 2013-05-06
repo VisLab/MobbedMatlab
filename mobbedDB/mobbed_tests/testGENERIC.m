@@ -28,51 +28,55 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testGenericElements(tStruct) %#ok<DEFNU>
-fprintf('\nIt should store a generic dataset with only elements\n');
+function testElements(tStruct) %#ok<DEFNU>
+fprintf(['\nUnit test for storing a generic modality dataset that only' ...
+    ' has elements\n']);
+fprintf(['It should store a generic modality dataset that only has' ...
+    ' elements\n']);
 DB = tStruct.DB;
 generic = genericTestClass(5, 0, 0, 0, 0);
 s1 = db2mat(DB);
-s1.dataset_name = 'GENERIC - elements only';
+s1.dataset_name = 'generic elements only';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, 'IsUnique', false);
-s2 = db2mat(DB, sUUID);
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+s2 = db2mat(DB, UUIDs);
+fprintf('--It should return a dataset that only has elements'
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEvents(tStruct) %#ok<DEFNU>
+function testElementsEvents(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements and events\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 0, 0, 0);
 s1 = db2mat(DB);
-s1.dataset_name = 'GENERIC - elements and events';
+s1.dataset_name = 'generic elements and events';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, 'IsUnique', false);
-s2 = db2mat(DB, sUUID);
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEventsMetadata(tStruct) %#ok<DEFNU>
+function testElementsEventsMetadata(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements, events, and metadata\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 5, 0, 0);
 s1 = db2mat(DB);
-s1.dataset_name = 'GENERIC - elements and events';
+s1.dataset_name = 'generic elements and events';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, 'IsUnique', false);
-s2 = db2mat(DB, sUUID);
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
-function testGenericElementsEventsMetadataExtras(tStruct) %#ok<DEFNU>
+function testElementsEventsMetadataExtras(tStruct) %#ok<DEFNU>
 fprintf('\nIt should store a generic dataset with elements, events, metadata, and extra fields\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 5, 5, 0);
 s1 = db2mat(DB);
-s1.dataset_name = 'GENERIC - elements and events';
+s1.dataset_name = 'generic elements, events, metadata, and extra fields';
 s1.data = generic.data;
 s1.dataset_modality_uuid = tStruct.mUUID;
-sUUID = mat2db(DB, s1, 'IsUnique', false);
-s2 = db2mat(DB, sUUID);
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 

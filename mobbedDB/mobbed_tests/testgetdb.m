@@ -76,83 +76,19 @@ s2 = getdb(DB, 'datasets', 1, 'Tags', {'ANDTAG1', 'ANDTAG2'});
 fprintf('--It should return a structure array that contains a dataset\n');
 assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
-% 
-% fprintf('\nIt should retrieve a dataset with multiple tags using or operator and and operator\n');
-% DB = tStruct.DB;
-% assertTrue(isvalid(DB));
-% load eeglab_data_ch.mat;
-% assertTrue(isstruct(EEG));
-% assertTrue(~isempty(EEG));
-% s1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
-% s1.dataset_name = 'Dataset with multiple tags - and operator and or operator';
-% s1.data = EEG;
-% s1.dataset_modality_uuid = tStruct.mUUID;
-% sNew1 = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'multipleandtag3', 'multipleandtag4','multipleortag3','multipleortag4'});
-% assertTrue(iscellstr(sNew1));
-% sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag3'},{'multipleortag3','multipleortag4'}});
-% assertTrue(isstruct(sNew2));
-% assertTrue(isequal(sNew2.dataset_name, s1.dataset_name));
-% 
-% fprintf('\nIt should retrieve a dataset with multiple tags using and operator and wildcards\n');
-% DB = tStruct.DB;
-% assertTrue(isvalid(DB));
-% load eeglab_data_ch.mat;
-% assertTrue(isstruct(EEG));
-% assertTrue(~isempty(EEG));
-% s1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
-% s1.dataset_name = 'Dataset with multiple tags - and operator and wildcards';
-% s1.data = EEG;
-% s1.dataset_modality_uuid = tStruct.mUUID;
-% sNew1 = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'multipleandtag5', 'multipleandwildcardtag'});
-% assertTrue(iscellstr(sNew1));
-% sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag5','multipleandwild*'}}, 'RegExp', 'on');
-% assertTrue(isstruct(sNew2));
-% assertTrue(isequal(sNew2.dataset_name, s1.dataset_name));
-% 
-% fprintf('\nIt should retrieve a dataset with multiple tags using or operator and wildcards\n');
-% DB = tStruct.DB;
-% assertTrue(isvalid(DB));
-% load eeglab_data_ch.mat;
-% assertTrue(isstruct(EEG));
-% assertTrue(~isempty(EEG));
-% s1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
-% s1.dataset_name = 'Dataset with multiple tags - or operator and wildcards';
-% s1.data = EEG;
-% s1.dataset_modality_uuid = tStruct.mUUID;
-% sNew1 = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'multipleortag5', 'multipleorwildcardtag'});
-% assertTrue(iscellstr(sNew1));
-% sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleortag5','multipleorwildcard*'}}, 'RegExp', 'on');
-% assertTrue(isstruct(sNew2));
-% assertTrue(isequal(sNew2.dataset_name, s1.dataset_name));
-% 
-% fprintf('\nIt should retrieve a dataset with multiple tags using and operator, or operator, and wildcards\n');
-% DB = tStruct.DB;
-% assertTrue(isvalid(DB));
-% load eeglab_data_ch.mat;
-% assertTrue(isstruct(EEG));
-% assertTrue(~isempty(EEG));
-% s1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
-% s1.dataset_name = 'Dataset with multiple tags - and operator, or operator, and wildcards';
-% s1.data = EEG;
-% s1.dataset_modality_uuid = tStruct.mUUID;
-% sNew1 = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'multipleandtag6','multipleortag6', 'multipleandorwildcardtag'});
-% assertTrue(iscellstr(sNew1));
-% sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'multipleandtag6'}, {'multipleortag6','multipleandor*'}}, 'RegExp', 'on');
-% assertTrue(isstruct(sNew2));
-% assertTrue(isequal(sNew2.dataset_name, s1.dataset_name));
-% 
-% fprintf('\nIt should retrieve a dataset with multiple tags using regular expressions\n');
-% DB = tStruct.DB;
-% assertTrue(isvalid(DB));
-% load eeglab_data_ch.mat;
-% assertTrue(isstruct(EEG));
-% assertTrue(~isempty(EEG));
-% s1 = getdb(DB, 'datasets', 0);  % Get the template structure for upload
-% s1.dataset_name = 'Dataset with multiple tags - regular expression';
-% s1.data = EEG;
-% s1.dataset_modality_uuid = tStruct.mUUID;
-% sNew1 = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'regexptag1','regexptag2', 'regexptag3'});
-% assertTrue(iscellstr(sNew1));
-% sNew2 = getdb(DB, 'datasets', 1, 'Tags', {{'regexptag*'}}, 'RegExp', 'on');
-% assertTrue(isstruct(sNew2));
-% assertTrue(isequal(sNew2.dataset_name, s1.dataset_name));
+
+function testORANDConditionTags(tStruct) %#ok<DEFNU>
+fprintf(['\nUnit test for getdb with tags using the OR and AND' ...
+    ' conditions\n']);
+fprintf(['It should retrieve a dataset by tags using the OR and AND' ...
+    ' condition\n']);
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = 'dataset with OR and AND condition tags';
+mat2db(DB, s1, 'IsUnique', false, 'Tags', {'ORANDTAG1', 'ORANDTAG2', ...
+    'ORANDTAG3'});
+s2 = getdb(DB, 'datasets', 1, 'Tags', {{'ORANDTAG1'},{'ORANDTAG2', ...
+    'ORANDTAG3'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s2));
+assertEqual(1, length(s2));
