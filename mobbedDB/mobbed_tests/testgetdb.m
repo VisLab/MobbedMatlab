@@ -1,4 +1,4 @@
-function test_suite = testgetdb %#ok<STOUT>
+function test_suite = testGetdb %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each tests
@@ -28,7 +28,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testGetdbExactMatchTags(tStruct) %#ok<DEFNU>
+function testExactMatchTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with tags that are a exact match\n');
 fprintf('It should retrieve a dataset by a tag that is a exact match\n');
 DB = tStruct.DB;
@@ -40,7 +40,7 @@ fprintf('--It should return a structure array that contains a dataset\n');
 assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
-function testGetdbRegExpTags(tStruct) %#ok<DEFNU>
+function testRegExpTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with tags that are regular expressions\n');
 fprintf(['It should retrieve a dataset by a tag that is a regular' ...
 ' expression\n']);
@@ -53,7 +53,7 @@ fprintf('--It should return a structure array that contains a dataset\n');
 assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
-function testGetdbORConditionTags(tStruct) %#ok<DEFNU>
+function testORConditionTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with tags using the OR condition\n');
 fprintf('It should retrieve a dataset by tags using the OR condition\n');
 DB = tStruct.DB;
@@ -65,7 +65,7 @@ fprintf('--It should return a structure array that contains a dataset\n');
 assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
-function testGetdbANDConditionTags(tStruct) %#ok<DEFNU>
+function testANDConditionTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with tags using the AND condition\n');
 fprintf('It should retrieve a dataset by tags using the AND condition\n');
 DB = tStruct.DB;

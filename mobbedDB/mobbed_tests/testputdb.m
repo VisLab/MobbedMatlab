@@ -1,4 +1,4 @@
-function test_suite = testputdb %#ok<STOUT>
+function test_suite = testPutdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -63,7 +63,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testputdbAttributes(tStruct) %#ok<DEFNU>
+function testAttributes(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with attributes:\n');
 fprintf('It should store a attribute\n');
 DB = tStruct.DB;
@@ -81,7 +81,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbCollections(tStruct) %#ok<DEFNU>
+function testCollections(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with collections:\n');
 fprintf('It should store a collection\n');
 DB = tStruct.DB;
@@ -95,7 +95,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbComments(tStruct) %#ok<DEFNU>
+function testComments(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with comments:\n');
 fprintf('It should store a comment\n');
 DB = tStruct.DB;
@@ -109,7 +109,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbContacts(tStruct) %#ok<DEFNU>
+function testContacts(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with contacts:\n');
 fprintf('It should store a contact\n');
 DB = tStruct.DB;
@@ -131,7 +131,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbDatadefs(tStruct) %#ok<DEFNU>
+function testDatadefs(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with datadefs:\n');
 fprintf('It should store a datadef\n');
 DB = tStruct.DB;
@@ -145,7 +145,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbDatamaps(tStruct) %#ok<DEFNU>
+function testDatamaps(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with datamaps:\n');
 fprintf('It should store a datamap\n');
 DB = tStruct.DB;
@@ -160,7 +160,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbDatasets(tStruct) %#ok<DEFNU>
+function testDatasets(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with datasets:\n');
 fprintf('It should store a dataset\n');
 DB = tStruct.DB;
@@ -173,7 +173,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbDevices(tStruct) %#ok<DEFNU>
+function testDevices(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with devices:\n');
 fprintf('It should store a device\n');
 DB = tStruct.DB;
@@ -185,7 +185,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbElements(tStruct) %#ok<DEFNU>
+function testElements(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with elements:\n');
 fprintf('It should store a element\n');
 DB = tStruct.DB;
@@ -200,7 +200,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbEvents(tStruct) %#ok<DEFNU>
+function testEvents(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with events:\n');
 fprintf('It should store a event\n');
 DB = tStruct.DB;
@@ -218,7 +218,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbEventTypes(tStruct) %#ok<DEFNU>
+function testEventTypes(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with event types:\n');
 fprintf('It should store a event type\n');
 DB = tStruct.DB;
@@ -231,7 +231,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbModalities(tStruct) %#ok<DEFNU>
+function testModalities(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with modalities:\n');
 fprintf('It should store a modality\n');
 DB = tStruct.DB;
@@ -245,7 +245,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbStructures(tStruct) %#ok<DEFNU>
+function testStructures(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with structures:\n');
 fprintf('It should store a structure\n');
 DB = tStruct.DB;
@@ -258,7 +258,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbSubjects(tStruct) %#ok<DEFNU>
+function testSubjects(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with subjects:\n');
 fprintf('It should store a subject\n');
 DB = tStruct.DB;
@@ -270,7 +270,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbTags(tStruct) %#ok<DEFNU>
+function testTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with tags:\n');
 fprintf('It should store a tag\n');
 DB = tStruct.DB;
@@ -284,7 +284,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-function testputdbTransforms(tStruct) %#ok<DEFNU>
+function testTransforms(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with transforms:\n');
 fprintf('It should store a transform\n');
 DB = tStruct.DB;

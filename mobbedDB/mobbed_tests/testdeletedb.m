@@ -1,4 +1,4 @@
-function test_suite = testdeletedb %#ok<STOUT>
+function test_suite = testDeletedb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -14,7 +14,7 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
-function testdeletedbNotExist(tStruct) %#ok<DEFNU>
+function testNotExist(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for deleting a database that does not exists:\n');
 fprintf(['It should throw an exception when deleting a database that' ...
     ' does not exist']);

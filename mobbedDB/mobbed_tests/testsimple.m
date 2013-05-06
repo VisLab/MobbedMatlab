@@ -35,7 +35,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testSimpleModalityUuid(tStruct) %#ok<DEFNU>
+function testModalityUuid(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a simple modality dataset using the' ...
     ' modality uuid:\n']);
 fprintf(['It should store a simple modality dataset using the modality' ...
@@ -54,7 +54,7 @@ fprintf('--It should return a dataset that is equal\n');
 s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
-function testSimpleModalityName(tStruct) %#ok<DEFNU>
+function testModalityName(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a simple modality dataset using the' ...
     ' modality name:\n']);
 fprintf(['It should store a simple modality dataset using the modality' ...

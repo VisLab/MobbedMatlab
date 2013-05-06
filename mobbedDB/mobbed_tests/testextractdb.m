@@ -1,4 +1,4 @@
-function test_suite = testextractdb %#ok<STOUT>
+function test_suite = testExtractdb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>

@@ -1,4 +1,4 @@
-function test_suite = testcreatedb %#ok<STOUT>
+function test_suite = testCreatedb %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -14,7 +14,7 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
-function testcreatedbExist(tStruct) %#ok<DEFNU>
+function testAlreadyExist(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for creating a database that already exits:\n');
 fprintf(['It should throw an exception when creating a database that' ...
     ' already exists']);

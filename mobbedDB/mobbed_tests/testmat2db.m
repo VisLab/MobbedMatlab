@@ -1,4 +1,4 @@
-function test_suite = testmat2db   %#ok<STOUT>
+function test_suite = testMat2db   %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test
@@ -28,7 +28,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testmat2DuplicateDataset(tStruct) %#ok<DEFNU>
+function testDuplicateDataset(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with duplicate dataset\n');
 fprintf('It should store a duplicate dataset\n');
 DB = tStruct.DB;
@@ -46,7 +46,7 @@ fprintf('--It return a dataset with a version number greater than 1\n');
 assertTrue(s3.dataset_version > 1);
 
 
-function testmat2UniqueDatasetException(tStruct) %#ok<DEFNU>
+function testUniqueDatasetException(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with unique dataset exception\n');
 fprintf(['It should throw an exception when storing a unique dataset' ...
     ' whose namespace and name combination already exist\n']);
@@ -62,7 +62,7 @@ s2.data = EEG;
 assertExceptionThrown(@() error(mat2db(DB, s2)), ...
     'MATLAB:Java:GenericException');
 
-function testmat2dbTags(tStruct) %#ok<DEFNU>
+function testTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with tags:\n');
 fprintf('It should store a dataset with tags\n');
 DB = tStruct.DB;
