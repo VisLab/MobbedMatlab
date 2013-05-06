@@ -50,8 +50,8 @@ UUIDs = mat2db(DB, s1, 'IsUnique', false);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-s2 = db2mat(DB, UUIDs);
 fprintf('--It should return a dataset that is equal\n');
+s2 = db2mat(DB, UUIDs);
 assertTrue(isequal(s1.data,s2.data));
 
 function testSimpleModalityName(tStruct) %#ok<DEFNU>
