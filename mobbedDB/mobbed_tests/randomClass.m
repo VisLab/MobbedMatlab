@@ -1,8 +1,8 @@
-classdef randomTestClass
+classdef randomClass
     
     methods(Static)
         
-        function UUID = generateRandomUUID
+        function UUID = generateUUID()
             value = randi(4294967296);
             UUID = lower(dec2hex(value, 8));
             value = randi(65536);
@@ -15,6 +15,10 @@ classdef randomTestClass
             UUID = [UUID '-' lower(dec2hex(value, 12))];
         end
         
+        function string = generateString()
+            length = 50;
+            string = char(floor(94*rand(1, length)) + 32);           
+        end
     end
     
 end
