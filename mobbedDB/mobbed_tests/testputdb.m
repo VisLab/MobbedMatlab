@@ -48,7 +48,7 @@ UUID = putdb(DB, 'event_types', e);
 tStruct.event_type_uuid = UUID{1};
 
 s = getdb(DB, 'structures', 0);
-s.structure_name = 'parent';
+s.structure_name = 'EEG';
 s.structure_path = '/EEG';
 UUID = putdb(DB, 'structures', s);
 tStruct.structure_uuid = UUID{1};
@@ -374,46 +374,84 @@ fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
-%
-% function testModalities(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for putdb with modalities:\n');
-% fprintf('It should store a modality\n');
-% DB = tStruct.DB;
-% m1 = getdb(DB, 'modalities', 0);
-% m1.modality_name = randomClass.generateString;
-% m1.modality_platform = 'matlab';
-% m1.modality_description = 'test modality description';
-% UUIDs = putdb(DB, 'modalities', m1);
-% fprintf('--It should return a cell array containing one string uuid\n');
-% assertTrue(iscellstr(UUIDs));
-% assertEqual(1, length(UUIDs));
-% DB.commit();
-%
-% function testStructures(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for putdb with structures:\n');
-% fprintf('It should store a structure\n');
-% DB = tStruct.DB;
-% s1 = getdb(DB, 'structures', 0);
-% s1.structure_name = 'parent';
-% s1.structure_path = '/EEG';
-% UUIDs = putdb(DB, 'structures', s1);
-% fprintf('--It should return a cell array containing one string uuid\n');
-% assertTrue(iscellstr(UUIDs));
-% assertEqual(1, length(UUIDs));
-% DB.commit();
-%
-% function testSubjects(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for putdb with subjects:\n');
-% fprintf('It should store a subject\n');
-% DB = tStruct.DB;
-% s1 = getdb(DB, 'subjects', 0);
-% s1.subject_description = 'test subject description';
-% UUIDs = putdb(DB, 'subjects', s1);
-% fprintf('--It should return a cell array containing one string uuid\n');
-% assertTrue(iscellstr(UUIDs));
-% assertEqual(1, length(UUIDs));
-% DB.commit();
-%
+
+function testModalities(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for putdb with modalities:\n');
+
+fprintf('It should store a modality\n');
+DB = tStruct.DB;
+m1 = getdb(DB, 'modalities', 0);
+m1.modality_name = randomClass.generateString;
+m1.modality_platform = 'matlab';
+m1.modality_description = 'test modality description';
+UUIDs = putdb(DB, 'modalities', m1);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+fprintf('It should update a modality\n');
+m2 = getdb(DB, 'modalities', 0);
+m2.modality_uuid = UUIDs{1};
+m2 = getdb(DB, 'modalities', 1, m2);
+m2.modality_description = 'update modality description';
+UUIDs  = putdb(DB, 'modalities', m2);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+function testStructures(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for putdb with structures:\n');
+
+fprintf('It should store a structure\n');
+DB = tStruct.DB;
+s1 = getdb(DB, 'structures', 0);
+s1.structure_name = 'chanlocs';
+s1.structure_path = '/EEG/chalocs';
+s1.structure_parent_uuid = tStruct.structure_uuid;
+UUIDs = putdb(DB, 'structures', s1);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+fprintf('It should update a structure\n');
+s2 = getdb(DB, 'structures', 0);
+s2.structure_uuid = UUIDs{1};
+s2 = getdb(DB, 'structures', 1, s2);
+s2.structure_name = 'event';
+s2.structure_path = '/EEG/event';
+UUIDs  = putdb(DB, 'structures', s2);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+function testSubjects(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for putdb with subjects:\n');
+
+fprintf('It should store a subject\n');
+DB = tStruct.DB;
+s1 = getdb(DB, 'subjects', 0);
+s1.subject_description = 'test subject description';
+UUIDs = putdb(DB, 'subjects', s1);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+fprintf('It should update a subject\n');
+s2 = getdb(DB, 'subjects', 0);
+s2.subject_uuid = UUIDs{1};
+s2 = getdb(DB, 'subjects', 1, s2);
+s2.subject_description = 'update subject description';
+UUIDs  = putdb(DB, 'subjects', s2);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
 % function testTags(tStruct) %#ok<DEFNU>
 % fprintf('\nUnit test for putdb with tags:\n');
 % fprintf('It should store a tag\n');
@@ -423,11 +461,27 @@ DB.commit();
 % t1.tag_entity_uuid = tStruct.dataset_uuid;
 % t1.tag_entity_class = 'datasets';
 % UUIDs = putdb(DB, 'tags', t1);
-% fprintf('--It should return a cell array containing one string uuid\n');
+% fprintf(['--It should return a cell array containing two comma' ...
+%     ' separated string uuids\n']);
 % assertTrue(iscellstr(UUIDs));
-% assertEqual(1, length(UUIDs));
+% UUIDs = regexp(UUIDs{1}, ',', 'split');
+% assertEqual(2, length(UUIDs));
 % DB.commit();
-%
+% 
+% fprintf('It should update a tag\n');
+% t2 = getdb(DB, 'tags', 0);
+% t2.tag_name = UUIDs{1};
+% t2.tag_entity_uuid = UUIDs{2};
+% t2 = getdb(DB, 'tags', 1, t2);
+% t2.tag_name = 'update tag';
+% UUIDs  = putdb(DB, 'tags', t2);
+% fprintf(['--It should return a cell array containing two comma' ...
+%     ' separated string uuids\n']);
+% assertTrue(iscellstr(UUIDs));
+% UUIDs = regexp(UUIDs{1}, ',', 'split');
+% assertEqual(2, length(UUIDs));
+% DB.commit();
+
 % function testTransforms(tStruct) %#ok<DEFNU>
 % fprintf('\nUnit test for putdb with transforms:\n');
 % fprintf('It should store a transform\n');
