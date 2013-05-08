@@ -74,7 +74,7 @@ e3.event_certainty = 1;
 putdb(DB, 'events', e3);
 
 e4 = getdb(DB, 'events', 0);
-e4.event_entity_uuid = randomTestClass.generateRandomUUID;
+e4.event_entity_uuid = randomClass.generateUUID;
 e4.event_entity_class = 'datasets';
 e4.event_type_uuid = uuid4{1};
 e4.event_start_time = 1;

@@ -98,7 +98,8 @@ classdef Mobbed < hgsetget
             % Create a data definition and store corresponding data in
             % database
             parser = inputParser();
-            parser.addRequired('datadefs', @isstruct);
+            parser.addRequired('datadefs', @(x) isstruct(x) && ...
+                all(ismember(fieldnames(db2data(DB)), fieldnames(x))));
             parser.parse(datadefs);
             try
                 UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
@@ -121,10 +122,9 @@ classdef Mobbed < hgsetget
             % Retrieve a data definition and associated data from the
             % database
             parser = inputParser();
-            parser.addOptional('UUIDs', {}, @(x) ...
-                isstruct(x) && isfield(x, 'datamap_def_uuid') && ...
-                DbHandler.validateUUIDs({x.datamap_def_uuid}) || ...
-                DbHandler.validateUUIDs(x));
+            parser.addOptional('UUIDs', {},@(x) isstruct(x) && ...
+                all(ismember(fieldnames(getdb(DB, 'datamaps', 0)), ...
+                fieldnames(x))) || DbHandler.validateUUIDs(x));
             parser.parse(varargin{:});
             ddef = getdb(DB, 'datadefs', 0);
             ddef.data = [];
@@ -278,8 +278,7 @@ classdef Mobbed < hgsetget
             % Create and store a dataset in the database
             parser = inputParser();
             parser.addRequired('datasets', @(x) isstruct(x) && ...
-                isfield(x, 'dataset_name') && ~isempty(x.dataset_name) ...
-                && isfield(x, 'data'));
+                all(ismember(fieldnames(db2mat(DB)), fieldnames(x))));
             parser.addParamValue('IsUnique', true, @islogical);
             parser.addParamValue('Tags', {}, @(x) ischar(x) || ...
                 iscellstr(x));
@@ -346,7 +345,8 @@ classdef Mobbed < hgsetget
             parser = inputParser();
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('inS', @(x) isstruct(x) && ...
-                ~isempty(fieldnames(x)));
+                all(ismember(fieldnames(getdb(DB, table, 0)), ...
+                fieldnames(x))));
             parser.parse(table, inS);
             columns = fieldnames(parser.Results.inS);
             doubleColumns = cell(DB.DbManager.getDoubleColumns(...

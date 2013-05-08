@@ -12,7 +12,7 @@ function testNormalConstructorOnlyElements %#ok<DEFNU>
 fprintf('\nUnit test for genericTestClass constructor with only elements:\n');
 
 fprintf('It should create a valid object with only elements\n');
-g = genericTestClass(5, 0, 0, 0, 0);
+g = genericTestClass(5, 0, 0, 0);
 assertTrue(isvalid(g));
 fprintf('--The object data should only have an element field\n');
 assertEqual(1, length(fieldnames(g.data)));
@@ -23,7 +23,7 @@ assertEqual(5, length(g.data.element));
 fprintf('--The elements should have the right number of fields\n');
 assertEqual(3, length(fieldnames(g.data.element)));
 
-g1 = genericTestClass(5, 0, 0, 3, 0);
+g1 = genericTestClass(5, 0, 0, 3);
 fprintf('--The object should have the correct number of extra fields\n');
 assertTrue(isfield(g1.data, 'element'));
 assertTrue(~isfield(g1.data, 'event'));
@@ -36,7 +36,7 @@ function testNormalConstructorElementsAndEvents %#ok<DEFNU>
 fprintf('\nUnit test for genericTestClass constructor with elements and events:\n');
 
 fprintf('It should create a valid object with elements and events\n');
-g2 = genericTestClass(5, 4, 0, 3, 0);
+g2 = genericTestClass(5, 4, 0, 3);
 assertTrue(isvalid(g2));
 fprintf('--The object should have the correct number of extra fields\n');
 assertTrue(isfield(g2.data, 'element'));
@@ -50,7 +50,7 @@ function testNormalConstructorElementsEventsAndMetadata %#ok<DEFNU>
 fprintf('\nUnit test for genericTestClass constructor with elements, events and metadata:\n');
 
 fprintf('It should create a valid object with elements, events and metadata\n');
-g = genericTestClass(5, 4, 2, 3, 0);
+g = genericTestClass(5, 4, 2, 3);
 assertTrue(isvalid(g));
 fprintf('--The object should have the correct number of fields\n');
 assertTrue(isfield(g.data, 'element'));
