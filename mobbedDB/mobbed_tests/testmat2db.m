@@ -36,14 +36,18 @@ load eeglab_data_ch.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'mat2db duplicate dataset';
 s1.data = EEG;
-mat2db(DB, s1);
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+s1 = db2mat(DB, UUIDs);
+version1 = str2double(s1.dataset_version);
 s2 = db2mat(DB);
 s2.dataset_name = 'mat2db duplicate dataset';
 s2.data = EEG;
 UUIDs = mat2db(DB, s2, 'IsUnique', false);
-s3 = db2mat(DB,UUIDs);
-fprintf('--It return a dataset with a version number greater than 1\n');
-assertTrue(s3.dataset_version > 1);
+s2 = db2mat(DB, UUIDs);
+version2 = str2double(s2.dataset_version);
+fprintf(['--It should return a dataset version that has been'  ...
+    ' incremented by 1\n']);
+assertEqual(version1 + 1, version2);
 
 
 function testUniqueDatasetException(tStruct) %#ok<DEFNU>
@@ -59,6 +63,7 @@ mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB);
 s2.dataset_name = 'mat2db unique dataset';
 s2.data = EEG;
+fprintf('--It should throw an exception and not store the dataset\n');
 assertExceptionThrown(@() error(mat2db(DB, s2)), ...
     'MATLAB:Java:GenericException');
 
