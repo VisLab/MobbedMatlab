@@ -17,8 +17,27 @@ classdef DbHandler
             warning on all;
         end % addJavaPath
         
+        function [mName, mUUID] = checkModality(DB, modalityUUID)
+            % Checks the given modality
+            expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
+                '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
+                '[0-9a-fA-F]{12}$'];
+            if isempty(regexpi(modalityUUID, expr))
+                inModality.modality_name = modalityUUID;
+            else
+                inModality.modality_uuid = modalityUUID;
+            end
+            outModality = getdb(DB, 'modalities', 1, inModality);
+            if isempty(outModality)
+                throw(MException('getModality:inValidModality', ...
+                    'Modality does not exist'));
+            end
+            mName = outModality.modality_name;
+            mUUID = outModality.modality_uuid;
+        end % checkModality
+        
         function jArray = createJaggedArray(array)
-            % Creates a jagged java array 
+            % Creates a jagged java array
             if isempty(array)
                 jArray = [];
                 return;
@@ -47,10 +66,10 @@ classdef DbHandler
                 jArray(1) = jArray2;
             end
         end % createJaggedArray
-               
+        
         function [values, doubleValues] = extractValues(structure, ...
                 doubleColumns)
-            % extracts values from a structure array 
+            % extracts values from a structure array
             numStructs = length(structure);
             numColumns = length(doubleColumns);
             if numColumns < 1
@@ -75,25 +94,6 @@ classdef DbHandler
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
         end % extractValues
         
-        function [mName, mUUID] = checkModality(DB, modalityUUID)
-            % Checks the given modality
-            expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
-                '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
-                '[0-9a-fA-F]{12}$'];
-            if isempty(regexpi(modalityUUID, expr))
-                inModality.modality_name = modalityUUID;
-            else
-                inModality.modality_uuid = modalityUUID;
-            end
-            outModality = getdb(DB, 'modalities', 1, inModality);
-            if isempty(outModality)
-                throw(MException('getModality:inValidModality', ...
-                    'Modality does not exist'));
-            end
-            mName = outModality.modality_name;
-            mUUID = outModality.modality_uuid;
-        end % getModality
-              
         function string = reformatString(string)
             % Convert character string to cellstr
             if ischar(string), string = cellstr(string); end;
@@ -154,7 +154,8 @@ classdef DbHandler
             end
         end % retrieveNumericStream
         
-        function storeFile(DB, entityUuid, data, isAdditionalData) %#ok<INUSL>
+        function storeFile(DB, entityUuid, data, ...
+                isAdditionalData) %#ok<INUSL>
             % Store data in a external file
             fileName = [tempname '.mat'];
             save(fileName, 'data', '-v7.3');
@@ -167,7 +168,7 @@ classdef DbHandler
             % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 DbHandler.storeFile(DB, datadef.datadef_uuid, ...
-                    datadef.data, false)                
+                    datadef.data, false)
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 if ~isfield(datadef, 'datadef_sampling_rate') && ...
                         ~isfield(datadef, 'datadef_timestamps')
@@ -191,7 +192,7 @@ classdef DbHandler
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
                 edu.utsa.mobbed.Datadefs.storeNumericValue(...
                     DB.getConnection(), datadef.datadef_uuid, ...
-                    datadef.data);                
+                    datadef.data);
             elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
                 edu.utsa.mobbed.Datadefs.storeXMLValue(...
                     DB.getConnection(), datadef.datadef_uuid, ...
@@ -202,7 +203,7 @@ classdef DbHandler
         end % storeDataDef
         
         function storeNumericStream(DB, dataDefUuid, data, times)
-            % Stores numeric stream 
+            % Stores numeric stream
             numFrames = length(data);
             jNumericStream = edu.utsa.mobbed.NumericStreams(...
                 DB.getConnection());
@@ -235,5 +236,6 @@ classdef DbHandler
         end % validateUUID
         
     end % static methods
+    
 end
 

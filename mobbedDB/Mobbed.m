@@ -17,7 +17,8 @@
 %    execution.
 %
 % Example 1:
-% % Open a connection to an existing database called mobbed on local machine
+% % Open a connection to an existing database called mobbed on local
+% % machine
 %    DB = Mobbed('mobbed', 'localhost','postgres', 'admin');
 %
 % Example 2:
@@ -35,7 +36,8 @@
 % See also:
 %
 
-% Copyright (C) 2012  Kay Robbins, Jeremy Cockfield, UTSA, {krobbins,jcockfie}@cs.utsa.edu
+% Copyright (C) 2012  Kay Robbins, Jeremy Cockfield, UTSA,
+% {krobbins,jcockfie}@cs.utsa.edu
 %
 % This program is free software; you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -49,7 +51,7 @@
 %
 % You should have received a copy of the GNU General Public License
 % along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 classdef Mobbed < hgsetget
     properties
@@ -62,7 +64,8 @@ classdef Mobbed < hgsetget
     
     methods
         
-        function DB = Mobbed(dbname, hostname, username, password, varargin)
+        function DB = Mobbed(dbname, hostname, username, password, ...
+                varargin)
             % Create a connection object for database name on hostname
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
@@ -70,7 +73,8 @@ classdef Mobbed < hgsetget
             parser.addRequired('username', @ischar);
             parser.addRequired('password', @ischar);
             parser.addOptional('verbose', true, @islogical);
-            parser.parse(dbname, hostname, username, password, varargin{:});
+            parser.parse(dbname, hostname, username, password, ...
+                varargin{:});
             DB.Verbose = parser.Results.verbose;
             % Set the properties of a database
             DbHandler.addJavaPath();
@@ -91,7 +95,8 @@ classdef Mobbed < hgsetget
         end % commit
         
         function UUIDs = data2db(DB, datadefs)
-            % Create a data definition and store corresponding data in database
+            % Create a data definition and store corresponding data in
+            % database
             parser = inputParser();
             parser.addRequired('datadefs', @isstruct);
             parser.parse(datadefs);
@@ -113,7 +118,8 @@ classdef Mobbed < hgsetget
         end % data2db
         
         function ddef = db2data(DB, varargin)
-            % Retrieve a data definition and associated data from the database
+            % Retrieve a data definition and associated data from the
+            % database
             parser = inputParser();
             parser.addOptional('UUIDs', {}, @(x) ...
                 isstruct(x) && isfield(x, 'datamap_def_uuid') && ...
@@ -203,7 +209,8 @@ classdef Mobbed < hgsetget
                 structure = rmfield(parser.Results.inS, ...
                     structFields(structfun(@isempty,parser.Results.inS)));
                 columns = fieldnames(structure);
-                values = DbHandler.createJaggedArray(struct2cell(structure));
+                values = DbHandler.createJaggedArray(...
+                    struct2cell(structure));
             end
             outValues = ...
                 cell(DB.DbManager.retrieveRows(parser.Results.table, ...
@@ -218,7 +225,8 @@ classdef Mobbed < hgsetget
         
         function [mStructure, extStructure] = extractdb(DB, inType, ...
                 inS, outType, outS, limit, varargin)
-            % Retrieve inter-related items such as events from more complex scenarios
+            % Retrieve inter-related items such as events from more
+            % complex scenarios
             parser = inputParser();
             parser.addRequired('inType', @ischar);
             parser.addRequired('inS', @(x) isempty(x) || isstruct(x) && ...
@@ -266,7 +274,6 @@ classdef Mobbed < hgsetget
             end
         end % extractdb
         
-        
         function [UUIDs, uniqueEvents] = mat2db(DB, datasets, varargin)
             % Create and store a dataset in the database
             parser = inputParser();
@@ -282,31 +289,20 @@ classdef Mobbed < hgsetget
             uniqueEvents = parser.Results.EventTypes;
             numDatasets = length(datasets);
             UUIDs = cell(1,numDatasets);
-            hasVersionField = isfield(parser.Results.datasets, ...
-                'dataset_version');
-            hasNamespaceField = isfield(parser.Results.datasets, ...
-                'dataset_namespace');
-            hasModalityField = isfield(parser.Results.datasets, ...
-                'dataset_modality_uuid');
             modality = 'EEG';
             namespace = 'mobbed';
             try
                 for k = 1:numDatasets
-                    % Check that dataset version
-                    if ~hasVersionField || ...
-                            isempty(datasets(k).dataset_version)
-                        if hasNamespaceField && ...
-                                ~isempty(datasets(k).dataset_namespace)
-                            namespace = datasets(k).dataset_namespace;
-                        end
-                        datasets(k).dataset_version = ...
-                            DB.DbManager.checkDatasetVersion(...
-                            parser.Results.IsUnique, namespace, ...
-                            datasets(k).dataset_name);
+                    % Check the dataset version
+                    if ~isempty(datasets(k).dataset_namespace)
+                        namespace = datasets(k).dataset_namespace;
                     end
-                    % Check the modality
-                    if hasModalityField && ...
-                            ~isempty(datasets(k).dataset_modality_uuid)
+                    datasets(k).dataset_version = ...
+                        DB.DbManager.checkDatasetVersion(...
+                        parser.Results.IsUnique, namespace, ...
+                        datasets(k).dataset_name);
+                    % Check the dataset modality
+                    if ~isempty(datasets(k).dataset_modality_uuid)
                         [modality, datasets(k).dataset_modality_uuid] = ...
                             DbHandler.checkModality(DB, ...
                             datasets(k).dataset_modality_uuid);
@@ -316,8 +312,7 @@ classdef Mobbed < hgsetget
                         rmfield(datasets(k), 'data'));
                     % Store the actual data
                     if ~isempty(datasets(k).data)
-                        uniqueEvents = ...
-                            eval([modality ...
+                        uniqueEvents = eval([modality ...
                             '_Modality.store(DB, UUIDs{k},' ...
                             'datasets(k).data, uniqueEvents)']);
                     end
@@ -368,7 +363,8 @@ classdef Mobbed < hgsetget
         end % rollback
         
         function setAutoCommit(DB, autoCommit)
-            % Set or clear flag indicating whether to automatically commit transactions
+            % Set or clear flag indicating whether to automatically commit
+            % transactions
             parser = inputParser();
             parser.addRequired('autoCommit', @islogical);
             parser.parse(autoCommit);
@@ -385,7 +381,8 @@ classdef Mobbed < hgsetget
         
         function createdb(dbname, hostname, username, password, script, ...
                 varargin)
-            % Create a database called dbname on hostname using explicit credentials
+            % Create a database called dbname on hostname using explicit
+            % credentials
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
@@ -402,7 +399,8 @@ classdef Mobbed < hgsetget
         end % createdb
         
         function createdbc(filename, script)
-            % Create a database called dbname on hostname using credentials file
+            % Create a database called dbname on hostname using credentials
+            % file
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);

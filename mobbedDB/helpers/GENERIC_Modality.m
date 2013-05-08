@@ -83,7 +83,8 @@ classdef GENERIC_Modality
             jElement.save();
         end % storeElements
         
-        function uniqueEvents = storeEvents(DB, datasetUuid, event, eventUuids)
+        function uniqueEvents = storeEvents(DB, datasetUuid, event, ...
+                eventUuids)
             % Store the elements for generic dataset
             if isempty(event)
                 return;

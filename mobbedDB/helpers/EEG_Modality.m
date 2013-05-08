@@ -22,14 +22,16 @@ classdef EEG_Modality
                     EEG_Modality.storeOriginalEvents(DB, datasetUuid, ...
                     data.urevent, eventUuids);
                 if DB.Verbose
-                    fprintf('Original events saved: %f seconds \n', toc(tStart));
+                    fprintf('Original events saved: %f seconds \n', ...
+                        toc(tStart));
                 end
             end
             
             % Store the events
             if isfield(data, 'event')
-                uniqueEvents = EEG_Modality.storeEvents(DB, datasetUuid, ...
-                    data.event, uniqueEvents, orignalEventUuids);
+                uniqueEvents = EEG_Modality.storeEvents(DB, ...
+                    datasetUuid, data.event, uniqueEvents, ...
+                    orignalEventUuids);
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
                 end
@@ -88,7 +90,8 @@ classdef EEG_Modality
                             dblArray(b) = java.lang.Double(numerValues{b});
                         end
                     end
-                    jElement.addAttribute(otherFields{a}, dblArray, values);
+                    jElement.addAttribute(otherFields{a}, dblArray, ...
+                        values);
                 end
             end
             jElement.save();
