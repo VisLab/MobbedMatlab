@@ -10,12 +10,12 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 % Create connection object (create database first if doesn't exist)
 try
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, true);
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, true);
+        tStruct.password, false);
 end
 
 % Create reference tables
@@ -454,6 +454,7 @@ DB.commit();
 
 function testTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with tags:\n');
+
 fprintf('It should store a tag\n');
 DB = tStruct.DB;
 t1 = getdb(DB, 'tags', 0);
@@ -482,16 +483,28 @@ UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
 DB.commit();
 
-% function testTransforms(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for putdb with transforms:\n');
-% fprintf('It should store a transform\n');
-% DB = tStruct.DB;
-% t1 = getdb(DB, 'transforms', 0);
-% t1.transform_uuid = tStruct.dataset_uuid;
-% t1.transform_string = randomClass.generateString;
-% t1.transform_description = 'test transform description';
-% UUIDs = putdb(DB, 'transforms', t1);
-% fprintf('--It should return a cell array containing one string uuid\n');
-% assertTrue(iscellstr(UUIDs));
-% assertEqual(1, length(UUIDs));
-% DB.commit();
+function testTransforms(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for putdb with transforms:\n');
+
+fprintf('It should store a transform\n');
+DB = tStruct.DB;
+t1 = getdb(DB, 'transforms', 0);
+t1.transform_uuid = tStruct.dataset_uuid;
+t1.transform_string = randomClass.generateString;
+t1.transform_description = 'test transform description';
+UUIDs = putdb(DB, 'transforms', t1);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
+
+fprintf('It should update a transform\n');
+t2 = getdb(DB, 'transforms', 0);
+t2.transform_uuid = UUIDs{1};
+t2 = getdb(DB, 'transforms', 1, t2);
+t2.transform_description = 'update transform description';
+UUIDs  = putdb(DB, 'transforms', t2);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));
+DB.commit();
