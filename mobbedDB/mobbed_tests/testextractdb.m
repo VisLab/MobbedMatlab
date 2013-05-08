@@ -89,86 +89,108 @@ tStruct.event_type_uuids = [uuid1(:),uuid2(:),uuid3(:),uuid4(:)];
 function teardown(tStruct) %#ok<DEFNU>
 tStruct.DB.close();
 
-function testextractdbRange(tStruct) %#ok<DEFNU>
+function testRange(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for extractdb with Range:\n');
-
-fprintf('\nIt should extract all events within default range ([0,1]) with no search qulifications and no limit \n');
+fprintf('\nIt should extract all events within the default range\n');
 DB = tStruct.DB;
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], inf);
+[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], ...
+    inf);
+fprintf(['--It should return a structure array of events found in the' ...
+    ' default range ([0,1])']);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with no search qualifications and a limit\n');
+fprintf(['\nIt should extract at most the limit of events within the' ...
+    ' default range  limit\n']);
 DB = tStruct.DB;
 limit = 1;
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], limit);
+[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], ...
+    limit);
+fprintf(['--It should return a structure array containing one event' ...
+    ' found in the default range']);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 assertTrue(isequal(length(mStructure), limit));
 assertTrue(isequal(length(extStructure), limit));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from inStructure and no limit\n');
+fprintf(['\nIt should extract all events within default range with' ...
+    ' search qualifications from inStructure and no limit\n']);
 DB = tStruct.DB;
 % only look for interrelated events in type 1 events
 inStructure.event_type_uuid = tStruct.event_type_uuids{1};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, 'events', [], inf);
+[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
+    'events', [], inf);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from inStructure and a limit\n');
+fprintf(['\nIt should extract all events within default range with' ...
+    ' search qualifications from inStructure and a limit\n']);
 DB = tStruct.DB;
 limit = 1;
 % only look for interrelated events in type 1 events
 inStructure.event_type_uuid = tStruct.event_type_uuids{1};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, 'events', [], limit);
+[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
+    'events', [], limit);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 assertTrue(isequal(length(mStructure), limit));
 assertTrue(isequal(length(extStructure), limit));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from outStructure and no limit\n');
+fprintf(['\nIt should extract all events within default range with' ...
+    ' search qualifications from outStructure and no limit\n']);
 DB = tStruct.DB;
 % only look for type 2 events in all events
 outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', outStructure, inf);
+[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', ...
+    outStructure, inf);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from outStructure and a limit\n');
+fprintf(['\nIt should extract all events within default range ([0,1])' ...
+    ' with search qualifications from outStructure and a limit\n']);
 DB = tStruct.DB;
 limit = 1;
 % only look for type 2 events in all events
 outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', outStructure, limit);
+[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', ...
+    outStructure, limit);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 assertTrue(isequal(length(mStructure), limit));
 assertTrue(isequal(length(extStructure), limit));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from inStructure and outStructure and no limit\n');
+fprintf(['\nIt should extract all events within default range with' ...
+    ' search qualifications from inStructure and outStructure and no' ...
+    ' limit\n']);
 DB = tStruct.DB;
 % only look for type 2 events in type 1 events
 inStructure.event_type_uuid = tStruct.event_type_uuids{1};
 outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, 'events', outStructure, inf);
+[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
+    'events', outStructure, inf);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 
-fprintf('\nIt should extract all events within default range ([0,1]) with search qualifications from inStructure and outStructure and a limit\n');
+fprintf(['\nIt should extract all events within default range with' ...
+    ' search qualifications from inStructure and outStructure and' ...
+    ' a limit\n']);
 DB = tStruct.DB;
 limit = 1;
 % only look for type 2 events in type 1 events
 inStructure.event_type_uuid = tStruct.event_type_uuids{1};
 outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, 'events', outStructure, inf);
+[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
+    'events', outStructure, inf);
 assertTrue(~isempty(mStructure));
 assertTrue(~isempty(extStructure));
 assertTrue(isequal(length(mStructure), limit));
 assertTrue(isequal(length(extStructure), limit));
 
-fprintf('\nIt should extract no events from an event belonging in a different dataset\n');
+fprintf(['\nIt should extract no events from an event belonging in a' ...
+    ' different dataset\n']);
 DB = tStruct.DB;
 inStructure.event_type_uuid = tStruct.event_type_uuids{4};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, 'events', [], inf);
+[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
+    'events', [], inf);
 assertTrue(isempty(mStructure));
 assertTrue(isempty(extStructure));
