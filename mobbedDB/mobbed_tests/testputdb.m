@@ -10,12 +10,12 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 % Create connection object (create database first if doesn't exist)
 try
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 end
 
 % Create reference tables
@@ -452,35 +452,35 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 DB.commit();
 
-% function testTags(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for putdb with tags:\n');
-% fprintf('It should store a tag\n');
-% DB = tStruct.DB;
-% t1 = getdb(DB, 'tags', 0);
-% t1.tag_name = 'test tag';
-% t1.tag_entity_uuid = tStruct.dataset_uuid;
-% t1.tag_entity_class = 'datasets';
-% UUIDs = putdb(DB, 'tags', t1);
-% fprintf(['--It should return a cell array containing two comma' ...
-%     ' separated string uuids\n']);
-% assertTrue(iscellstr(UUIDs));
-% UUIDs = regexp(UUIDs{1}, ',', 'split');
-% assertEqual(2, length(UUIDs));
-% DB.commit();
-% 
-% fprintf('It should update a tag\n');
-% t2 = getdb(DB, 'tags', 0);
-% t2.tag_name = UUIDs{1};
-% t2.tag_entity_uuid = UUIDs{2};
-% t2 = getdb(DB, 'tags', 1, t2);
-% t2.tag_name = 'update tag';
-% UUIDs  = putdb(DB, 'tags', t2);
-% fprintf(['--It should return a cell array containing two comma' ...
-%     ' separated string uuids\n']);
-% assertTrue(iscellstr(UUIDs));
-% UUIDs = regexp(UUIDs{1}, ',', 'split');
-% assertEqual(2, length(UUIDs));
-% DB.commit();
+function testTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for putdb with tags:\n');
+fprintf('It should store a tag\n');
+DB = tStruct.DB;
+t1 = getdb(DB, 'tags', 0);
+t1.tag_name = 'test tag';
+t1.tag_entity_uuid = tStruct.dataset_uuid;
+t1.tag_entity_class = 'datasets';
+UUIDs = putdb(DB, 'tags', t1);
+fprintf(['--It should return a cell array containing two comma' ...
+    ' separated string uuids\n']);
+assertTrue(iscellstr(UUIDs));
+UUIDs = regexp(UUIDs{1}, ',', 'split');
+assertEqual(2, length(UUIDs));
+DB.commit();
+
+fprintf('It should update a tag\n');
+t2 = getdb(DB, 'tags', 0);
+t2.tag_name = UUIDs{1};
+t2.tag_entity_uuid = UUIDs{2};
+t2 = getdb(DB, 'tags', 1, t2);
+t2.tag_name = 'update tag';
+UUIDs  = putdb(DB, 'tags', t2);
+fprintf(['--It should return a cell array containing two comma' ...
+    ' separated string uuids\n']);
+assertTrue(iscellstr(UUIDs));
+UUIDs = regexp(UUIDs{1}, ',', 'split');
+assertEqual(2, length(UUIDs));
+DB.commit();
 
 % function testTransforms(tStruct) %#ok<DEFNU>
 % fprintf('\nUnit test for putdb with transforms:\n');
