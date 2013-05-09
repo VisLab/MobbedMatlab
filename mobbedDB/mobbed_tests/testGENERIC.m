@@ -30,7 +30,7 @@ end
 
 function testElements(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that only' ...
-    ' has elements\n']);
+    ' has elements:\n']);
 fprintf(['It should store a generic modality dataset that only has' ...
     ' elements\n']);
 DB = tStruct.DB;
@@ -48,7 +48,7 @@ assertTrue(isequal(s1.data,s2.data));
 
 function testElementsEvents(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that' ...
-    ' has elements and events\n']);
+    ' has elements and events:\n']);
 fprintf('It should store a generic dataset with elements and events\n');
 DB = tStruct.DB;
 generic = genericTestClass(5, 5, 0, 0);
@@ -67,7 +67,7 @@ assertTrue(isequal(s1.data,s2.data));
 
 function testElementsEventsMetadata(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that' ...
-    ' has elements, events, and metadata\n']);
+    ' has elements, events, and metadata:\n']);
 fprintf(['It should store a generic dataset with elements, events,' ...
     ' and metadata\n']);
 DB = tStruct.DB;
@@ -89,7 +89,7 @@ assertTrue(isequal(s1.data,s2.data));
 
 function testElementsEventsMetadataExtras(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that' ...
-    ' has elements, events, metadata, and extra fields\n']);
+    ' has elements, events, metadata, and extra fields:\n']);
 fprintf(['It should store a generic dataset with elements, events,' ...
     ' metadata, and extra fields\n']);
 DB = tStruct.DB;

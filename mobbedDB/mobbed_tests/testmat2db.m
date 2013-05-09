@@ -29,7 +29,7 @@ catch ME %#ok<NASGU>
 end
 
 function testDuplicateDataset(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with duplicate dataset\n');
+fprintf('\nUnit test for mat2db with duplicate dataset:\n');
 fprintf('It should store a duplicate dataset\n');
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
@@ -51,7 +51,7 @@ assertEqual(version1 + 1, version2);
 
 
 function testUniqueDatasetException(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with unique dataset exception\n');
+fprintf('\nUnit test for mat2db with unique dataset exception:\n');
 fprintf(['It should throw an exception when storing a unique dataset' ...
     ' whose namespace and name combination already exist\n']);
 DB = tStruct.DB;

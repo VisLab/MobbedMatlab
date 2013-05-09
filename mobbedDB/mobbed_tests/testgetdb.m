@@ -29,7 +29,7 @@ catch ME %#ok<NASGU>
 end
 
 function testExactMatchTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with tags that are a exact match\n');
+fprintf('\nUnit test for getdb with tags that are a exact match:\n');
 fprintf('It should retrieve a dataset by a tag that is a exact match\n');
 DB = tStruct.DB;
 s1 = db2mat(DB);
@@ -41,7 +41,7 @@ assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
 function testRegExpTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with tags that are regular expressions\n');
+fprintf('\nUnit test for getdb with tags that are regular expressions:\n');
 fprintf(['It should retrieve a dataset by a tag that is a regular' ...
 ' expression\n']);
 DB = tStruct.DB;
@@ -54,7 +54,7 @@ assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
 function testORConditionTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with tags using the OR condition\n');
+fprintf('\nUnit test for getdb with tags using the OR condition:\n');
 fprintf('It should retrieve a dataset by tags using the OR condition\n');
 DB = tStruct.DB;
 s1 = db2mat(DB);
@@ -66,7 +66,7 @@ assertTrue(isstruct(s2));
 assertEqual(1, length(s2));
 
 function testANDConditionTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with tags using the AND condition\n');
+fprintf('\nUnit test for getdb with tags using the AND condition:\n');
 fprintf('It should retrieve a dataset by tags using the AND condition\n');
 DB = tStruct.DB;
 s1 = db2mat(DB);
@@ -79,7 +79,7 @@ assertEqual(1, length(s2));
 
 function testORANDConditionTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for getdb with tags using the OR and AND' ...
-    ' conditions\n']);
+    ' conditions:\n']);
 fprintf(['It should retrieve a dataset by tags using the OR and AND' ...
     ' condition\n']);
 DB = tStruct.DB;

@@ -55,7 +55,7 @@ fprintf('--It should return a dataset that is equal\n');
 assertTrue(isequal(s1.data,s2.data));
 
 function testNoChanlocs(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for EEG modality dataset with no chanlocs\n');
+fprintf('\nUnit test for EEG modality dataset with no chanlocs:\n');
 fprintf('It should store a EEG modality dataset with no chanlocs\n');
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
@@ -75,7 +75,7 @@ fprintf('--It should return a dataset that has no chanlocs\n');
 assertTrue(isempty(s2.data.chanlocs));
 
 function testNoEvents(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for EEG modality dataset with no events\n');
+fprintf('\nUnit test for EEG modality dataset with no events:\n');
 fprintf('It should store a EEG modality dataset with no events\n');
 DB = tStruct.DB;
 load eeglab_data_ch.mat;
@@ -95,7 +95,7 @@ fprintf('--It should return a dataset that has no events\n');
 assertTrue(isempty(s2.data.event));
 
 function testModalityName(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for EEG modality dataset using the modality name\n');
+fprintf('\nUnit test for EEG modality dataset using the modality name:\n');
 fprintf(['It should store a EEG modality dataset using the modality' ...
     ' name\n']);
 DB = tStruct.DB;
@@ -114,7 +114,7 @@ assertTrue(isequal(s1.data,s2.data));
 
 function testDefaultModality(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset using the default' ...
-    ' modality which is EEG\n']);
+    ' modality which is EEG:\n']);
 fprintf(['It should store a EEG modality dataset using the default' ...
     ' EEG modality\n']);
 DB = tStruct.DB;
@@ -167,7 +167,7 @@ s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 [~, uniqueEvents1] = mat2db(DB, s1, 'IsUnique', false);
 fprintf(['--It should return a cell array containing the string uuids' ...
-    ' of the unique event types \n']);
+    ' of the unique event types\n']);
 assertTrue(iscellstr(uniqueEvents1));
 s2 = db2mat(DB);
 s2.dataset_name = 'EEG - unique event types';
