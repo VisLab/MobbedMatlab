@@ -59,7 +59,7 @@ classdef GENERIC_Modality
             otherFields = setdiff(fieldnames(element), ...
                 {'label', 'position', 'description'})';
             jElement = edu.utsa.mobbed.Elements(DB.getConnection());
-            jElement.reset(datasetUuid, 'element', ...
+            jElement.reset('GENERIC', datasetUuid, 'element', ...
                 'Generic element group', label, description, position);
             jElement.addElements();
             for a = 1:length(otherFields)
@@ -102,8 +102,8 @@ classdef GENERIC_Modality
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
-            jEvent.reset(datasetUuid, 'event', uniqueTypes, types, ...
-                positions, startTimes, endTimes, certainties, ...
+            jEvent.reset('GENERIC', datasetUuid, 'event', uniqueTypes, ...
+                types, positions, startTimes, endTimes, certainties, ...
                 eventUuids, parentUuids);
             uniqueEvents = cell(jEvent.addNewTypes());
             jEvent.addEvents();
@@ -131,7 +131,7 @@ classdef GENERIC_Modality
         function storeMetadata(DB, datasetUuid, metadata)
             % Store the metadata for generic dataset
             jMetadata = edu.utsa.mobbed.Metadata(DB.getConnection());
-            jMetadata.reset(datasetUuid, 'metadata');
+            jMetadata.reset('GENERIC', datasetUuid, 'metadata');
             otherFields = fieldnames(metadata);
             for a = 1:length(otherFields)
                 value = num2str(metadata.(otherFields{a}));
