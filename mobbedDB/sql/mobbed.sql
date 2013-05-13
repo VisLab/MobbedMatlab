@@ -191,7 +191,7 @@ WITH (
 CREATE TABLE numeric_values
 (
   numeric_value_def_uuid uuid,  
-  numeric_value double precision[],
+  numeric_value_data_value double precision[],
   PRIMARY KEY (numeric_value_def_uuid)
 )
 WITH (
@@ -264,7 +264,7 @@ WITH (
 CREATE TABLE xml_values
 (
   xml_value_def_uuid uuid,
-  xml_value character varying,
+  xml_value_data_value character varying,
   PRIMARY KEY (xml_value_def_uuid)
 )
 WITH (
