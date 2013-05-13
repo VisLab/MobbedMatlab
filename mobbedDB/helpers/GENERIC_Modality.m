@@ -29,6 +29,15 @@ classdef GENERIC_Modality
                 uniqueEvents = {};
             end
             
+            % Store the features
+            if isfield(data, 'feature')
+                GENERIC_Modality.storeFeatures(DB, datasetUuid, ...
+                    data.feature);
+                if DB.Verbose
+                    fprintf('Features saved: %f seconds \n', toc(tStart));
+                end
+            end
+            
             % Store the metadata
             if isfield(data, 'metadata')
                 GENERIC_Modality.storeMetadata(DB, datasetUuid, ...
@@ -128,30 +137,60 @@ classdef GENERIC_Modality
             jEvent.save();
         end % storeEvents
         
+        function storeFeatures(DB, datasetUuid, feature)
+            % Store the features for generic dataset
+            jFeature = edu.utsa.mobbed.Metadata(DB.getConnection());
+            jFeature.reset('GENERIC', datasetUuid, 'feature');
+            otherFields = setdiff(fieldnames(feature), ...
+                {'type', 'value', 'description'})';
+            for a = 1:length(otherFields)
+                values = cellfun(@num2str, {feature.(otherFields{a})}', ...
+                    'UniformOutput', false);
+                % convert non-numeric values and empty strings to null
+                numerValues = {feature.(otherFields{a})}';
+                numerValues(cellfun(@(x) ~isnumeric(x) ...
+                    || isempty(x),numerValues)) = {[]};
+                dblArray = javaArray ('java.lang.Double', ...
+                    length(numerValues));
+                for b = 1:length(numerValues)
+                    if isempty(numerValues{b})
+                        dblArray(b) = numerValues{b};
+                    else
+                        dblArray(b) = java.lang.Double(numerValues{b});
+                    end
+                end
+                jFeature.addAttribute(otherFields{a}, dblArray, values);
+            end
+            jFeature.save();
+        end % storeFeatures
+        
         function storeMetadata(DB, datasetUuid, metadata)
             % Store the metadata for generic dataset
             jMetadata = edu.utsa.mobbed.Metadata(DB.getConnection());
             jMetadata.reset('GENERIC', datasetUuid, 'metadata');
             otherFields = fieldnames(metadata);
             for a = 1:length(otherFields)
-                value = num2str(metadata.(otherFields{a}));
+                values = cellfun(@num2str, ...
+                    {metadata.(otherFields{a})}', 'UniformOutput', false);
                 % convert non-numeric values and empty strings to null
-                numerValue = metadata.(otherFields{a});
-                if ~isnumeric(numerValue) || isempty(numerValue)
-                    numerValue = [];
+                numerValues = {metadata.(otherFields{a})}';
+                numerValues(cellfun(@(x) ~isnumeric(x) ...
+                    || isempty(x),numerValues)) = {[]};
+                dblArray = javaArray ('java.lang.Double', ...
+                    length(numerValues));
+                for b = 1:length(numerValues)
+                    if isempty(numerValues{b})
+                        dblArray(b) = numerValues{b};
+                    else
+                        dblArray(b) = java.lang.Double(numerValues{b});
+                    end
                 end
-                dblArray = javaArray ('java.lang.Double', 1);
-                if isempty(numerValue)
-                    dblArray(1) = numerValue;
-                else
-                    dblArray(1) = java.lang.Double(numerValue);
-                end
-                jMetadata.addAttribute(otherFields{a}, dblArray, value);
+                jMetadata.addAttribute(otherFields{a}, dblArray, values);
             end
             jMetadata.save();
         end % storeMetadata
         
-    end % private methods
+    end % Private methods
     
 end % GENERIC_Modality
 

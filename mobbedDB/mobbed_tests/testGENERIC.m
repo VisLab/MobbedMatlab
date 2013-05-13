@@ -34,7 +34,7 @@ fprintf(['\nUnit test for storing a generic modality dataset that only' ...
 fprintf(['It should store a generic modality dataset that only has' ...
     ' elements\n']);
 DB = tStruct.DB;
-generic = genericTestClass(5, 0, 0, 0);
+generic = genericTestClass(5, 0, [], 0, 0);
 s1 = db2mat(DB);
 s1.dataset_name = 'generic elements only';
 s1.data = generic.data;
@@ -51,7 +51,7 @@ fprintf(['\nUnit test for storing a generic modality dataset that' ...
     ' has elements and events:\n']);
 fprintf('It should store a generic dataset with elements and events\n');
 DB = tStruct.DB;
-generic = genericTestClass(5, 5, 0, 0);
+generic = genericTestClass(5, 5, [], 0, 0);
 s1 = db2mat(DB);
 s1.dataset_name = 'generic elements and events';
 s1.data = generic.data;
@@ -65,13 +65,13 @@ assertTrue(isfield(s2.data, 'event'));
 fprintf('--It should return a dataset that is equal\n');
 assertTrue(isequal(s1.data,s2.data));
 
-function testElementsEventsMetadata(tStruct) %#ok<DEFNU>
+function testElementsEventsFeatures(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that' ...
     ' has elements, events, and metadata:\n']);
 fprintf(['It should store a generic dataset with elements, events,' ...
     ' and metadata\n']);
 DB = tStruct.DB;
-generic = genericTestClass(5, 5, 5, 0);
+generic = genericTestClass(5, 5, 'NUMERIC_STREAM', 0, 0);
 s1 = db2mat(DB);
 s1.dataset_name = 'generic elements and events';
 s1.data = generic.data;
@@ -82,18 +82,18 @@ fprintf('--It should return a dataset with a element field\n');
 assertTrue(isfield(s2.data, 'element'));
 fprintf('--It should return a dataset with a event field\n');
 assertTrue(isfield(s2.data, 'event'));
-fprintf('--It should return a dataset with a metadata field\n');
-assertTrue(isfield(s2.data, 'metadata'));
+fprintf('--It should return a dataset with a feature field\n');
+assertTrue(isfield(s2.data, 'feature'));
 fprintf('--It should return a dataset that is equal\n');
 assertTrue(isequal(s1.data,s2.data));
 
-function testElementsEventsMetadataExtras(tStruct) %#ok<DEFNU>
+function testElementsEventsFeaturesMetadataExtras(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a generic modality dataset that' ...
     ' has elements, events, metadata, and extra fields:\n']);
 fprintf(['It should store a generic dataset with elements, events,' ...
     ' metadata, and extra fields\n']);
 DB = tStruct.DB;
-generic = genericTestClass(5, 5, 5, 5);
+generic = genericTestClass(5, 5, 'NUMERIC_STREAM', 5, 5);
 s1 = db2mat(DB);
 s1.dataset_name = 'generic elements, events, metadata, and extra fields';
 s1.data = generic.data;
@@ -104,8 +104,9 @@ fprintf('--It should return a dataset with a element field\n');
 assertTrue(isfield(s2.data, 'element'));
 fprintf('--It should return a dataset with a event field\n');
 assertTrue(isfield(s2.data, 'event'));
+fprintf('--It should return a dataset with a feature field\n');
+assertTrue(isfield(s2.data, 'feature'));
 fprintf('--It should return a dataset with a metadata field\n');
 assertTrue(isfield(s2.data, 'metadata'));
 fprintf('--It should return a dataset that is equal\n');
 assertTrue(isequal(s1.data,s2.data));
-

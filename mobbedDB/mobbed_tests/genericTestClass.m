@@ -9,15 +9,18 @@ classdef genericTestClass < hgsetget
     
     methods (Access = public)
         function obj = genericTestClass(numElements, numEvents, ...
-                numMeta, numExtra)
+                type, numMeta, numExtra)
             if numElements > 0
                 obj.setElements(numElements, numExtra);
             end
             if numEvents > 0
                 obj.setEvents(numEvents, numExtra);
             end
+            if ~isempty(type)
+                obj.setFeatures(type, numExtra);
+            end
             if numMeta > 0
-                obj.setMetadata(numMeta);
+                obj.setMetadata(numMeta, numExtra);
             end
         end % TestClass constructor
         
@@ -32,7 +35,7 @@ classdef genericTestClass < hgsetget
             for j = 1:length(element)
                 element(j).position = positions(j);
                 for k = 1:numExtra
-                    thisName = ['extra' num2str(k)];
+                    thisName = ['extraelement' num2str(k)];
                     element(j).(thisName) = [thisName ': ' labels{j}];
                 end
             end
@@ -45,29 +48,50 @@ classdef genericTestClass < hgsetget
             types = strcat({'EV'}, strtrim(cellstr(num2str(positions))));
             event = struct('type', types, 'position', types, ...
                 'stime', types, 'etime', types, 'certainty', types);
-            
             for j = 1:length(event)
                 event(j).position = int64(positions(j));
                 event(j).stime = int64(positions(j)*3);
                 event(j).etime = int64(positions(j)*3);
                 event(j).certainty = rand(1,1);
                 for k = 1:numExtra
-                    thisName = ['extra' num2str(k)];
+                    thisName = ['extraevent' num2str(k)];
                     event(j).(thisName) = [thisName ': ' types{j}];
                 end
             end
             obj.data.event = event;
         end % setElements
         
-        function setMetadata(obj, numMeta)
+        function setFeatures(obj, type, numExtra)
+            % Set the metadata structure
+            if strcmpi(type, 'NUMERIC_VALUE')
+                value = [0 1 2 3 4 5];
+                strcmpi(type, 'XML_VALUE')
+            elseif strcmpi(type, 'XML_VALUE')
+                value = '<xml> <tag1> </tag1> </xml>';
+            else
+                value = [0 1; 2 3; 4 5];
+            end
+            feature = struct('type', type, 'value', ...
+                value, 'description', [type ' data']);
+            for k = 1:numExtra
+                thisName = ['extrafeature' num2str(k)];
+                feature.(thisName) = [thisName ': data'];
+            end
+            obj.data.feature = feature;
+        end % setFeatures
+        
+        function setMetadata(obj, numMeta, numExtra)
             % Set the metadata structure
             metadata = struct();
-            for k = 1:numMeta
-                thisName = ['meta' num2str(k)];
-                metadata.(thisName) = [thisName ': data'];
+            for j = 1:numMeta
+                for k = 1:numExtra
+                    thisName = ['extrametadata' num2str(k)];
+                    metadata(j).(thisName) = [thisName ': data'];
+                end
             end
             obj.data.metadata = metadata;
         end % setMetadata
+        
     end % public methods
     
     
