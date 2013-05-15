@@ -28,10 +28,13 @@
 % Mobbed static methods
 %   createCredentials  - create a credentials file
 %   createdb           - create a database using username and password
-%   createdbc          - create a database using a credentials file
+%   createdbc          - create a database using the credentials from a
+%                        property file
 %   deletedb           - delete a database using username and password
-%   deletedbc          - delete a database using a credentials file
-%   getFromCredentials - get an open database connection given credentials
+%   deletedbc          - delete a database using the credentials from a
+%                        property file
+%   getFromCredentials - get an open database connection using the
+%                        credentials from a property file
 %
 % Kay A. Robbins and Jeremy Cockfield
 % Copyright 2011-2013 The University of Texas at San Antonio

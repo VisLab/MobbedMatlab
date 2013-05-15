@@ -381,8 +381,7 @@ classdef Mobbed < hgsetget
         
         function createdb(dbname, hostname, username, password, script, ...
                 varargin)
-            % Create a database called dbname on hostname using explicit
-            % credentials
+            % Create a database using username and password
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
@@ -399,8 +398,7 @@ classdef Mobbed < hgsetget
         end % createdb
         
         function createdbc(filename, script)
-            % Create a database called dbname on hostname using credentials
-            % file
+            % Create a database using the credentials from a property file
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
@@ -411,7 +409,7 @@ classdef Mobbed < hgsetget
         end % createdbc
         
         function deletedb(dbname, hostname, username, password, varargin)
-            % Delete Postgresql database name on host hostname
+            % Delete a database using username and password
             parser = inputParser();
             parser.addRequired('dbname', @ischar);
             parser.addRequired('hostname', @ischar);
@@ -427,6 +425,7 @@ classdef Mobbed < hgsetget
         end % deletedb
         
         function deletedbc(filename)
+            % Delete a database using the credentials from a property file
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
@@ -437,6 +436,8 @@ classdef Mobbed < hgsetget
         end % deletedbc
         
         function DB = getFromCredentials(filename)
+            % Get an open database connection using the credentials from
+            % a property file
             parser = inputParser();
             parser.addRequired('filename', @ischar);
             parser.parse(filename);
