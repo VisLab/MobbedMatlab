@@ -16,7 +16,7 @@ classdef randomClass
         end
         
         function string = generateString()
-            length = 50;
+            length = 200;
             string = char(floor(94*rand(1, length)) + 32);           
         end
     end
