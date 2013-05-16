@@ -1,8 +1,3 @@
-%   This test file attempts to store 8 attention shift formatted datasets
-% - 6 datasets will be saved to the database 
-% - 2 datasets will not be saved to the database because they contain 
-%   duplicate names of unique datasets 
-
 function test_suite = testGenericTestClass %#ok<STOUT>
 initTestSuite;
 

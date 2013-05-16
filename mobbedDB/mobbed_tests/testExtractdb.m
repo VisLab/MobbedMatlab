@@ -17,143 +17,123 @@ tStruct.DB = DB;
 
 % Create event types
 e1 = getdb(DB, 'event_types', 0);
-e1.event_type = 'event type 1';
+e1.event_type = 'light flash';
 e1.event_type_description = 'event type description: event type 1';
-uuid1 = putdb(DB, 'event_types', e1);
+eventTypeUuid1 = putdb(DB, 'event_types', e1);
 
 e2 = getdb(DB, 'event_types', 0);
-e2.event_type = 'event type 2';
+e2.event_type = 'vibration';
 e2.event_type_description = 'event type description: event type 2';
-uuid2 = putdb(DB, 'event_types', e2);
+eventTypeUuid2 = putdb(DB, 'event_types', e2);
 
 e3 = getdb(DB, 'event_types', 0);
-e3.event_type = 'event type 3';
+e3.event_type = 'button press';
 e3.event_type_description = 'event type description: event type 3';
-uuid3 = putdb(DB, 'event_types', e3);
-
-e4 = getdb(DB, 'event_types', 0);
-e4.event_type = 'event type 4';
-e4.event_type_description = 'event type description: event type 4';
-uuid4 = putdb(DB, 'event_types', e4);
+eventTypeUuid3 = putdb(DB, 'event_types', e3);
 
 d = getdb(DB, 'datasets', 0);
-d.dataset_name = randseq(20);
+d.dataset_name = randomClass.generateString();
 d.dataset_description = 'reference dataset description ';
 d.dataset_uuid = putdb(DB, 'datasets', d);
 datasetUuid = d.dataset_uuid{1};
 
-% Create events
+% light flash event
 e1 = getdb(DB, 'events', 0);
 e1.event_entity_uuid = datasetUuid;
 e1.event_entity_class = 'datasets';
-e1.event_type_uuid = uuid1{1};
-e1.event_start_time = 1;
-e1.event_end_time = 1;
+e1.event_type_uuid = eventTypeUuid1{1};
+e1.event_start_time = 3;
+e1.event_end_time = 3;
 e1.event_position = 1;
 e1.event_certainty = 1;
 putdb(DB, 'events', e1);
 
+% button press event
 e2 = getdb(DB, 'events', 0);
 e2.event_entity_uuid = datasetUuid;
 e2.event_entity_class = 'datasets';
-e2.event_type_uuid = uuid2{1};
-e2.event_start_time = 2;
-e2.event_end_time = 2;
+e2.event_type_uuid = eventTypeUuid3{1};
+e2.event_start_time = 4;
+e2.event_end_time = 4;
 e2.event_position = 2;
 e2.event_certainty = 1;
 putdb(DB, 'events', e2);
 
+% vibration event
 e3 = getdb(DB, 'events', 0);
 e3.event_entity_uuid = datasetUuid;
 e3.event_entity_class = 'datasets';
-e3.event_type_uuid = uuid3{1};
-e3.event_start_time = 3;
-e3.event_end_time = 3;
+e3.event_type_uuid = eventTypeUuid2{1};
+e3.event_start_time = 7;
+e3.event_end_time = 7;
 e3.event_position = 3;
 e3.event_certainty = 1;
 putdb(DB, 'events', e3);
 
+e4 = getdb(DB, 'events', 0);
+e4.event_entity_uuid = datasetUuid;
+e4.event_entity_class = 'datasets';
+e4.event_type_uuid = eventTypeUuid3{1};
+e4.event_start_time = 9;
+e4.event_end_time = 9;
+e4.event_position = 4;
+e4.event_certainty = 1;
+putdb(DB, 'events', e4);
+
 tStruct.DB.commit();
-tStruct.event_type_uuids = [uuid1(:),uuid2(:),uuid3(:),uuid4(:)];
+tStruct.datasetUuid = datasetUuid;
+tStruct.event_type_uuids = [eventTypeUuid1(:), eventTypeUuid2(:), ...
+    eventTypeUuid3(:)];
 
 function teardown(tStruct) %#ok<DEFNU>
 tStruct.DB.close();
 
-function testDefaultRange(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for extractdb with default range:\n');
-fprintf('It should extract all events within the default range\n');
+function testInS(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for extractdb with inS structure search criteria:\n');
+
+fprintf(['It should extract events that have other events that occur' ...
+    ' within the default range (1 second) of their occurance\n']);
 DB = tStruct.DB;
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], ...
+inS.event_entity_uuid = tStruct.datasetUuid;
+[mStructure, extStructure] = extractdb(DB, 'events', inS, 'events', [], ...
     inf);
-fprintf(['--It should return a structure array containing the' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(mStructure));
-fprintf(['--It should return a structure array containing the unique' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(extStructure));
+fprintf(['--It should return a structure array containing one event' ...
+    ' that found other events in the default range\n']);
+assertEqual(length(mStructure), 1);
+fprintf(['--It should return a structure array containing one' ...
+    ' unique event found in the default range\n']);
+assertEqual(length(extStructure), 1);
 
-function testLimit(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for extractdb with limit:\n');
-fprintf(['It should extract at most the limit of events found in the' ...
-    ' default range\n']);
-DB = tStruct.DB;
-limit = 1;
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', [], ...
-    limit);
-fprintf(['--It should return a structure array the size of limit' ...
-    ' containing the events found in the default range\n']);
-assertTrue(~isempty(mStructure));
-assertTrue(isequal(length(mStructure), limit));
-fprintf(['--It should return a structure array the size of limit' ...
-    ' containing the unique events found in the default range\n']);
-assertTrue(~isempty(extStructure));
-assertTrue(isequal(length(extStructure), limit));
+fprintf(['It should extract events that have other events that occur' ...
+    ' within 2 seconds of their occurance\n']);
+[mStructure, extStructure] = extractdb(DB, 'events', inS, 'events', [], ...
+    inf, 'Range', [0,2]);
+fprintf(['--It should return a structure array containing two events' ...
+    ' that found other events in the range of 2 seconds\n']);
+assertEqual(length(mStructure), 2);
+fprintf(['--It should return a structure array containing two' ...
+    ' unique events found in the range of 2 seconds\n']);
+assertEqual(length(extStructure), 2);
 
-function testInStructure(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for extractdb with inStructure:\n');
-fprintf(['It should extract all events within the default range with' ...
-    ' search qualifications specified in inStructure\n']);
-DB = tStruct.DB;
-% only look for interrelated events in type 1 events
-inStructure.event_type_uuid = tStruct.event_type_uuids{1};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
-    'events', [], inf);
-fprintf(['--It should return a structure array containing the' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(mStructure));
-fprintf(['--It should return a structure array containing the unique' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(extStructure));
+fprintf(['It should extract at most one event that has other events' ... 
+    ' that occur within 2 seconds of its occurance\n']);
+[mStructure, extStructure] = extractdb(DB, 'events', inS, 'events', [], ...
+    1, 'Range', [0,2]);
+fprintf(['--It should return a structure array containing one event' ...
+    ' that found other events in the range of 2 seconds\n']);
+assertEqual(length(mStructure), 1);
+fprintf(['--It should return a structure array containing one' ...
+    ' unique event found in the range of 2 seconds\n']);
+assertEqual(length(extStructure), 1);
 
-function testOutStructure(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for extractdb with outStructure:\n');
-fprintf(['It should extract all events within the default range with' ...
-    ' search qualifications specified in outStructure\n']);
-DB = tStruct.DB;
-% only look for type 2 events in all events
-outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', [], 'events', ...
-    outStructure, inf);
-fprintf(['--It should return a structure array containing the' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(mStructure));
-fprintf(['--It should return a structure array containing the unique' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(extStructure));
-
-function testInStructureAndOutStructure(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for extractdb with inStructure and outStructure:\n');
-fprintf(['It should extract all events within the default range with' ...
-    ' search qualifications specified in inStructure and outStructure\n']);
-DB = tStruct.DB;
-% only look for type 2 events in type 1 events
-inStructure.event_type_uuid = tStruct.event_type_uuids{1};
-outStructure.event_type_uuid = tStruct.event_type_uuids{2};
-[mStructure, extStructure] = extractdb(DB, 'events', inStructure, ...
-    'events', outStructure, inf);
-fprintf(['--It should return a structure array containing the' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(mStructure));
-fprintf(['--It should return a structure array containing the unique' ...
-    ' events found in the default range\n']);
-assertTrue(~isempty(extStructure));
+fprintf(['It should extract light flash events that have other events' ... 
+    ' that occur within 2 seconds of their occurance\n']);
+inS.event_type_uuid = tStruct.event_type_uuids{1};
+[mStructure, extStructure] = extractdb(DB, 'events', inS, 'events', [], ...
+    Inf, 'Range', [0,2]);
+fprintf(['--It should return a structure array containing one light' ...
+    ' flash event that found other events in the range of 2 seconds\n']);
+assertEqual(length(mStructure), 1);
+fprintf(['--It should return a structure array containing one' ...
+    ' unique event found in the range of 2 seconds\n']);
+assertEqual(length(extStructure), 1);
