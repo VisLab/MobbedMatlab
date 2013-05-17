@@ -104,8 +104,7 @@ classdef Mobbed < hgsetget
             try
                 UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
                 for a = 1:length(UUIDs)
-                    datadefs(a).datadef_uuid = UUIDs{a};
-                    DbHandler.storeDataDef(DB, datadefs(a));
+                    DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a));
                 end
             catch ME
                 try
@@ -129,24 +128,20 @@ classdef Mobbed < hgsetget
             ddef = getdb(DB, 'datadefs', 0);
             ddef.data = [];
             if ~isempty(parser.Results.UUIDs)
-                if ischar(parser.Results.UUIDs)
-                    UUIDs = ...
-                        DbHandler.reformatString(parser.Results.UUIDs);
-                elseif iscellstr(parser.Results.UUIDs)
-                    UUIDs = parser.Results.UUIDs;
-                else
+                if isstruct(parser.Results.UUIDs)
                     UUIDs = {parser.Results.UUIDs.datamap_def_uuid};
+                else
+                    UUIDs = DbHandler.reformatString(parser.Results.UUIDs);
                 end
                 numUUIDs = length(UUIDs);
                 ddef = repmat(ddef, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    currentDataDef.datadef_uuid = UUIDs{k};
-                    currentDataDef = getdb(DB, 'datadefs', 1, ...
-                        currentDataDef);
-                    currentDataDef.data = DbHandler.retrieveDataDef(DB, ...
-                        currentDataDef, false);
-                    ddef(k) = currentDataDef;
-                    currentDataDef = [];
+                    tempDatadef.datadef_uuid = UUIDs{k};
+                    tempDatadef = getdb(DB, 'datadefs', 1, tempDatadef);
+                    tempDatadef.data = DbHandler.retrieveDataDef(DB, ...
+                        tempDatadef, false);
+                    ddef(k) = tempDatadef;
+                    tempDatadef = [];
                 end
             end
         end % db2data
@@ -159,25 +154,23 @@ classdef Mobbed < hgsetget
             datasets = getdb(DB, 'datasets', 0);
             datasets.data = [];
             if ~isempty(parser.Results.UUIDs)
-                UUIDsReformat = ...
-                    DbHandler.reformatString(parser.Results.UUIDs);
-                numUUIDs = length(UUIDsReformat);
+                UUIDs = DbHandler.reformatString(parser.Results.UUIDs);
+                numUUIDs = length(UUIDs);
                 datasets = repmat(datasets, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    currentDataset.dataset_uuid = UUIDsReformat{k};
-                    currentDataset = getdb(DB, 'datasets', 1, ...
-                        currentDataset);
-                    currentDataset.data = ...
-                        DbHandler.retrieveFile(DB, UUIDsReformat{k}, true);
-                    datasets(k) = currentDataset;
-                    currentDataset = [];
+                    tempDataset.dataset_uuid = UUIDs{k};
+                    tempDataset = getdb(DB, 'datasets', 1, tempDataset);
+                    tempDataset.data = ...
+                        DbHandler.retrieveFile(DB, UUIDs{k}, true);
+                    datasets(k) = tempDataset;
+                    tempDataset = [];
                 end
             end
         end % db2mat
         
         function connection = getConnection(DB)
             connection = DB.DbManager.getConnection();
-        end %
+        end % getConnection
         
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve rows from a single table
@@ -185,8 +178,7 @@ classdef Mobbed < hgsetget
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('limit', @(x) isnumeric(x) && ...
                 isscalar(x) && x > -1);
-            parser.addOptional('inS', [], @(x) isstruct(x) && ...
-                ~isempty(fieldnames(x)));
+            parser.addOptional('inS', [], @(x) isstruct(x));
             parser.addParamValue('Tags', [], @iscell);
             parser.addParamValue('Attributes', [], @iscell);
             parser.addParamValue('RegExp', 'off', ...

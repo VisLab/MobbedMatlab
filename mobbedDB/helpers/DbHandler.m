@@ -164,11 +164,10 @@ classdef DbHandler
             delete(fileName);
         end % storeExternal
         
-        function storeDataDef(DB, datadef)
+        function storeDataDef(DB, datadefUuid, datadef)
             % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
-                DbHandler.storeFile(DB, datadef.datadef_uuid, ...
-                    datadef.data, false)
+                DbHandler.storeFile(DB, datadefUuid, datadef.data, false)
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 if ~isfield(datadef, 'datadef_sampling_rate') && ...
                         ~isfield(datadef, 'datadef_timestamps')
@@ -187,16 +186,14 @@ classdef DbHandler
                 else
                     times = datadef.timestamps;
                 end
-                DbHandler.storeNumericStream(DB, datadef.datadef_uuid, ...
+                DbHandler.storeNumericStream(DB, datadefUuid, ...
                     datadef.data, times);
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
                 edu.utsa.mobbed.Datadefs.storeNumericValue(...
-                    DB.getConnection(), datadef.datadef_uuid, ...
-                    datadef.data);
+                    DB.getConnection(), datadefUuid, datadef.data);
             elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
                 edu.utsa.mobbed.Datadefs.storeXMLValue(...
-                    DB.getConnection(), datadef.datadef_uuid, ...
-                    datadef.data);
+                    DB.getConnection(), datadefUuid, datadef.data);
             else throw (MException('retrieveDataDef:InvalidFormat', ...
                     'Datadef format is invalid'));
             end
