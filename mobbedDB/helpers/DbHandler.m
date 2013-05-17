@@ -2,7 +2,7 @@ classdef DbHandler
     
     methods(Static)
         
-        function addJavaPath
+        function addJavaPath()
             % Add all of jar files in the jars subdirectory to java path
             jarPath = [fileparts(which('Mobbed')) filesep 'jars'];
             jarFiles = dir([jarPath filesep '*.jar']);
@@ -82,8 +82,7 @@ classdef DbHandler
                         if isempty(structure(a).(doubleColumns{b}))
                             doubleValues(a,b) = [];
                         else
-                            doubleValues(a,b) = ...
-                                java.lang.Double(...
+                            doubleValues(a,b) = java.lang.Double(...
                                 structure(a).(doubleColumns{b}));
                         end
                     end
@@ -99,21 +98,30 @@ classdef DbHandler
             if ischar(string), string = cellstr(string); end;
         end % reformatString
         
-        function data = retrieveDataDef(DB, datadef, isAdditionalData)
+        function value = replaceEmpty(a, b)
+            % Return a if non-empty otherwise return b
+            if isempty(a)
+                value = b;
+            else
+                value = a;
+            end
+        end % replaceEmpty
+        
+        function data = retrieveDataDef(DB, datadefUuid, datadefFormat, ...
+                additionalData)
             % Retrieves the data associated with a datadef
-            if strcmpi(datadef.datadef_format, 'EXTERNAL')
-                data = DbHandler.retrieveFile(DB, ...
-                    datadef.datadef_uuid, isAdditionalData);
-            elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
-                data = DbHandler.retrieveNumericStream(DB, ...
-                    datadef.datadef_uuid);
-            elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
+            if strcmpi(datadefFormat, 'EXTERNAL')
+                data = DbHandler.retrieveFile(DB, datadefUuid, ...
+                    additionalData);
+            elseif strcmpi(datadefFormat, 'NUMERIC_STREAM')
+                data = DbHandler.retrieveNumericStream(DB, datadefUuid);
+            elseif strcmpi(datadefFormat, 'NUMERIC_VALUE')
                 data = double(...
                     edu.utsa.mobbed.Datadefs.retrieveNumericValue(...
-                    DB.getConnection(), datadef.datadef_uuid));
-            elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
+                    DB.getConnection(), datadefUuid));
+            elseif strcmpi(datadefFormat, 'XML_VALUE')
                 data = char(edu.utsa.mobbed.Datadefs.retrieveXMLValue(...
-                    DB.getConnection(), datadef.datadef_uuid));
+                    DB.getConnection(), datadefUuid));
             else throw(MException('retrieveDataDef:InvalidFormat', ...
                     'Datadef format is invalid'));
             end

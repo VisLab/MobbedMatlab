@@ -139,7 +139,7 @@ classdef Mobbed < hgsetget
                     tempDatadef.datadef_uuid = UUIDs{k};
                     tempDatadef = getdb(DB, 'datadefs', 1, tempDatadef);
                     tempDatadef.data = DbHandler.retrieveDataDef(DB, ...
-                        tempDatadef, false);
+                        UUIDs{k}, tempDatadef.datadef_format, false);
                     ddef(k) = tempDatadef;
                     tempDatadef = [];
                 end
