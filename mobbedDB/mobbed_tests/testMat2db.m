@@ -32,7 +32,7 @@ function testDuplicateDataset(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with duplicate dataset:\n');
 fprintf('It should store a duplicate dataset\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'mat2db duplicate dataset';
 s1.data = EEG;
@@ -55,7 +55,7 @@ fprintf('\nUnit test for mat2db with unique dataset exception:\n');
 fprintf(['It should throw an exception when storing a unique dataset' ...
     ' whose namespace and name combination already exist\n']);
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'mat2db unique dataset';
 s1.data = EEG;
@@ -71,7 +71,7 @@ function testTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with tags:\n');
 fprintf('It should store a dataset with tags\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'mat2db with tags';
 s1.data = EEG;

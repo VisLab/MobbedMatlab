@@ -32,7 +32,7 @@ function testNumericStream(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for data2db with numeric stream format:\n');
 fprintf('It should store a datadef that is numeric stream format\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 sdef = db2data(DB);        
 sdef.datadef_format = 'NUMERIC_STREAM';
 sdef.datadef_sampling_rate = EEG.srate;
@@ -47,7 +47,7 @@ function testNumericValue(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for data2db with numeric value format:\n');
 fprintf('It should store a datadef that is numeric value format\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 sdef = db2data(DB);        
 sdef.datadef_format = 'NUMERIC_VALUE';
 sdef.data = EEG.data(1,:);
@@ -61,7 +61,7 @@ function testExternal(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for data2db with external format:\n');
 fprintf('It should store a datadef that is external format\n');
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 sdef = db2data(DB);        
 sdef.datadef_format = 'EXTERNAL';
 sdef.data = EEG.data;

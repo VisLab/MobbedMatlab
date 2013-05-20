@@ -41,7 +41,7 @@ fprintf(['\nUnit test for storing a simple modality dataset by' ...
 fprintf(['It should store a simple modality dataset using the modality' ...
     ' uuid\n']);
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'simple modality dataset using uuid';
 s1.data = EEG;
@@ -62,7 +62,7 @@ fprintf(['\nUnit test for storing a simple modality dataset by' ...
 fprintf(['It should store a simple modality dataset using the modality' ...
     ' name\n']);
 DB = tStruct.DB;
-load eeglab_data_ch.mat;
+load eeg_data_ch1.mat;
 s1 = db2mat(DB);
 s1.dataset_name = 'simple modality dataset using name';
 s1.data = EEG;
