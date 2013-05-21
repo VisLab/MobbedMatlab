@@ -1,4 +1,4 @@
-% MobbedDB Package
+% Mobbed Package
 % Version 1.0a Beta 20-May-2013 09:36:35
 %
 % Requires PostgreSQL to be installed.
