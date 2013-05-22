@@ -105,7 +105,7 @@ classdef GENERIC_Modality
             certainties = cell2mat({event.certainty}');
             parentUuids = cell(1, length(event));
             [parentUuids{:}] = ...
-                deal(char(edu.utsa.mobbed.ManageDB.noParentUuid));
+                deal(char(edu.utsa.mobbed.ManageDB.nullParentUuid ));
             uniqueTypes = unique(types);
             otherFields = setdiff(fieldnames(event), ...
                 {'type', 'position', 'stime', 'etime', 'certainty'})';

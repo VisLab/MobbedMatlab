@@ -156,7 +156,7 @@ classdef EEG_Modality
             positions = int64(1:length(types))';
             parentUuids = cell(1, length(urevent));
             [parentUuids{:}] = ...
-                deal(char(edu.utsa.mobbed.ManageDB.noParentUuid));
+                deal(char(edu.utsa.mobbed.ManageDB.nullParentUuid ));
             uniqueTypes = unique(types);
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset('EEG', datasetUuid, 'event', uniqueTypes, ...
