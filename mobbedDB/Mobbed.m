@@ -89,6 +89,14 @@ classdef Mobbed < hgsetget
             DB.DbManager.close();
         end % close
         
+        function outS = closecur(DB, varargin)
+            % Closes a cursor 
+            parser = inputparser();
+            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
+                ~isempty(x));
+            outS = DB.DbManager.closeCursor(parser.CursorName);
+        end
+        
         function commit(DB)
             % Commit the current database transaction, if uncommitted
             DB.DbManager.commit();
@@ -172,6 +180,13 @@ classdef Mobbed < hgsetget
             connection = DB.DbManager.getConnection();
         end % getConnection
         
+%         function outS = getcur(DB)
+%             fields = {'name', 'query'};
+%             
+%             outS = md
+%             
+%         end
+        
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve rows from a single table
             parser = inputParser();
@@ -183,6 +198,8 @@ classdef Mobbed < hgsetget
             parser.addParamValue('Attributes', [], @iscell);
             parser.addParamValue('RegExp', 'off', ...
                 @(x) any(strcmpi(x, {'on', 'off'})));
+            parser.addParamValue('CursorName', [], @(x) ischar(x) && ...
+                ~isempty(x));
             parser.parse(table, limit, varargin{:});
             columns = [];
             values =[];
@@ -207,7 +224,7 @@ classdef Mobbed < hgsetget
             outValues = ...
                 cell(DB.DbManager.retrieveRows(parser.Results.table, ...
                 parser.Results.limit, parser.Results.RegExp, tags, ...
-                attributes, columns, values));
+                attributes, columns, values, parser.Results.CursorName));
             if ~isempty(outValues)
                 outColumns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
@@ -335,6 +352,22 @@ classdef Mobbed < hgsetget
             end
             DB.commit();
         end % mat2db
+        
+        function outS = next(DB, varargin)
+            % Fetches the next set of rows that a cursor points to
+            parser = inputparser();
+            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
+                ~isempty(x));
+            outS = DB.DbManager.next(parser.CursorName);
+        end
+        
+        function outS = previous(DB, varargin)
+            % Fetches the previous set of rows that a cursor points to 
+            parser = inputparser();
+            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
+                ~isempty(x));
+            outS = DB.DbManager.previous(parser.CursorName);         
+        end
         
         function UUIDs = putdb(DB, table, inS)
             % Create or update rows from a single table
