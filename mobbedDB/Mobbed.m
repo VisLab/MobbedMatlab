@@ -84,18 +84,18 @@ classdef Mobbed < hgsetget
                 parser.Results.verbose);
         end % Mobbed
         
-        function close(DB)
-            % Close the database descriptor
-            DB.DbManager.close();
-        end % close
-        
-        function outS = closecur(DB, varargin)
-            % Closes a cursor 
-            parser = inputparser();
-            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
+        function close(DB, varargin)
+            % Close the database descriptor or a cursor
+            parser = inputParser();
+            parser.addParamValue('DataCursor', [], @(x) ischar(x) && ...
                 ~isempty(x));
-            outS = DB.DbManager.closeCursor(parser.CursorName);
-        end
+            parser.parse(varargin{:});
+            if ~isempty(parser.Results.DataCursor)
+                DB.DbManager.closeCursor(parser.Results.DataCursor);
+            else
+                DB.DbManager.close();
+            end
+        end % close
         
         function commit(DB)
             % Commit the current database transaction, if uncommitted
@@ -110,6 +110,8 @@ classdef Mobbed < hgsetget
                 all(ismember(fieldnames(db2data(DB)), fieldnames(x))));
             parser.parse(datadefs);
             try
+                autocommit = getAutoCommit(DB);
+                DB.setAutoCommit(false);
                 UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
                 for a = 1:length(UUIDs)
                     DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a));
@@ -123,6 +125,7 @@ classdef Mobbed < hgsetget
                 throw(ME);
             end
             DB.commit();
+            DB.setAutoCommit(autocommit);
         end % data2db
         
         function ddef = db2data(DB, varargin)
@@ -176,16 +179,13 @@ classdef Mobbed < hgsetget
             end
         end % db2mat
         
+        function autocommit = getAutoCommit(DB)
+            autocommit = DB.DbManager.getAutoCommit();
+        end % getAutoCommit
+        
         function connection = getConnection(DB)
             connection = DB.DbManager.getConnection();
         end % getConnection
-        
-%         function outS = getcur(DB)
-%             fields = {'name', 'query'};
-%             
-%             outS = md
-%             
-%         end
         
         function outS = getdb(DB, table, limit, varargin)
             % Retrieve rows from a single table
@@ -198,7 +198,7 @@ classdef Mobbed < hgsetget
             parser.addParamValue('Attributes', [], @iscell);
             parser.addParamValue('RegExp', 'off', ...
                 @(x) any(strcmpi(x, {'on', 'off'})));
-            parser.addParamValue('CursorName', [], @(x) ischar(x) && ...
+            parser.addParamValue('DataCursor', [], @(x) ischar(x) && ...
                 ~isempty(x));
             parser.parse(table, limit, varargin{:});
             columns = [];
@@ -224,11 +224,11 @@ classdef Mobbed < hgsetget
             outValues = ...
                 cell(DB.DbManager.retrieveRows(parser.Results.table, ...
                 parser.Results.limit, parser.Results.RegExp, tags, ...
-                attributes, columns, values, parser.Results.CursorName));
+                attributes, columns, values, parser.Results.DataCursor));
             if ~isempty(outValues)
                 outColumns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
-                outS = cell2struct(outValues, outColumns, 2);
+                outS = cell2struct(outValues, outColumns, 2)';
             end
         end % getdb
         
@@ -304,6 +304,8 @@ classdef Mobbed < hgsetget
             modality = 'EEG';
             namespace = 'mobbed';
             try
+                autocommit = getAutoCommit(DB);
+                DB.setAutoCommit(false);
                 for k = 1:numDatasets
                     % Check the dataset version
                     if ~isempty(datasets(k).dataset_namespace)
@@ -335,8 +337,8 @@ classdef Mobbed < hgsetget
                     numTags = length(tags);
                     tags = repmat(tags, 1, numDatasets);
                     entityUuids = repmat(UUIDs, 1, numTags);
-                    tagStruct = repmat(getdb(DB, 'tags', 0), 1, ...
-                        numDatasets * numTags);
+                    tempTag = getdb(DB, 'tags', 0);
+                    tagStruct = repmat(tempTag, 1, numDatasets * numTags);
                     [tagStruct.tag_name] = deal(tags{:});
                     [tagStruct.tag_entity_uuid] = deal(entityUuids{:});
                     [tagStruct.tag_entity_class] = deal('datasets');
@@ -351,23 +353,9 @@ classdef Mobbed < hgsetget
                 throw(ME);
             end
             DB.commit();
+            DB.setAutoCommit(autocommit);
         end % mat2db
         
-        function outS = next(DB, varargin)
-            % Fetches the next set of rows that a cursor points to
-            parser = inputparser();
-            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
-                ~isempty(x));
-            outS = DB.DbManager.next(parser.CursorName);
-        end
-        
-        function outS = previous(DB, varargin)
-            % Fetches the previous set of rows that a cursor points to 
-            parser = inputparser();
-            parser.addOptional('CursorName', [], @(x) ischar(x) && ...
-                ~isempty(x));
-            outS = DB.DbManager.previous(parser.CursorName);         
-        end
         
         function UUIDs = putdb(DB, table, inS)
             % Create or update rows from a single table
@@ -397,8 +385,9 @@ classdef Mobbed < hgsetget
             parser = inputParser();
             parser.addRequired('autoCommit', @islogical);
             parser.parse(autoCommit);
-            DB.DbManager(autoCommit);
+            DB.DbManager.setAutoCommit(autoCommit);
         end % setAutoCommit
+        
         
     end % public methods
     
