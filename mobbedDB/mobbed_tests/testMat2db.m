@@ -81,7 +81,7 @@ fprintf(['--It should retrieve a dataset by the tags that were' ...
 s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
 assertTrue(~isempty(s2));
 
-function testMat2dbRollback(tStruct) %#ok<DEFNU>
+function testRollback(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with rollback:\n');
 fprintf('It should rollback the transaction when mat2db fails\n');
 DB = tStruct.DB;

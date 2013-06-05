@@ -177,13 +177,12 @@ classdef DbHandler
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 DbHandler.storeFile(DB, datadefUuid, datadef.data, false)
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
-                if ~isfield(datadef, 'datadef_sampling_rate') && ...
-                        ~isfield(datadef, 'datadef_timestamps')
-                    throw (MException(['storeDataDef:' ...
-                        'InvalidSamplingRate'], ...
+                if isempty(datadef.datadef_sampling_rate') && ...
+                        isempty(datadef.datadef_timestamps')
+                    throw (MException('DbHandler:InvalidSamplingRate', ...
                         'sample rate and timestamps are not present'));
                 end
-                if  isfield(datadef, 'datadef_sampling_rate')
+                if  ~isempty(datadef.datadef_sampling_rate)
                     if datadef.datadef_sampling_rate < 0
                         datadef.datadef_sampling_rate = 1;
                     end

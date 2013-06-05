@@ -4,7 +4,7 @@ initTestSuite;
 % Function executed before each test
 function tStruct = setup %#ok<DEFNU>
 
-% Structure that holds Mobbed connection object constructor arguments 
+% Structure that holds Mobbed connection object constructor arguments
 tStruct = struct('name', 'testdb', 'url', 'localhost', ...
     'user', 'postgres', 'password', 'admin', 'DB', []);
 
@@ -33,12 +33,12 @@ fprintf('\nUnit test for data2db with numeric stream format:\n');
 fprintf('It should store a datadef that is numeric stream format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
-sdef = db2data(DB);        
+sdef = db2data(DB);
 sdef.datadef_format = 'NUMERIC_STREAM';
 sdef.datadef_sampling_rate = EEG.srate;
 sdef.data = EEG.data;
 sdef.datadef_description = 'numeric stream data';
-UUIDs = data2db(DB, sdef);            
+UUIDs = data2db(DB, sdef);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
@@ -48,11 +48,11 @@ fprintf('\nUnit test for data2db with numeric value format:\n');
 fprintf('It should store a datadef that is numeric value format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
-sdef = db2data(DB);        
+sdef = db2data(DB);
 sdef.datadef_format = 'NUMERIC_VALUE';
 sdef.data = EEG.data(1,:);
 sdef.datadef_description = 'numeric value data';
-UUIDs = data2db(DB, sdef);        
+UUIDs = data2db(DB, sdef);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
@@ -62,11 +62,11 @@ fprintf('\nUnit test for data2db with external format:\n');
 fprintf('It should store a datadef that is external format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
-sdef = db2data(DB);        
+sdef = db2data(DB);
 sdef.datadef_format = 'EXTERNAL';
 sdef.data = EEG.data;
 sdef.datadef_description = 'external data';
-UUIDs = data2db(DB, sdef);            
+UUIDs = data2db(DB, sdef);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
@@ -75,11 +75,27 @@ function testXMLValue(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for data2db with xml value format:\n');
 fprintf('It should store a datadef that is xml value format\n');
 DB = tStruct.DB;
-sdef = db2data(DB);         
+sdef = db2data(DB);
 sdef.datadef_format = 'XML_VALUE';
 sdef.data = '<xml> <tag1> </tag1> </xml>';
 sdef.datadef_description = 'xml value data';
-UUIDs = data2db(DB, sdef);           
+UUIDs = data2db(DB, sdef);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
+
+function testRollback(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for data2db with rollback:\n');
+fprintf('It should rollback the transaction when data2db fails\n');
+DB = tStruct.DB;
+DB.setAutoCommit(true);
+load eeg_data_ch1.mat;
+sdef = db2data(DB);
+sdef.datadef_format = 'NUMERIC_STREAM';
+sdef.data = EEG.data;
+sdef.datadef_description = 'numeric stream data';
+assertExceptionThrown(@() error(data2db(DB, sdef)), ...
+    'DbHandler:InvalidSamplingRate');
+fprintf('--There should be no data definition stored in the database\n');
+DB.setAutoCommit(false);
+
