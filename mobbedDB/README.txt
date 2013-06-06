@@ -8,8 +8,9 @@ I.   WHAT IS MOBBED
 II.  SYSTEM REQUIREMENTS
 III. GETTING STARTED 
 IV.  TECHNICAL SUPPORT
+V.   ADDITIONAL INFORMATION
  
-I.  WHAT IS MOBBED 
+I. WHAT IS MOBBED 
  
 Mobbed is a lightweight, easy-to-use, extensible toolkit that allows users to incorporate
 a computational database into their normal MATLAB workflow. Although capable of storing
@@ -29,6 +30,7 @@ II. SYSTEM REQUIREMENTS
 * 9.2
 
 III. GETTING STARTED
+
 Open up MATLAB. Add the Mobbed directory and its subdirectories to the workspace. 
 
 1) Creating a database:
@@ -51,4 +53,16 @@ IV. TECHNICAL SUPPORT
 If you need technical assistance, you may contact us on our website, 
 http://visual.cs.utsa.edu/contact-info. Please provide a name, email address, subject, 
 and message. 
+
+V. ADDITIONAL INFORMATION
+
+For additional information please see:
+
+CS-TR-2013-005, http://venom.cs.utsa.edu/dmz/techrep/2013/CS-TR-2013-005.pdf,
+by Jeremy Cockfield, Kyung Min Su and Kay Robbins, Department of Computer Science, 
+University of Texas at San Antonio, Apr. 2013
+
+CS-TR-2013-006, http://venom.cs.utsa.edu/dmz/techrep/2013/CS-TR-2013-006.pdf,
+by Jeremy Cockfield, Kyung Min Su and Kay Robbins, Department of Computer Science,
+University of Texas at San Antonio, Apr. 2013
 
