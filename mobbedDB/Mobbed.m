@@ -97,11 +97,6 @@ classdef Mobbed < hgsetget
             end
         end % close
         
-        function commit(DB)
-            % Commit the current database transaction, if uncommitted
-            DB.DbManager.commit();
-        end % commit
-        
         function UUIDs = data2db(DB, datadefs)
             % Create a data definition and store corresponding data in
             % database
@@ -356,7 +351,6 @@ classdef Mobbed < hgsetget
             DB.setAutoCommit(autocommit);
         end % mat2db
         
-        
         function UUIDs = putdb(DB, table, inS)
             % Create or update rows from a single table
             parser = inputParser();
@@ -373,21 +367,6 @@ classdef Mobbed < hgsetget
             UUIDs = cell(DB.DbManager.addRows(table, columns, values, ...
                 doubleColumns, doubleValues));
         end % putdb
-        
-        function rollback(DB)
-            % Rollback the current transaction if any is uncommitted
-            DB.DbManager.rollback();
-        end % rollback
-        
-        function setAutoCommit(DB, autoCommit)
-            % Set or clear flag indicating whether to automatically commit
-            % transactions
-            parser = inputParser();
-            parser.addRequired('autoCommit', @islogical);
-            parser.parse(autoCommit);
-            DB.DbManager.setAutoCommit(autoCommit);
-        end % setAutoCommit
-        
         
     end % public methods
     

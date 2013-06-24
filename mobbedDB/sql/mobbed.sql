@@ -7,9 +7,7 @@ CREATE TABLE attributes
   attribute_uuid uuid DEFAULT uuid_generate_v4(),
   attribute_entity_uuid uuid,
   attribute_entity_class character varying, 
-  attribute_organizational_uuid uuid,
-  attribute_organizational_class character varying, 
-  attribute_structure_uuid uuid,
+  attribute_path character varying,
   attribute_numeric_value double precision, 
   attribute_value character varying,
   PRIMARY KEY (attribute_uuid)
@@ -72,7 +70,6 @@ WITH (
   datadef_uuid uuid DEFAULT uuid_generate_v4(),
   datadef_format character varying CHECK (upper(datadef_format) = 'NUMERIC_VALUE' OR upper(datadef_format) = 'NUMERIC_STREAM' OR upper(datadef_format) = 'XML_VALUE' OR upper(datadef_format) = 'XML_STREAM' OR upper(datadef_format) = 'EXTERNAL' ),
   datadef_sampling_rate double precision CHECK (datadef_sampling_rate = -1 OR datadef_sampling_rate > 0),
-  datadef_timestamps double precision[],
   datadef_oid oid,
   datadef_description character varying, 
   PRIMARY KEY (datadef_uuid)
@@ -132,8 +129,7 @@ CREATE TABLE elements
 (
   element_uuid uuid DEFAULT uuid_generate_v4(),
   element_label character varying,
-  element_organizational_uuid uuid,
-  element_organizational_class character varying, 
+  element_dataset_uuid uuid,
   element_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',  
   element_position bigint CHECK (element_position = -1 OR element_position > 0),
   element_description character varying,
@@ -147,10 +143,8 @@ CREATE TABLE elements
 CREATE TABLE events
 (
   event_uuid uuid DEFAULT uuid_generate_v4(),
-  event_entity_uuid uuid,
-  event_entity_class character varying, 
+  event_dataset_uuid uuid,
   event_type_uuid uuid,
-  event_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb', 
   event_start_time double precision CHECK (event_start_time >= 0),
   event_end_time double precision CHECK (event_end_time >= 0),
   event_position bigint CHECK (event_position > 0),
@@ -206,19 +200,6 @@ CREATE TABLE numeric_streams
   numeric_stream_record_time double precision CHECK (numeric_stream_record_time >= 0),
   numeric_stream_data_value double precision[],
   PRIMARY KEY (numeric_stream_def_uuid, numeric_stream_record_position)
-)
-WITH (
-  OIDS=FALSE
-);
-
--- execute
-CREATE TABLE structures
-(
-  structure_uuid uuid DEFAULT uuid_generate_v4(),
-  structure_name character varying,
-  structure_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
-  structure_path character varying, 
-  PRIMARY KEY (structure_uuid)
 )
 WITH (
   OIDS=FALSE
