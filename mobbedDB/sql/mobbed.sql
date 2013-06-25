@@ -7,6 +7,7 @@ CREATE TABLE attributes
   attribute_uuid uuid DEFAULT uuid_generate_v4(),
   attribute_entity_uuid uuid,
   attribute_entity_class character varying, 
+  attribute_organizational_uuid uuid, 
   attribute_path character varying,
   attribute_numeric_value double precision, 
   attribute_value character varying,
@@ -257,7 +258,7 @@ CREATE TABLE xml_streams
 (
   xml_stream_def_uuid uuid,
   xml_stream_record_position bigint CHECK (xml_stream_record_position > 0),
-  xml_stream_record_time double precision CHECK (xml_stream_record_time >= 0) ,
+  xml_stream_record_time double precision CHECK (xml_stream_record_time >= 0),
   xml_stream_data_value double precision[],
   PRIMARY KEY (xml_stream_def_uuid, xml_stream_record_position)
 )
@@ -265,8 +266,6 @@ WITH (
   OIDS=FALSE
 ); 
 
--- execute
-ALTER TABLE attributes ADD FOREIGN KEY (attribute_structure_uuid) REFERENCES structures (structure_uuid);
 -- execute
 ALTER TABLE collections ADD FOREIGN KEY (collection_uuid) REFERENCES datasets (dataset_uuid);
 -- execute
@@ -321,8 +320,8 @@ CREATE OR REPLACE FUNCTION extractRange(inQuery varchar, outQuery varchar, lower
 			LOOP
 			FOR outevent in EXECUTE outQuery ||
 			' INTERSECT SELECT * FROM EVENTS
-			WHERE EVENT_UUID <> $1 AND EVENT_ENTITY_UUID = $2 AND EVENT_START_TIME BETWEEN $3 + $5 AND $4 + $6'
-			USING inevent.event_uuid, inevent.event_entity_uuid, inevent.event_start_time, inevent.event_end_time, lower, upper
+			WHERE EVENT_UUID <> $1 AND EVENT_DATASET_UUID = $2 AND EVENT_START_TIME BETWEEN $3 + $5 AND $4 + $6'
+			USING inevent.event_uuid, inevent.event_dataset_uuid, inevent.event_start_time, inevent.event_end_time, lower, upper
 			Loop
 			founduuids[i] := outevent.event_uuid;
 			i := i+1;

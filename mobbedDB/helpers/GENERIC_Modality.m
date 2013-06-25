@@ -68,8 +68,8 @@ classdef GENERIC_Modality
             otherFields = setdiff(fieldnames(element), ...
                 {'label', 'position', 'description'})';
             jElement = edu.utsa.mobbed.Elements(DB.getConnection());
-            jElement.reset('GENERIC', datasetUuid, 'element', ...
-                'Generic element group', label, description, position);
+            jElement.reset(datasetUuid, 'Generic element group', label, ...
+                description, position);
             jElement.addElements();
             for a = 1:length(otherFields)
                 values = cellfun(@(x) num2str(x,16), ...
@@ -87,7 +87,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jElement.addAttribute(otherFields{a}, dblArray, values);
+                jElement.addAttribute(['/element/' ...
+                    element.(otherFields{a})], dblArray, values);
             end
             jElement.save();
         end % storeElements
@@ -103,17 +104,13 @@ classdef GENERIC_Modality
             startTimes = cell2mat({event.stime}');
             endTimes = cell2mat({event.etime}');
             certainties = cell2mat({event.certainty}');
-            parentUuids = cell(1, length(event));
-            [parentUuids{:}] = ...
-                deal(char(edu.utsa.mobbed.ManageDB.nullParentUuid ));
             uniqueTypes = unique(types);
             otherFields = setdiff(fieldnames(event), ...
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
-            jEvent.reset('GENERIC', datasetUuid, 'event', uniqueTypes, ...
-                types, positions, startTimes, endTimes, certainties, ...
-                eventUuids, parentUuids);
+            jEvent.reset(datasetUuid, startTimes, endTimes, ...
+                positions,  certainties, uniqueTypes, types, eventUuids);
             uniqueEvents = cell(jEvent.addNewTypes());
             jEvent.addEvents();
             for a = 1:length(otherFields)
@@ -132,7 +129,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jEvent.addAttribute(otherFields{a}, dblArray, values);
+                jEvent.addAttribute(['/event/' ...
+                    event.(otherFields{a})], dblArray, values);
             end
             jEvent.save();
         end % storeEvents
@@ -140,7 +138,7 @@ classdef GENERIC_Modality
         function storeFeatures(DB, datasetUuid, feature)
             % Store the features for generic dataset
             jFeature = edu.utsa.mobbed.Metadata(DB.getConnection());
-            jFeature.reset('GENERIC', datasetUuid, 'feature');
+            jFeature.reset(datasetUuid);
             otherFields = setdiff(fieldnames(feature), ...
                 {'type', 'value', 'description'})';
             for a = 1:length(otherFields)
@@ -159,7 +157,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jFeature.addAttribute(otherFields{a}, dblArray, values);
+                jFeature.addAttribute(['/feature/' ...
+                    feature.(otherFields{a})], dblArray, values);
             end
             jFeature.save();
         end % storeFeatures
@@ -167,7 +166,7 @@ classdef GENERIC_Modality
         function storeMetadata(DB, datasetUuid, metadata)
             % Store the metadata for generic dataset
             jMetadata = edu.utsa.mobbed.Metadata(DB.getConnection());
-            jMetadata.reset('GENERIC', datasetUuid, 'metadata');
+            jMetadata.reset(datasetUuid);
             otherFields = fieldnames(metadata);
             for a = 1:length(otherFields)
                 values = cellfun(@num2str, ...
@@ -185,7 +184,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jMetadata.addAttribute(otherFields{a}, dblArray, values);
+                jMetadata.addAttribute(['/metadata/' ...
+                    metadata.(otherFields{a})], dblArray, values);
             end
             jMetadata.save();
         end % storeMetadata
