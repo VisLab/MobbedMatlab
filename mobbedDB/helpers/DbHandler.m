@@ -172,13 +172,13 @@ classdef DbHandler
             delete(fileName);
         end % storeExternal
         
-        function storeDataDef(DB, datadefUuid, datadef)
+        function storeDataDef(DB, datadefUuid, datadef, timestamps)
             % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
                 DbHandler.storeFile(DB, datadefUuid, datadef.data, false)
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
-                if isempty(datadef.datadef_sampling_rate') && ...
-                        isempty(datadef.datadef_timestamps')
+                if isempty(datadef.datadef_sampling_rate) && ...
+                        isempty(timestamps)
                     throw (MException('DbHandler:InvalidSamplingRate', ...
                         'sample rate and timestamps are not present'));
                 end
@@ -191,7 +191,7 @@ classdef DbHandler
                         times(a) = (a-1)/datadef.datadef_sampling_rate;
                     end
                 else
-                    times = datadef.timestamps;
+                    times = timestamps;
                 end
                 DbHandler.storeNumericStream(DB, datadefUuid, ...
                     datadef.data, times);

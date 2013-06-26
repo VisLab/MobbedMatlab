@@ -81,25 +81,19 @@ fprintf(['--It should retrieve a dataset by the tags that were' ...
 s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
 assertTrue(~isempty(s2));
 
-function testRollback(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with rollback:\n');
-fprintf('It should rollback the transaction when mat2db fails\n');
-DB = tStruct.DB;
-DB.setAutoCommit(true);
-load eeg_data_ch1.mat;
-s1 = db2mat(DB);
-s1.dataset_name = 'mat2db with rollback';
-s1.data = EEG;
-numchans = length(s1.data.chanlocs);
-s1.data.chanlocs(numchans+1) = s1.data.chanlocs(1);
-assertExceptionThrown(@() error(mat2db(DB, s1, 'IsUnique', false)), ...
-    'EEG_Modality:EEGChannelLocsStructureInvalid');
-fprintf('--There should be no dataset stored in the database\n');
-s2.dataset_name = 'mat2db with rollback';
-s3 = getdb(DB, 'datasets', 1, s2);
-assertTrue(isempty(s3));
-DB.setAutoCommit(false);
-
-
-
-
+% function testRollback(tStruct) %#ok<DEFNU>
+% fprintf('\nUnit test for mat2db with rollback:\n');
+% fprintf('It should rollback the transaction when mat2db fails\n');
+% DB = tStruct.DB;
+% load eeg_data_ch1.mat;
+% s1 = db2mat(DB);
+% s1.dataset_name = 'mat2db with rollback';
+% s1.data = EEG;
+% numchans = length(s1.data.chanlocs);
+% s1.data.chanlocs(numchans+1) = s1.data.chanlocs(1);
+% assertExceptionThrown(@() error(mat2db(DB, s1, 'IsUnique', false)), ...
+%     'EEG_Modality:EEGChannelLocsStructureInvalid');
+% fprintf('--There should be no dataset stored in the database\n');
+% s2.dataset_name = 'mat2db with rollback';
+% s3 = getdb(DB, 'datasets', 1, s2);
+% assertTrue(isempty(s3));

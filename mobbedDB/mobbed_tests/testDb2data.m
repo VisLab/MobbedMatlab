@@ -5,7 +5,7 @@ initTestSuite;
 function tStruct = setup %#ok<DEFNU>
 
 % Structure that holds Mobbed connection object constructor arguments
-tStruct = struct('name', 'deletedb', 'url', 'localhost', ...
+tStruct = struct('name', 'testdb', 'url', 'localhost', ...
     'user', 'postgres', 'password', 'admin', 'DB', []);
 
 % Create connection object (create database first if doesn't exist)

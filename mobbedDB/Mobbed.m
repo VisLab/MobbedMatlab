@@ -97,30 +97,29 @@ classdef Mobbed < hgsetget
             end
         end % close
         
-        function UUIDs = data2db(DB, datadefs)
+        function UUIDs = data2db(DB, datadefs, varargin)
             % Create a data definition and store corresponding data in
             % database
             parser = inputParser();
             parser.addRequired('datadefs', @(x) isstruct(x) && ...
                 all(ismember(fieldnames(db2data(DB)), fieldnames(x))));
-            parser.parse(datadefs);
+            parser.addOptional('TimeStamps', [],  @(x) isdouble(x));
+            parser.parse(datadefs, varargin{:});
             try
-                autocommit = getAutoCommit(DB);
-                DB.setAutoCommit(false);
                 UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
                 for a = 1:length(UUIDs)
-                    DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a));
+                    DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a), ...
+                        parser.Results.TimeStamps);
                 end
             catch ME
                 try
-                    DB.rollback();
+                    DB.DbManager.rollback();
                 catch ME1
                     ME = addCause(ME, ME1);
                 end
                 throw(ME);
             end
-            DB.commit();
-            DB.setAutoCommit(autocommit);
+            DB.DbManager.commit();
         end % data2db
         
         function ddef = db2data(DB, varargin)
@@ -173,10 +172,6 @@ classdef Mobbed < hgsetget
                 end
             end
         end % db2mat
-        
-        function autocommit = getAutoCommit(DB)
-            autocommit = DB.DbManager.getAutoCommit();
-        end % getAutoCommit
         
         function connection = getConnection(DB)
             connection = DB.DbManager.getConnection();
@@ -299,8 +294,6 @@ classdef Mobbed < hgsetget
             modality = 'EEG';
             namespace = 'mobbed';
             try
-                autocommit = getAutoCommit(DB);
-                DB.setAutoCommit(false);
                 for k = 1:numDatasets
                     % Check the dataset version
                     if ~isempty(datasets(k).dataset_namespace)
@@ -341,14 +334,13 @@ classdef Mobbed < hgsetget
                 end
             catch ME
                 try
-                    DB.rollback();
+                    DB.DbManager.rollback();
                 catch ME1
                     ME = addCause(ME, ME1);
                 end
                 throw(ME);
             end
-            DB.commit();
-            DB.setAutoCommit(autocommit);
+            DB.DbManager.commit();
         end % mat2db
         
         function UUIDs = putdb(DB, table, inS)
@@ -359,13 +351,24 @@ classdef Mobbed < hgsetget
                 all(ismember(fieldnames(getdb(DB, table, 0)), ...
                 fieldnames(x))));
             parser.parse(table, inS);
-            columns = fieldnames(parser.Results.inS);
-            doubleColumns = cell(DB.DbManager.getDoubleColumns(...
-                parser.Results.table));
-            [values, doubleValues] = ...
-                DbHandler.extractValues(parser.Results.inS, doubleColumns);
-            UUIDs = cell(DB.DbManager.addRows(table, columns, values, ...
-                doubleColumns, doubleValues));
+            try
+                columns = fieldnames(parser.Results.inS);
+                doubleColumns = cell(DB.DbManager.getDoubleColumns(...
+                    parser.Results.table));
+                [values, doubleValues] = ...
+                    DbHandler.extractValues(parser.Results.inS, ...
+                    doubleColumns);
+                UUIDs = cell(DB.DbManager.addRows(table, columns, ...
+                    values, doubleColumns, doubleValues));
+            catch ME
+                try
+                    DB.DbManager.rollback();
+                catch ME1
+                    ME = addCause(ME, ME1);
+                end
+                throw(ME);
+            end
+            DB.DbManager.commit();
         end % putdb
         
     end % public methods

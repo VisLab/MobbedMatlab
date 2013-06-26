@@ -34,8 +34,7 @@ tStruct.dataset_uuid = UUID{1};
 
 e = getdb(DB, 'elements', 0);
 e.element_label = 'reference element';
-e.element_organizational_uuid = tStruct.dataset_uuid;
-e.element_organizational_class = 'datasets';
+e.element_dataset_uuid = tStruct.dataset_uuid;
 e.element_position = 1;
 e.element_description = 'reference element position';
 UUID = putdb(DB, 'elements', e);
@@ -47,13 +46,7 @@ e.event_type_description = 'referece type description';
 UUID = putdb(DB, 'event_types', e);
 tStruct.event_type_uuid = UUID{1};
 
-s = getdb(DB, 'structures', 0);
-s.structure_name = 'EEG';
-s.structure_path = '/EEG';
-UUID = putdb(DB, 'structures', s);
-tStruct.structure_uuid = UUID{1};
 
-DB.commit();
 tStruct.DB = DB;
 
 function teardown(tStruct) %#ok<DEFNU>
@@ -72,15 +65,14 @@ a1 = getdb(DB, 'attributes', 0);
 a1.attribute_entity_uuid = tStruct.element_uuid;
 a1.attribute_entity_class = 'elements';
 a1.attribute_organizational_uuid = tStruct.dataset_uuid;
-a1.attribute_organizational_class = 'datasets';
-a1.attribute_structure_uuid = tStruct.structure_uuid;
+a1.attribute_path = '/Z';
 a1.attribute_numeric_value = 1;
 a1.attribute_value = '1';
 UUIDs = putdb(DB, 'attributes', a1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a attribute\n');
 a2 = getdb(DB, 'attributes', 0);
@@ -92,7 +84,7 @@ UUIDs  = putdb(DB, 'attributes', a2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testCollections(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with collections:\n');
@@ -109,22 +101,22 @@ fprintf(['--It should return a cell array containing two comma' ...
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a collection\n');
 c2 = getdb(DB, 'collections', 0);
 c2.collection_uuid = UUIDs{1};
 c2.collection_entity_uuid = UUIDs{2};
 c2 = getdb(DB, 'collections', 1, c2);
-c2.collection_entity_uuid = tStruct.structure_uuid;
-c2.collection_entity_class = 'structures';
+c2.collection_entity_uuid = tStruct.dataset_uuid;
+c2.collection_entity_class = 'datasets';
 UUIDs  = putdb(DB, 'collections', c2);
 fprintf(['--It should return a cell array containing two comma' ...
     ' separated string uuids\n']);
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 function testComments(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with comments:\n');
@@ -139,19 +131,18 @@ UUIDs = putdb(DB, 'comments', c1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a comment\n');
 c2 = getdb(DB, 'comments', 0);
 c2.comment_uuid = UUIDs{1};
 c2 = getdb(DB, 'comments', 1, c2);
-c2.comment_entity_uuid = tStruct.structure_uuid;
-c2.comment_entity_class = 'structures';
+c2.comment_value = 'updated comment value';
 UUIDs  = putdb(DB, 'comments', c2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testContacts(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with contacts:\n');
@@ -174,7 +165,7 @@ UUIDs = putdb(DB, 'contacts', c1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a contact\n');
 c2 = getdb(DB, 'contacts', 0);
@@ -185,7 +176,7 @@ UUIDs  = putdb(DB, 'contacts', c2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 
 function testDatadefs(tStruct) %#ok<DEFNU>
@@ -201,7 +192,7 @@ UUIDs = putdb(DB, 'datadefs', d1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a datadef\n');
 d2 = getdb(DB, 'datadefs', 0);
@@ -212,7 +203,7 @@ UUIDs  = putdb(DB, 'datadefs', d2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testDatamaps(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with datamaps:\n');
@@ -230,7 +221,7 @@ fprintf(['--It should return a cell array containing two comma' ...
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a datamap\n');
 d2 = getdb(DB, 'datamaps', 0);
@@ -244,7 +235,7 @@ fprintf(['--It should return a cell array containing two comma' ...
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 function testDatasets(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with datasets:\n');
@@ -257,7 +248,7 @@ UUIDs = putdb(DB, 'datasets', d1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a dataset\n');
 d2 = getdb(DB, 'datasets', 0);
@@ -268,7 +259,7 @@ UUIDs  = putdb(DB, 'datasets', d2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testDevices(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with devices:\n');
@@ -281,7 +272,7 @@ UUIDs = putdb(DB, 'devices', d1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a device\n');
 d2 = getdb(DB, 'devices', 0);
@@ -292,7 +283,7 @@ UUIDs  = putdb(DB, 'devices', d2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testElements(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with elements:\n');
@@ -300,6 +291,7 @@ fprintf('It should store a element\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'elements', 0);
 e1.element_label = 'test element';
+e1.element_dataset_uuid = tStruct.dataset_uuid;
 e1.element_parent_uuid = tStruct.element_uuid;
 e1.element_position = 1;
 e1.element_description = 'test element description';
@@ -307,7 +299,7 @@ UUIDs = putdb(DB, 'elements', e1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a element\n');
 e2 = getdb(DB, 'elements', 0);
@@ -318,7 +310,7 @@ UUIDs  = putdb(DB, 'elements', e2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testEvents(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with events:\n');
@@ -326,8 +318,7 @@ fprintf('\nUnit test for putdb with events:\n');
 fprintf('It should store a event\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'events', 0);
-e1.event_entity_uuid = tStruct.dataset_uuid;
-e1.event_entity_class = 'datasets';
+e1.event_dataset_uuid = tStruct.dataset_uuid;
 e1.event_type_uuid = tStruct.event_type_uuid;
 e1.event_start_time = 0;
 e1.event_end_time = 1;
@@ -337,7 +328,7 @@ UUIDs = putdb(DB, 'events', e1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a event\n');
 e2 = getdb(DB, 'events', 0);
@@ -348,7 +339,7 @@ UUIDs  = putdb(DB, 'events', e2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testEventTypes(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with event types:\n');
@@ -362,7 +353,7 @@ UUIDs = putdb(DB, 'event_types', e1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a event type\n');
 e2 = getdb(DB, 'event_types', 0);
@@ -373,7 +364,7 @@ UUIDs  = putdb(DB, 'event_types', e2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testModalities(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with modalities:\n');
@@ -388,7 +379,7 @@ UUIDs = putdb(DB, 'modalities', m1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a modality\n');
 m2 = getdb(DB, 'modalities', 0);
@@ -399,34 +390,7 @@ UUIDs  = putdb(DB, 'modalities', m2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
 
-function testStructures(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with structures:\n');
-
-fprintf('It should store a structure\n');
-DB = tStruct.DB;
-s1 = getdb(DB, 'structures', 0);
-s1.structure_name = 'chanlocs';
-s1.structure_path = '/EEG/chalocs';
-s1.structure_parent_uuid = tStruct.structure_uuid;
-UUIDs = putdb(DB, 'structures', s1);
-fprintf('--It should return a cell array containing one string uuid\n');
-assertTrue(iscellstr(UUIDs));
-assertEqual(1, length(UUIDs));
-DB.commit();
-
-fprintf('It should update a structure\n');
-s2 = getdb(DB, 'structures', 0);
-s2.structure_uuid = UUIDs{1};
-s2 = getdb(DB, 'structures', 1, s2);
-s2.structure_name = 'event';
-s2.structure_path = '/EEG/event';
-UUIDs  = putdb(DB, 'structures', s2);
-fprintf('--It should return a cell array containing one string uuid\n');
-assertTrue(iscellstr(UUIDs));
-assertEqual(1, length(UUIDs));
-DB.commit();
 
 function testSubjects(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with subjects:\n');
@@ -439,7 +403,7 @@ UUIDs = putdb(DB, 'subjects', s1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a subject\n');
 s2 = getdb(DB, 'subjects', 0);
@@ -450,7 +414,7 @@ UUIDs  = putdb(DB, 'subjects', s2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 function testTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with tags:\n');
@@ -467,7 +431,7 @@ fprintf(['--It should return a cell array containing two comma' ...
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a tag\n');
 t2 = getdb(DB, 'tags', 0);
@@ -481,7 +445,7 @@ fprintf(['--It should return a cell array containing two comma' ...
 assertTrue(iscellstr(UUIDs));
 UUIDs = regexp(UUIDs{1}, ',', 'split');
 assertEqual(2, length(UUIDs));
-DB.commit();
+
 
 function testTransforms(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for putdb with transforms:\n');
@@ -496,7 +460,7 @@ UUIDs = putdb(DB, 'transforms', t1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+
 
 fprintf('It should update a transform\n');
 t2 = getdb(DB, 'transforms', 0);
@@ -507,4 +471,4 @@ UUIDs  = putdb(DB, 'transforms', t2);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-DB.commit();
+

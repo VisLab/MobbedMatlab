@@ -30,8 +30,7 @@ classdef EEG_Modality
             % Store the events
             if isfield(data, 'event')
                 uniqueEvents = EEG_Modality.storeEvents(DB, ...
-                    datasetUuid, data.event, uniqueEvents, ...
-                    orignalEventUuids);
+                    datasetUuid, data.event, uniqueEvents);
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
                 end
@@ -89,8 +88,8 @@ classdef EEG_Modality
                             dblArray(b) = java.lang.Double(numerValues{b});
                         end
                     end
-                    jElement.addAttribute(['/chanlocs/' ...
-                        chanlocs.(otherFields{a})], dblArray, values);
+                    jElement.addAttribute(['/' otherFields{a}], ...
+                        dblArray, values);
                 end
             end
             jElement.save();
@@ -134,8 +133,8 @@ classdef EEG_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jEvent.addAttribute(['/event/' ...
-                    event.(otherFields{a})], dblArray, values);
+                jEvent.addAttribute(['/' otherFields{a}], dblArray, ...
+                    values);
             end
             jEvent.save();
         end % storeEvents
@@ -158,6 +157,7 @@ classdef EEG_Modality
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 positions,  certainties, uniqueTypes, types, eventUuids);
             uniqueEvents = cell(jEvent.addNewTypes());
+            jEvent.addEvents();
             jEvent.save();
         end % storeOriginalEvents
         

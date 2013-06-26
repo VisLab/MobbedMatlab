@@ -87,8 +87,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jElement.addAttribute(['/element/' ...
-                    element.(otherFields{a})], dblArray, values);
+                jElement.addAttribute(['/' otherFields{a}], dblArray, ...
+                    values);
             end
             jElement.save();
         end % storeElements
@@ -129,8 +129,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jEvent.addAttribute(['/event/' ...
-                    event.(otherFields{a})], dblArray, values);
+                jEvent.addAttribute(['/' otherFields{a}], dblArray, ...
+                    values);
             end
             jEvent.save();
         end % storeEvents
@@ -157,8 +157,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jFeature.addAttribute(['/feature/' ...
-                    feature.(otherFields{a})], dblArray, values);
+                jFeature.addAttribute(['/' otherFields{a}], dblArray, ...
+                    values);
             end
             jFeature.save();
         end % storeFeatures
@@ -184,8 +184,8 @@ classdef GENERIC_Modality
                         dblArray(b) = java.lang.Double(numerValues{b});
                     end
                 end
-                jMetadata.addAttribute(['/metadata/' ...
-                    metadata.(otherFields{a})], dblArray, values);
+                jMetadata.addAttribute(['/' otherFields{a}], dblArray, ...
+                    values);
             end
             jMetadata.save();
         end % storeMetadata

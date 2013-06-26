@@ -39,8 +39,7 @@ datasetUuid = d.dataset_uuid{1};
 
 % light flash event
 e1 = getdb(DB, 'events', 0);
-e1.event_entity_uuid = datasetUuid;
-e1.event_entity_class = 'datasets';
+e1.event_dataset_uuid = datasetUuid;
 e1.event_type_uuid = eventTypeUuid1{1};
 e1.event_start_time = 3;
 e1.event_end_time = 3;
@@ -50,8 +49,7 @@ putdb(DB, 'events', e1);
 
 % button press event
 e2 = getdb(DB, 'events', 0);
-e2.event_entity_uuid = datasetUuid;
-e2.event_entity_class = 'datasets';
+e2.event_dataset_uuid = datasetUuid;
 e2.event_type_uuid = eventTypeUuid3{1};
 e2.event_start_time = 4;
 e2.event_end_time = 4;
@@ -61,8 +59,7 @@ putdb(DB, 'events', e2);
 
 % vibration event
 e3 = getdb(DB, 'events', 0);
-e3.event_entity_uuid = datasetUuid;
-e3.event_entity_class = 'datasets';
+e3.event_dataset_uuid = datasetUuid;
 e3.event_type_uuid = eventTypeUuid2{1};
 e3.event_start_time = 7;
 e3.event_end_time = 7;
@@ -71,8 +68,7 @@ e3.event_certainty = 1;
 putdb(DB, 'events', e3);
 
 e4 = getdb(DB, 'events', 0);
-e4.event_entity_uuid = datasetUuid;
-e4.event_entity_class = 'datasets';
+e4.event_dataset_uuid = datasetUuid;
 e4.event_type_uuid = eventTypeUuid3{1};
 e4.event_start_time = 9;
 e4.event_end_time = 9;
@@ -80,7 +76,6 @@ e4.event_position = 4;
 e4.event_certainty = 1;
 putdb(DB, 'events', e4);
 
-tStruct.DB.commit();
 tStruct.datasetUuid = datasetUuid;
 tStruct.event_type_uuids = [eventTypeUuid1(:), eventTypeUuid2(:), ...
     eventTypeUuid3(:)];
@@ -94,7 +89,7 @@ fprintf('\nUnit test for extractdb with inS structure search criteria:\n');
 fprintf(['It should extract events that have other events that occur' ...
     ' within the default range (1 second) of their occurance\n']);
 DB = tStruct.DB;
-inS.event_entity_uuid = tStruct.datasetUuid;
+inS.event_dataset_uuid = tStruct.datasetUuid;
 [mStructure, extStructure] = extractdb(DB, 'events', inS, 'events', [], ...
     inf);
 fprintf(['--It should return a structure array containing one event' ...

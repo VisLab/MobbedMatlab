@@ -37,7 +37,6 @@ for a = 1:50
     dataset.dataset_name = ['cursor_dataset' num2str(a)];
     putdb(DB, 'datasets', dataset);
 end
-commit(DB);
 tempdataset.dataset_name = 'cursor_dataset*';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
     ' 30\n'])
@@ -59,7 +58,6 @@ for a = 1:50
     dataset.dataset_name = ['close_dataset' num2str(a)];
     putdb(DB, 'datasets', dataset);
 end
-commit(DB);
 tempdataset.dataset_name = 'close_dataset*';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
     ' 30\n'])
