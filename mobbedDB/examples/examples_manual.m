@@ -13,7 +13,7 @@ try
     Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...
                 dbPassword, 'mobbed.sql')
 catch me   % if database already exists, creation fails and warning is output
-    warning('mobbed:creationfailed', me.message);
+    warning('mobbed:creationFailed', me.message);
 end
 
 %% 3.1 deleting a database named shooter
@@ -80,14 +80,23 @@ s.dataset_name = 'eeg*';          % dataset name starts with 'eeg'
 sNew = getdb(DB, 'datasets', 10, s, 'RegExp', 'on',...
     'Tags', {{'EyeTrack'}, {'VisualTarget', 'Audio*'}});
 
+%% 8.7 Data cursor
+uniqueTypes = { };              % start with an empty set of types
+UUIDs = {sNew.dataset_uuid};    % fetch the UUIDs of the query datasets
+s = getdb(DB, 'events', 0);     % get template for retrieving events
+s.event_dataset_uuid = UUIDs;    % set search criteria
+s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
+while ~isempty(s)
+    uniqueTypes = union(uniqueTypes, unique({s.event_type_uuid}));    % process
+    s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor'); % get next
+end
+
 %% 9.1 Update a dataset
-commit(DB);                       % commit outstanding transactions
 s = getdb(DB, 'datasets', 0);     % get an empty structure to
 s.dataset_uuid = sUUID;
 s = getdb(DB, 'datasets', 1, s);     % retrieve the dataset
 s.dataset_description = 'dataset that comes with EEGLAB';
 putdb(DB, 'datasets', s);
-commit(DB);
 
 %% 10.1 Store ten copies of the EEG dataset
 s = db2mat(DB);                  % get empty structure to fill in
@@ -101,32 +110,28 @@ end
 
 %% 10.2 Retrieve all events associated with the dataset identified by UUID
 s = getdb(DB, 'events', 0);            % get empty structure to fill in
-s.event_entity_uuid = UUIDs{1};        % search for events from a particular dataset
+s.event_dataset_uuid = UUIDs{1};        % search for events from a particular dataset
 s.event_type_uuid = uniqueEvents{1};   % search for events only of a particular type
 events = getdb(DB, 'events', inf, s);  % search for events from a particular dataset
 
 %% 11.1 Create a tag “/Label/Event/Type”
-commit(DB);                   % only need this if something is uncommitted
 s = getdb(DB, 'tags', 0);      % get empty structure to fill in
 s.tag_name = '/Label/Event/Type';
 s.tag_entity_uuid = uniqueEvents{1};
 s.tag_entity_class = 'event_types'; % name of table where entity is defined
 putdb(DB, 'tags', s);         % store the tag
-commit(DB);                   % be sure to commit
 
 %% 11.2 Create eeglab tag for all datasets whose name start with eeglab
-commit(DB);                   % only need this if something is uncommitted
 s = getdb(DB, 'datasets', 0); % get empty structure to fill in
 s.dataset_name = 'eeglab*';    % set search criteria
 datasets = getdb(DB, 'datasets', inf, s, 'RegExp', 'on');
 t = getdb(DB, 'tags', 0);      % get empty structure to fill in
+t.tag_name = 'eeglab';
+t.tag_entity_class = 'datasets';
 for a = 1:length(datasets)
-    t.tag_name = 'eeglab';
-    t.tag_entity_class = 'datasets';
     t.tag_entity_uuid = datasets(a).dataset_uuid;
     putdb(DB, 'tags', t);         % store the tag
 end
-commit(DB);
 
 %% 13.1 Load a dataset, filter it, and store the results in the database.
 % Store original dataset in the database
@@ -149,7 +154,6 @@ t.transform_uuid = sNewF{1};    % set the fields
 t.transform_string = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)' ];
 t.transform_description = 'Used EEGLAB FIR filter [1.0, 0]';
 putdb(DB, 'transforms', t);     % set the fields
-commit(DB);
 
 %% 13.2 Use the transforms to retrieve the filtered data rather than recomputing the values.
 t = getdb(DB, 'transforms', 0);              % retrieve an empty structure
@@ -167,7 +171,6 @@ sdef.data = EEG.data;                      % set the data
 sdefUUID = data2db(DB, sdef);              % store individual frames in database
 
 %% 14.2 Associate the data defined in Example 14.1 with the datasets whose UUIDs are contained in the array UUIDs
-commit(DB);                                  % well, it never hurts
 smap = getdb(DB, 'datamaps', 0);             % get the template
 smap.datamap_def_uuid = sdefUUID{1};            % UUID of data from Example 14.2
 smap.datamap_path = '/EEG/dataEx'; % load destination
@@ -176,7 +179,6 @@ for k = 1:length(UUIDs)
     smap.datamap_entity_class = 'datasets';
     putdb(DB, 'datamaps', smap);
 end
-commit(DB);
 
 %% 15.1 Retrieve the data identified by the data definition UUID in the variable dUUID.
 datadefs = db2data(DB, sdefUUID);

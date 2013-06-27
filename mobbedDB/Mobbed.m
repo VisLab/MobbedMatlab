@@ -105,8 +105,15 @@ classdef Mobbed < hgsetget
                 all(ismember(fieldnames(db2data(DB)), fieldnames(x))));
             parser.addOptional('TimeStamps', [],  @(x) isdouble(x));
             parser.parse(datadefs, varargin{:});
+            columns = cell(DB.DbManager.getColumnNames('datadefs'));
             try
-                UUIDs = putdb(DB, 'datadefs', rmfield(datadefs, 'data'));
+                doubleColumns = cell(DB.DbManager.getDoubleColumns(...
+                    'datadefs'));
+                [values, doubleValues] = ...
+                    DbHandler.extractValues(rmfield(datadefs, ...
+                    'data'), doubleColumns);
+                UUIDs = cell(DB.DbManager.addRows('datadefs', ...
+                    columns, values, doubleColumns, doubleValues));
                 for a = 1:length(UUIDs)
                     DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a), ...
                         parser.Results.TimeStamps);
@@ -127,10 +134,12 @@ classdef Mobbed < hgsetget
             % database
             parser = inputParser();
             parser.addOptional('UUIDs', {},@(x) isstruct(x) && ...
-                all(ismember(fieldnames(getdb(DB, 'datamaps', 0)), ...
+                all(ismember(cell(DB.DbManager.getColumnNames(...
+                'datamaps')), ...
                 fieldnames(x))) || DbHandler.validateUUIDs(x));
             parser.parse(varargin{:});
-            ddef = getdb(DB, 'datadefs', 0);
+            columns = cell(DB.DbManager.getColumnNames('datadefs'));
+            ddef = cell2struct(cell(length(columns),1), columns,1);
             ddef.data = [];
             if ~isempty(parser.Results.UUIDs)
                 if isstruct(parser.Results.UUIDs)
@@ -156,7 +165,8 @@ classdef Mobbed < hgsetget
             parser = inputParser();
             parser.addOptional('UUIDs', {}, @DbHandler.validateUUIDs);
             parser.parse(varargin{:});
-            datasets = getdb(DB, 'datasets', 0);
+            columns = cell(DB.DbManager.getColumnNames('datasets'));
+            datasets = cell2struct(cell(length(columns),1), columns,1);
             datasets.data = [];
             if ~isempty(parser.Results.UUIDs)
                 UUIDs = DbHandler.reformatString(parser.Results.UUIDs);
@@ -203,7 +213,8 @@ classdef Mobbed < hgsetget
                 outS = cell2struct(cell(length(columns),1), columns,1);
                 return;
             end
-            if ~isempty(parser.Results.inS)
+            if ~isempty(parser.Results.inS) && ...
+                    isempty(parser.Results.DataCursor)
                 structFields = fieldnames(parser.Results.inS);
                 structure = rmfield(parser.Results.inS, ...
                     structFields(structfun(@isempty,parser.Results.inS)));
@@ -293,6 +304,7 @@ classdef Mobbed < hgsetget
             UUIDs = cell(1,numDatasets);
             modality = 'EEG';
             namespace = 'mobbed';
+            columns = cell(DB.DbManager.getColumnNames('datasets'));
             try
                 for k = 1:numDatasets
                     % Check the dataset version
@@ -310,8 +322,13 @@ classdef Mobbed < hgsetget
                             datasets(k).dataset_modality_uuid);
                     end
                     % Store the dataset
-                    UUIDs(k) = putdb(DB, 'datasets', ...
-                        rmfield(datasets(k), 'data'));
+                    doubleColumns = cell(DB.DbManager.getDoubleColumns(...
+                        'datasets'));
+                    [values, doubleValues] = ...
+                        DbHandler.extractValues(rmfield(datasets(k), ...
+                        'data'), doubleColumns);
+                    UUIDs = cell(DB.DbManager.addRows('datasets', ...
+                        columns, values, doubleColumns, doubleValues));
                     % Store the actual data
                     if ~isempty(datasets(k).data)
                         uniqueEvents = eval([modality ...
@@ -325,12 +342,19 @@ classdef Mobbed < hgsetget
                     numTags = length(tags);
                     tags = repmat(tags, 1, numDatasets);
                     entityUuids = repmat(UUIDs, 1, numTags);
-                    tempTag = getdb(DB, 'tags', 0);
+                    columns = cell(DB.DbManager.getColumnNames('tags'));
+                    tempTag = cell2struct(cell(length(columns),1), ...
+                        columns,1);
                     tagStruct = repmat(tempTag, 1, numDatasets * numTags);
                     [tagStruct.tag_name] = deal(tags{:});
                     [tagStruct.tag_entity_uuid] = deal(entityUuids{:});
                     [tagStruct.tag_entity_class] = deal('datasets');
-                    putdb(DB, 'tags', tagStruct);
+                    doubleColumns = cell(DB.DbManager.getDoubleColumns(...
+                        'tags'));
+                    [values, doubleValues] = ...
+                        DbHandler.extractValues(tagStruct, doubleColumns);
+                    DB.DbManager.addRows('tags', ...
+                        columns, values, doubleColumns, doubleValues);
                 end
             catch ME
                 try
@@ -348,7 +372,7 @@ classdef Mobbed < hgsetget
             parser = inputParser();
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('inS', @(x) isstruct(x) && ...
-                all(ismember(fieldnames(getdb(DB, table, 0)), ...
+                all(ismember(cell(DB.DbManager.getColumnNames(table)), ...
                 fieldnames(x))));
             parser.parse(table, inS);
             try

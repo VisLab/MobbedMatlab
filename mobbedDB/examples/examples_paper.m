@@ -1,5 +1,5 @@
 %% Setup for this installation.
-dbName = 'mobbed';
+dbName = 'dbmobbed';
 dbHost = 'localhost';
 dbPort = 5432;
 dbUser = 'postgres';
@@ -33,7 +33,8 @@ s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s);               %#ok<NASGU> % store in database DB
 
 %% 4.3 Upload datasets to the database (optional parameters)
-sUUID = mat2db(DB, s, 'IsUnique', false, 'Tags', {'EyeTrack', 'VisualTarget', 'AudioLeft'});
+sUUID = mat2db(DB, s, 'IsUnique', false, 'Tags', {'EyeTrack', ...
+    'VisualTarget', 'AudioLeft'});
 
 %% 4.4 Search for datasets from the database (get all rows)
 s = getdb(DB, 'datasets', inf); %#ok<NASGU> all rows in datasets table
@@ -52,6 +53,15 @@ sNew = getdb(DB, 'datasets', 10, s, 'RegExp', 'on', ...
 UUIDs = {sNew.dataset_uuid};
 datasets = db2mat(DB, UUIDs);
 EEG = datasets(1).data;
+
+%% 4.4 Data cursors
+s = getdb(DB, 'events', 0);     % get template for retrieving events
+s.event_dataset_uuid = UUIDs;    % set search criteria
+s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
+while ~isempty(s)
+    % ... do stuff to events in s ...
+    s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
+end
 
 %% 4.5 Events with unique events - store 10 copies of sample EEG (as data1....)
 uniqueEvents = {};
@@ -76,13 +86,12 @@ sdefUUID = data2db(DB, sdef);       % store frames in database
 %% 4.6 Associating exploded frames with multiple datasets.
 smap = getdb(DB, 'datamaps', 0);
 smap.datamap_def_uuid = sdefUUID{1};
-smap.datamap_path = '/EEG/dataEx'; % load destination
+smap.datamap_path = '/dataEx'; % load destination
 for k = 1:10
     smap.datamap_entity_uuid = UUIDs{k};
     smap.datamap_entity_class = 'datasets';
     putdb(DB, 'datamaps', smap);
 end
-commit(DB);
 
 %% 4.6 Retrieving an exploded dataset
 ddef = db2data(DB, sdefUUID);    %#ok<NASGU> % ddef.data has the actual data
@@ -93,7 +102,7 @@ smap.datamap_entity_uuid = UUIDs{1};       % pick first dataset to try
 dmaps = getdb(DB, 'datamaps', inf, smap);  % retrieve all data
 ddef = db2data(DB, dmaps);                 % get data in structured form
 
-%% 4.6 Caching, reuse, and standardization
+%% 4.7 Caching, reuse, and standardization
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);
 s = db2mat(DB);
 s.dataset_name = 'eeglab_data_filtered.set';
@@ -108,7 +117,6 @@ t.transform_uuid = sNewF{1};
 t.transform_string = tString;
 t.transform_description = 'Used EEGLAB FIR filter [1.0, 0]';
 putdb(DB, 'transforms', t);
-commit(DB);
 
 t = getdb(DB, 'transforms', 0);
 t.transform_string = tString;

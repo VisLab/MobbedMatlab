@@ -30,7 +30,6 @@ tStruct.mUUID = uuids{pos};
 % Function executed after each test
 function teardown(tStruct) %#ok<DEFNU>
 try
-    tStruct.DB.commit();
     tStruct.DB.close();
 catch ME %#ok<NASGU>
 end

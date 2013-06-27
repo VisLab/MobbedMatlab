@@ -23,7 +23,6 @@ tStruct.DB = DB;
 % Function executed after each test
 function teardown(tStruct) %#ok<DEFNU>
 try
-    tStruct.DB.commit();
     tStruct.DB.close();
 catch ME %#ok<NASGU>
 end
@@ -84,18 +83,15 @@ fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 
-% function testRollback(tStruct) %#ok<DEFNU>
-% fprintf('\nUnit test for data2db with rollback:\n');
-% fprintf('It should rollback the transaction when data2db fails\n');
-% DB = tStruct.DB;
-% DB.setAutoCommit(true);
-% load eeg_data_ch1.mat;
-% sdef = db2data(DB);
-% sdef.datadef_format = 'NUMERIC_STREAM';
-% sdef.data = EEG.data;
-% sdef.datadef_description = 'numeric stream data';
-% assertExceptionThrown(@() error(data2db(DB, sdef)), ...
-%     'DbHandler:InvalidSamplingRate');
-% fprintf('--There should be no data definition stored in the database\n');
-% DB.setAutoCommit(false);
-
+function testRollback(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for data2db with rollback:\n');
+fprintf('It should rollback the transaction when data2db fails\n');
+DB = tStruct.DB;
+load eeg_data_ch1.mat;
+sdef = db2data(DB);
+sdef.datadef_format = 'NUMERIC_STREAM';
+sdef.data = EEG.data;
+sdef.datadef_description = 'numeric stream data';
+assertExceptionThrown(@() error(data2db(DB, sdef)), ...
+    'DbHandler:InvalidSamplingRate');
+fprintf('--There should be no data definition stored in the database\n');

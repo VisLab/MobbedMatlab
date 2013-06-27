@@ -81,7 +81,11 @@ tStruct.event_type_uuids = [eventTypeUuid1(:), eventTypeUuid2(:), ...
     eventTypeUuid3(:)];
 
 function teardown(tStruct) %#ok<DEFNU>
-tStruct.DB.close();
+% Function executed after each test
+try
+    tStruct.DB.close();
+catch ME %#ok<NASGU>
+end
 
 function testInS(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for extractdb with inS structure search criteria:\n');
