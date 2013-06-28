@@ -150,12 +150,16 @@ classdef Mobbed < hgsetget
                 numUUIDs = length(UUIDs);
                 ddef = repmat(ddef, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    tempDatadef.datadef_uuid = UUIDs{k};
-                    tempDatadef = getdb(DB, 'datadefs', 1, tempDatadef);
+                    values = DbHandler.createJaggedArray(UUIDs{k});
+                    outValues = ...
+                        cell(DB.DbManager.retrieveRows('datadefs', ...
+                        1, 'off', [], [], {'datadef_uuid'}, values, []));
+                    outColumns = ...
+                        cell(DB.DbManager.getColumnNames('datadefs'));
+                    tempDatadef = cell2struct(outValues, outColumns, 2)';
                     tempDatadef.data = DbHandler.retrieveDataDef(DB, ...
                         UUIDs{k}, tempDatadef.datadef_format, false);
                     ddef(k) = tempDatadef;
-                    tempDatadef = [];
                 end
             end
         end % db2data
@@ -173,12 +177,16 @@ classdef Mobbed < hgsetget
                 numUUIDs = length(UUIDs);
                 datasets = repmat(datasets, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    tempDataset.dataset_uuid = UUIDs{k};
-                    tempDataset = getdb(DB, 'datasets', 1, tempDataset);
+                    values = DbHandler.createJaggedArray(UUIDs{k});
+                    outValues = ...
+                        cell(DB.DbManager.retrieveRows('datasets', ...
+                        1, 'off', [], [], {'dataset_uuid'}, values, []));
+                    outColumns = ...
+                        cell(DB.DbManager.getColumnNames('datasets'));
+                    tempDataset = cell2struct(outValues, outColumns, 2)';
                     tempDataset.data = ...
                         DbHandler.retrieveFile(DB, UUIDs{k}, true);
                     datasets(k) = tempDataset;
-                    tempDataset = [];
                 end
             end
         end % db2mat
@@ -193,7 +201,7 @@ classdef Mobbed < hgsetget
             parser.addRequired('table', @(x) ischar(x) && ~isempty(x));
             parser.addRequired('limit', @(x) isnumeric(x) && ...
                 isscalar(x) && x > -1);
-            parser.addOptional('inS', [], @(x) isstruct(x));
+            parser.addOptional('inS', [], @(x) isstruct(x) && isscalar(x));
             parser.addParamValue('Tags', [], @iscell);
             parser.addParamValue('Attributes', [], @iscell);
             parser.addParamValue('RegExp', 'off', ...
@@ -213,8 +221,7 @@ classdef Mobbed < hgsetget
                 outS = cell2struct(cell(length(columns),1), columns,1);
                 return;
             end
-            if ~isempty(parser.Results.inS) && ...
-                    isempty(parser.Results.DataCursor)
+            if ~isempty(parser.Results.inS)
                 structFields = fieldnames(parser.Results.inS);
                 structure = rmfield(parser.Results.inS, ...
                     structFields(structfun(@isempty,parser.Results.inS)));

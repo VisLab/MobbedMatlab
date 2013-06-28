@@ -60,7 +60,7 @@ s.event_dataset_uuid = UUIDs;    % set search criteria
 s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
 while ~isempty(s)
     % ... do stuff to events in s ...
-    s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
+    s = getdb(DB, 'events', 100, 'DataCursor', 'mycursor');
 end
 
 %% 4.5 Events with unique events - store 10 copies of sample EEG (as data1....)

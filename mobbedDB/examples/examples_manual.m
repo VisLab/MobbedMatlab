@@ -46,10 +46,12 @@ s.data = EEG;                        % set data to be stored
 sUUID = mat2db(DB, s, 'Tags', {'EyeTrack', 'Oddball', 'AudioLeft'});
 
 %% 6.3 reuse event types
+load eeglab_data_ch2.mat;
 s = db2mat(DB);                       % get empty structure to fill in
 s.data = EEG;                    % store EEG with new set of event types
 s.dataset_name = 'original EEG';
 [~, uniqueEvents] = mat2db(DB, s);
+s.data = EEG1;                        % store EEG1 reusing event types
 s.dataset_name = 'EEG1';
 [~, uniqueEvents] = mat2db(DB, s, 'EventTypes', uniqueEvents); %#ok<NASGU>
 
@@ -88,7 +90,7 @@ s.event_dataset_uuid = UUIDs;    % set search criteria
 s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor');
 while ~isempty(s)
     uniqueTypes = union(uniqueTypes, unique({s.event_type_uuid}));    % process
-    s = getdb(DB, 'events', 100, s, 'DataCursor', 'mycursor'); % get next
+    s = getdb(DB, 'events', 100, 'DataCursor', 'mycursor'); % get next
 end
 
 %% 9.1 Update a dataset
@@ -144,7 +146,6 @@ sUUID = mat2db(DB, s);  % store original dataset
 % Filter the data and store kthe filtered dataset
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);         % filter an EEG dataset
 s.dataset_name = 'eeglab_data_filtered.set';   % set up for storage
-s.dataset_parent_uuid = sUUID{1};
 s.data = EEG;                   % put data in structure for storing
 sNewF = mat2db(DB, s);    % store the filtered dataset
 

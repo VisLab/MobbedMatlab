@@ -31,10 +31,14 @@ function testCursor(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with cursor:\n');
 fprintf('It should retrieve datasets using a cursor\n');
 DB = tStruct.DB;
-dataset = getdb(DB, 'datasets', 0);
-for a = 1:50
-    dataset.dataset_name = ['cursor_dataset' num2str(a)];
-    putdb(DB, 'datasets', dataset);
+dataset.dataset_name = 'cursor_dataset*';
+s1 = getdb(DB, 'datasets', 1, dataset, 'RegExp', 'on');
+if isempty(s1)
+    dataset = getdb(DB, 'datasets', 0);
+    for a = 1:50
+        dataset.dataset_name = ['cursor_dataset' num2str(a)];
+        putdb(DB, 'datasets', dataset);
+    end
 end
 tempdataset.dataset_name = 'cursor_dataset*';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
@@ -52,10 +56,14 @@ function testCloseCursor(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for close with cursor that exists:\n');
 fprintf('It should close a cursor that exists\n');
 DB = tStruct.DB;
-dataset = getdb(DB, 'datasets', 0);
-for a = 1:50
-    dataset.dataset_name = ['close_dataset' num2str(a)];
-    putdb(DB, 'datasets', dataset);
+dataset.dataset_name = 'close_dataset*';
+s1 = getdb(DB, 'datasets', 1, dataset, 'RegExp', 'on');
+if isempty(s1)
+    dataset = getdb(DB, 'datasets', 0);
+    for a = 1:50
+        dataset.dataset_name = ['close_dataset' num2str(a)];
+        putdb(DB, 'datasets', dataset);
+    end
 end
 tempdataset.dataset_name = 'close_dataset*';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
