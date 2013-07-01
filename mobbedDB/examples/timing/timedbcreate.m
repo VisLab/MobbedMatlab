@@ -1,10 +1,12 @@
-function tElapsed = timedbcreate(dbNames, hostName, userName, password, dbScript)
+function tElapsed = timeDbCreate(dbNames, hostName, userName, password, ...
+    dbScript)
 % Create the specified number of databases and return the time elapsed
 %
 % Parameters
-%   dbNames  cell array of strings with database names (converted to lowercase)
+%   dbNames  cell array of strings with database names
+%            (converted to lowercase)
 %   hostName string with URL of host or 'localhost' for local machine
-%   userName string with user name 
+%   userName string with user name
 %   password string containing password
 %   dbScript .xml or .sql file containing commands to create database
 %   tElapsed (output) time in seconds to perform the creation
@@ -15,7 +17,8 @@ function tElapsed = timedbcreate(dbNames, hostName, userName, password, dbScript
 tStart = tic;
 for k = 1:length(dbNames)
     try
-        Mobbed.createdb(dbNames{k}, hostName, userName, password, dbScript, false)
+        Mobbed.createdb(dbNames{k}, hostName, userName, password, ...
+            dbScript, false)
     catch ME   % If database already exists, creation fails and warns
         warning('mobbed:creationFailed', ME.message);
     end

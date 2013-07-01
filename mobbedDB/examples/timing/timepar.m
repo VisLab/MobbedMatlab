@@ -1,15 +1,15 @@
-% timeParallel    time database operations for a set of datasets 
+% timePar    time database operations for a set of datasets
 %
 % Usage:
 %  >> timeParallel(dbName, hostName, userName, password, dbScript, ...
 %                  inDir, nameSpace, dataName, modality, threads)
-% 
+%
 % Input
 %    dbName     name of database to be created (must not exist)
-%    hostName 
+%    hostName
 
 
-function timepar(dbName, hostName, userName, password, dbScript, ...
+function timePar(dbName, hostName, userName, password, dbScript, ...
     inDir, nameSpace, dataName, modality, threads)
 
 fprintf('Timing script %s with %g threads...\n', dbName, threads);
@@ -17,7 +17,7 @@ fprintf('Timing script %s with %g threads...\n', dbName, threads);
 
 %% Get the pathnames of files in the inDir directory tree
 fprintf('Creating a list of files for %s tree...\n', inDir);
-[fPaths, tElapsed] = getfilelist(inDir);
+[fPaths, tElapsed] = getFileList(inDir);
 fprintf('\tTotal files: %g took %g s (%g s average)\n', length(fPaths), ...
     tElapsed, tElapsed/length(fPaths));
 
@@ -40,15 +40,16 @@ tElapsedFiles = zeros(workers, 1);
 % Do the workers
 if isempty(threads) || threads == 0
     for k = 1:workers
-        [~, tElapsedFiles(k)] = storetemp(fPathGroups{k}) ;
+        [~, tElapsedFiles(k)] = storeTemp(fPathGroups{k}) ;
     end
 else
     parfor k = 1:workers
-        [~, tElapsedFiles(k)] = storetemp(fPathGroups{k}) ;
+        [~, tElapsedFiles(k)] = storeTemp(fPathGroups{k}) ;
     end
 end
 tElapsed = toc(tStart);
-fprintf('\tLoaded, saved, and deleted %g datasets from local file system in %g s (%g s average)\n', ...
+fprintf(['\tLoaded, saved, and deleted %g datasets from local file' ...
+    ' system in %g s (%g s average)\n'], ...
     length(fPaths), tElapsed, tElapsed/length(fPaths));
 fprintf('\tWorker times:\n')
 for k = 1:workers
@@ -75,20 +76,22 @@ for k = 1:length(fPaths)
     load(fPaths{k});
     eTypes = {EEG.event.type}';
     uniqueTypes = union(uniqueTypes, eTypes);
-    uniqueEventAttributes = union(uniqueEventAttributes, fieldnames(EEG.event));
+    uniqueEventAttributes = union(uniqueEventAttributes, ...
+        fieldnames(EEG.event));
 end
 DB = Mobbed(dbName, hostName, userName, password, false);
 % Insert unique event types in database
 typeTemplate(length(uniqueTypes)) = getdb(DB, 'event_types', 0);
 for k = 1:length(uniqueTypes)
     typeTemplate(k).event_type = num2str(uniqueTypes{k});
-    typeTemplate(k).event_type_description = [dataName typeTemplate.event_type];
+    typeTemplate(k).event_type_description = ...
+        [dataName typeTemplate.event_type];
 end
 uniqueEvents = putdb(DB, 'event_types', typeTemplate);
-commit(DB);
 % Insert event attribute types in database  ---- must do this
 tElapsed = toc(tStart);
-fprintf('\tCreated %g unique events and %g unique event attributes in %g s\n', ...
+fprintf(['\tCreated %g unique events and %g unique event attributes in' ...
+    ' %g s\n'], ...
     length(uniqueEvents), length(uniqueEventAttributes), tElapsed);
 close(DB);
 
@@ -103,22 +106,25 @@ tElapsedStore = zeros(workers, 1);
 if isempty(threads) || threads == 0
     for k = 1:workers
         [fUUIDsThread{k}, uniqueEventsThread{k}, tElapsedStore(k)] = ...
-            storedbpar(dbName, hostName, userName, password, ...
+            storeDbPar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, nameSpace, dataName, uniqueEvents);
     end
 else
     parfor k = 1:workers
         [fUUIDsThread{k}, uniqueEventsThread{k}, tElapsedStore(k)] = ...
-            storedbpar(dbName, hostName, userName, password, ...
-            fPathGroups{k}, modality, nameSpace, dataName, uniqueEvents);  %#ok<PFOUS>
+            storeDbPar(dbName, hostName, userName, password, ...
+            fPathGroups{k}, modality, nameSpace, dataName, ...
+            uniqueEvents);  %#ok<PFOUS>
     end
 end
 tElapsed = toc(tStart);
-fprintf('\tStored the %g datasets in the database in %g s (%g s average)\n', ...
+fprintf(['\tStored the %g datasets in the database in %g s' ...
+    ' (%g s average)\n'], ...
     length(fPaths), tElapsed, tElapsed/length(fPaths));
 fprintf('\tStore worker times:\n')
 for k = 1:workers
-    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsThread{k}), tElapsedStore(k));
+    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsThread{k}), ...
+        tElapsedStore(k));
 end
 fprintf('\n');
 input('Press enter to continue after maintenance', 's');
@@ -129,7 +135,7 @@ tElapsedLoad = zeros(workers, 1);
 fUUIDGroups = cell(workers, 1);
 tStart = tic;
 parfor k = 1:workers
-    [fUUIDGroups{k}, tElapsedLoad(k)] = loaddbpar(dbName, hostName,  ...
+    [fUUIDGroups{k}, tElapsedLoad(k)] = loadDbPar(dbName, hostName,  ...
         userName, password, fUUIDsThread{k});
 end
 tElapsed = toc(tStart);
@@ -137,7 +143,8 @@ fprintf('\tLoaded the data from the database in %g s (%g s average)\n', ...
     tElapsed, tElapsed/length(fPaths));
 fprintf('\tWorker times:\n')
 for k = 1:workers
-    fprintf('\t\t%g datasets in %g s\n', length(fUUIDGroups{k}), tElapsedLoad(k));
+    fprintf('\t\t%g datasets in %g s\n', length(fUUIDGroups{k}), ...
+        tElapsedLoad(k));
 end
 fprintf('\n');
 
@@ -154,7 +161,7 @@ for k = 1:workers;
 end;
 for k = 1:workers
     [eventTypes{k}, eventCounts{k}, tElapsedEvents(k)] = ...
-        geteventspar(dbName, hostName,  ...
+        getEventsPar(dbName, hostName,  ...
         userName, password, eventGroups{k});
 end
 tElapsed = toc(tStart);
@@ -171,12 +178,13 @@ for k = 1:workers
 end
 fprintf('\tRetrieved %g events of %s from %s:\n', totalEvents, ...
     dataName, dbName);
-fprintf('\tTotal time: %g s, average time per dataset: %g s (%g s per event)\n', ...
+fprintf(['\tTotal time: %g s, average time per dataset: %g s' ...
+    ' (%g s per event)\n'], ...
     tElapsed, tElapsed/length(fPaths), tElapsed/totalEvents);
 
 %% Store exploded data in the database
-fprintf('Storing exploded data from %g datasets in the database %s...\n', length(fPaths), ...
-    dbName);
+fprintf(['Storing exploded data from %g datasets in the database' ...
+    ' %s...\n'], length(fPaths), dbName);
 tStart = tic;
 fUUIDsData = cell(workers, 1);
 tElapsedStoreData = zeros(workers, 1);
@@ -184,22 +192,24 @@ tElapsedStoreData = zeros(workers, 1);
 if isempty(threads) || threads == 0
     for k = 1:workers
         [fUUIDsData{k}, tElapsedStore(k)] = ...
-            storedatadbpar(dbName, hostName, userName, password, ...
+            storeDataDbPar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, 'NUMERIC_STREAM', uniqueEvents);
     end
 else
     parfor k = 1:workers
         [fUUIDsData{k}, tElapsedStoreData(k)] = ...
-            storedatadbpar(dbName, hostName, userName, password, ...
+            storeDataDbPar(dbName, hostName, userName, password, ...
             fPathGroups{k}, modality, 'NUMERIC_STREAM', uniqueEvents);
     end
 end
 tElapsed = toc(tStart);
-fprintf('\tStored exploded data from %g datasets in the database in %g s (%g s average)\n', ...
+fprintf(['\tStored exploded data from %g datasets in the database in' ...
+    ' %g s (%g s average)\n'], ...
     length(fPaths), tElapsed, tElapsed/length(fPaths));
 fprintf('\tStore data worker times:\n')
 for k = 1:workers
-    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsData{k}), tElapsedStoreData(k));
+    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsData{k}), ...
+        tElapsedStoreData(k));
 end
 fprintf('\n');
 input('Press enter to continue after maintenance', 's');
@@ -208,14 +218,16 @@ fprintf('Retrieving exploded data from %s...\n', dbName);
 tElapsedLoadData = zeros(workers, 1);
 tStart = tic;
 parfor k = 1:workers
-    [fUUIDsData{k}, tElapsedLoadData(k)] = loaddatadbpar(dbName, hostName,  ...
-        userName, password, fUUIDsData{k});
+    [fUUIDsData{k}, tElapsedLoadData(k)] = loadDataDbPar(dbName, ...
+        hostName,  userName, password, fUUIDsData{k});
 end
 tElapsed = toc(tStart);
-fprintf('\tLoaded the exploded data from the database in %g s (%g s average)\n', ...
+fprintf(['\tLoaded the exploded data from the database in %g s' ...
+    ' (%g s average)\n'], ...
     tElapsed, tElapsed/length(fPaths));
 fprintf('\tWorker times:\n')
 for k = 1:workers
-    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsData{k}), tElapsedLoadData(k));
+    fprintf('\t\t%g datasets in %g s\n', length(fUUIDsData{k}), ...
+        tElapsedLoadData(k));
 end
 fprintf('\n');

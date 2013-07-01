@@ -9,7 +9,8 @@
 %  Files must be readable by MATLAB load and contain
 %
 %  TODO:  This function needs to be generalized.
-function [fUUIDs, tElapsed] = storedatadb(DB, fPaths, modality, dataType, uniqueEvents)
+function [fUUIDs, tElapsed] = storeDataDb(DB, fPaths, modality, ...
+    dataType, uniqueEvents)
 
 tStart = tic;
 
@@ -42,7 +43,9 @@ for k = 1:length(fPaths)
     sdef.datadef_format = dataType;
     sdef.datadef_sampling_rate = x.(fNames{1}).srate;
     sdef.data = x.(fNames{1}).data;
-    sdef.datadef_description = [x.(fNames{1}).setname ' ' x.(fNames{1}).filename ' individual frames'];
+    sdef.datadef_description = ...
+        [x.(fNames{1}).setname ' ' x.(fNames{1}).filename ...
+        ' individual frames'];
     sdefUUID = data2db(DB, sdef);
     smap = getdb(DB, 'datamaps', 0);
     smap.datamap_def_uuid = sdefUUID{1};
@@ -50,6 +53,5 @@ for k = 1:length(fPaths)
     smap.datamap_entity_uuid = fUUIDs{k};
     putdb(DB, 'datamaps', smap);
 end
-commit(DB);
 tElapsed = toc(tStart);
 end
