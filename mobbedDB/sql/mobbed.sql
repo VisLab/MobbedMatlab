@@ -1,10 +1,7 @@
 -- execute
-CREATE EXTENSION "uuid-ossp";
-
--- execute
 CREATE TABLE attributes
 (
-  attribute_uuid uuid DEFAULT uuid_generate_v4(),
+  attribute_uuid uuid,
   attribute_entity_uuid uuid,
   attribute_entity_class character varying, 
   attribute_organizational_uuid uuid, 
@@ -32,7 +29,7 @@ WITH (
 -- execute
 CREATE TABLE comments
 (
-  comment_uuid uuid DEFAULT uuid_generate_v4(),
+  comment_uuid uuid,
   comment_entity_uuid uuid,
   comment_entity_class character varying,
   comment_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
@@ -47,7 +44,7 @@ WITH (
 -- execute
 CREATE TABLE contacts
 (
-  contact_uuid uuid DEFAULT uuid_generate_v4(),
+  contact_uuid uuid,
   contact_first_name character varying,
   contact_last_name character varying,
   contact_middle_initial character varying,
@@ -68,7 +65,7 @@ WITH (
 -- execute
  CREATE TABLE datadefs
 (
-  datadef_uuid uuid DEFAULT uuid_generate_v4(),
+  datadef_uuid uuid,
   datadef_format character varying CHECK (upper(datadef_format) = 'NUMERIC_VALUE' OR upper(datadef_format) = 'NUMERIC_STREAM' OR upper(datadef_format) = 'XML_VALUE' OR upper(datadef_format) = 'XML_STREAM' OR upper(datadef_format) = 'EXTERNAL' ),
   datadef_sampling_rate double precision CHECK (datadef_sampling_rate = -1 OR datadef_sampling_rate > 0),
   datadef_oid oid,
@@ -95,8 +92,8 @@ WITH (
 -- execute  
   CREATE TABLE datasets
 (
-  dataset_uuid uuid DEFAULT uuid_generate_v4(),
-  dataset_session_uuid uuid DEFAULT uuid_generate_v4(),  
+  dataset_uuid uuid,
+  dataset_session_uuid uuid,  
   dataset_namespace character varying DEFAULT 'mobbed',
   dataset_name character varying NOT NULL,
   dataset_version integer CHECK (dataset_version > 0) DEFAULT 1,
@@ -116,7 +113,7 @@ WITH (
 -- execute 
   CREATE TABLE devices
 (
-  device_uuid uuid DEFAULT uuid_generate_v4(),
+  device_uuid uuid,
   device_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   device_description character varying,
   PRIMARY KEY (device_uuid)
@@ -128,7 +125,7 @@ WITH (
 -- execute 
 CREATE TABLE elements
 (
-  element_uuid uuid DEFAULT uuid_generate_v4(),
+  element_uuid uuid,
   element_label character varying,
   element_dataset_uuid uuid,
   element_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',  
@@ -143,7 +140,7 @@ CREATE TABLE elements
 -- execute	
 CREATE TABLE events
 (
-  event_uuid uuid DEFAULT uuid_generate_v4(),
+  event_uuid uuid,
   event_dataset_uuid uuid,
   event_type_uuid uuid,
   event_start_time double precision CHECK (event_start_time >= 0),
@@ -159,7 +156,7 @@ WITH (
 -- execute 
 CREATE TABLE event_types
 (
-  event_type_uuid uuid DEFAULT uuid_generate_v4(),
+  event_type_uuid uuid,
   event_type character varying,
   event_type_description character varying,
   PRIMARY KEY (event_type_uuid )
@@ -171,7 +168,7 @@ WITH (
 -- execute  
 CREATE TABLE modalities
 (
-  modality_uuid uuid DEFAULT uuid_generate_v4(),
+  modality_uuid uuid,
   modality_name character varying,
   modality_platform character varying,
   modality_description character varying,
@@ -209,7 +206,7 @@ WITH (
 -- execute
 CREATE TABLE subjects
 (
-  subject_uuid uuid DEFAULT uuid_generate_v4(),
+  subject_uuid uuid,
   subject_description character varying,
   PRIMARY KEY (subject_uuid)
 )
