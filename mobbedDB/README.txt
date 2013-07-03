@@ -1,6 +1,6 @@
 README FILE
 -----------------------------------------------------------
-Mobbed 1.0a Beta
+Mobbed 1.1a Beta
 by Kay Robbins/Jeremy Cockfield/Arif Hossain 
 -----------------------------------------------------------
 Contents:
