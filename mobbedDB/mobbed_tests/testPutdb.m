@@ -49,10 +49,10 @@ tStruct.event_type_uuid = UUID{1};
 
 tStruct.DB = DB;
 
-function teardown(tStruct) %#ok<DEFNU>
 % Function executed after each test
+function teardown(~) %#ok<DEFNU>
 try
-    tStruct.DB.close();
+    Mobbed.closeAll();
 catch ME %#ok<NASGU>
 end
 

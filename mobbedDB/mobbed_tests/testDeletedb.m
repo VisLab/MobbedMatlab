@@ -14,6 +14,13 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
+% Function executed after each test
+function teardown(~) %#ok<DEFNU>
+try
+    Mobbed.closeAll();
+catch ME %#ok<NASGU>
+end
+
 function testNotExist(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for deleting a database that does not exists:\n');
 fprintf(['It should throw an exception when deleting a database that' ...

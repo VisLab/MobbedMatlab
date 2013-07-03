@@ -21,10 +21,10 @@ pos = strcmp('GENERIC', mNames);
 uuids = {m.modality_uuid};
 tStruct.mUUID = uuids{pos};
 
-function teardown(tStruct) %#ok<DEFNU>
 % Function executed after each test
+function teardown(~) %#ok<DEFNU>
 try
-    tStruct.DB.close();
+    Mobbed.closeAll();
 catch ME %#ok<NASGU>
 end
 

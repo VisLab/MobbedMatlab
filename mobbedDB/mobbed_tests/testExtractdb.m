@@ -80,10 +80,10 @@ tStruct.datasetUuid = datasetUuid;
 tStruct.event_type_uuids = [eventTypeUuid1(:), eventTypeUuid2(:), ...
     eventTypeUuid3(:)];
 
-function teardown(tStruct) %#ok<DEFNU>
 % Function executed after each test
+function teardown(~) %#ok<DEFNU>
 try
-    tStruct.DB.close();
+    Mobbed.closeAll();
 catch ME %#ok<NASGU>
 end
 

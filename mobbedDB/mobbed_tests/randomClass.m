@@ -16,8 +16,11 @@ classdef randomClass
         end
         
         function string = generateString()
-            length = 200;
-            string = char(floor(94*rand(1, length)) + 32);           
+            symbols = ['a':'z' 'A':'Z' '0':'9'];
+            MAX_ST_LENGTH = 50;
+            stLength = randi(MAX_ST_LENGTH);
+            nums = randi(numel(symbols),[1 stLength]);
+            string = symbols (nums);
         end
     end
     

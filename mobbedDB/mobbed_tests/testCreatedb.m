@@ -14,6 +14,13 @@ catch ME %#ok<NASGU>
         tStruct.password, false);
 end
 
+% Function executed after each test
+function teardown(~) %#ok<DEFNU>
+try
+    Mobbed.closeAll();
+catch ME %#ok<NASGU>
+end
+
 function testAlreadyExist(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for creating a database that already exits:\n');
 fprintf(['It should throw an exception when creating a database that' ...
