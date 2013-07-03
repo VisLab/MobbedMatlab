@@ -26,7 +26,8 @@
 %                        automatically commit transactions
 %
 % Mobbed static methods
-%   createCredentials  - create a credentials file
+%   closeAll           - closes all workspace database descriptors
+%   createCredentials  - create a database credentials file
 %   createdb           - create a database using username and password
 %   createdbc          - create a database using the credentials from a
 %                        property file

@@ -406,7 +406,13 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
+        function closeAll()
+            % Closes all workspace database descriptors
+            edu.utsa.mobbed.ManageDB.closeAll();
+        end
+        
         function configPath = createCredentials()
+            % Create a database credentials file
             configPath = inputdbcreds;
         end % createCredentials
         
