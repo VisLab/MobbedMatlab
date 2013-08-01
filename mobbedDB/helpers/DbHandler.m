@@ -36,6 +36,26 @@ classdef DbHandler
             mUUID = outModality.modality_uuid;
         end % checkModality
         
+        function jArray = tags2JaggedArray(cellArray)
+            cellArrayLength = length(cellArray);
+            jArray = javaArray('java.lang.String[]', cellArrayLength);
+            for a = 1:cellArrayLength
+                if iscellstr(cellArray{a})
+                    cellSize = length(cellArray{a});
+                    currentCell = cellArray{a};
+                    jArray2 = javaArray('java.lang.String', cellSize);
+                    for b = 1:cellSize
+                        jArray2(b) = java.lang.String(currentCell{b});
+                    end
+                else
+                    jArray2 = javaArray('java.lang.String', 1);
+                    jArray2(1) = java.lang.String(cellArray{a});
+                end
+                jArray(a) = jArray2;
+            end
+        end
+ 
+              
         function jArray = createJaggedArray(array)
             % Creates a jagged java array
             if isempty(array)
@@ -67,6 +87,17 @@ classdef DbHandler
             end
         end % createJaggedArray
         
+        function tags = extractTags(data)  
+            tags = [];
+            eventFields = {data.etc.tags.map.field};
+            if any(strcmpi('type', eventFields))
+                typeIndecie = strcmpi('type', eventFields);
+                typeTagMap = data.etc.tags.map(typeIndecie);
+                tags = {typeTagMap.values.tags}';
+                tags = DbHandler.tags2JaggedArray(tags);
+            end        
+        end
+           
         function [values, doubleValues] = extractValues(structure, ...
                 doubleColumns)
             % extracts values from a structure array
