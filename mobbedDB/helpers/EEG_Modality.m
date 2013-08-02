@@ -7,25 +7,26 @@ classdef EEG_Modality
             
             tStart = tic;
             
-%             % Store the channels
-%             if isfield(data, 'chanlocs')
-%                 EEG_Modality.storeElements(DB, datasetUuid, ...
-%                     size(data.data, 1), data.chanlocs);
-%                 if DB.Verbose
-%                     fprintf('Channels saved: %f seconds \n', toc(tStart));
-%                 end
-%             end
+            % Store the channels
+            if isfield(data, 'chanlocs')
+                EEG_Modality.storeElements(DB, datasetUuid, ...
+                    size(data.data, 1), data.chanlocs);
+                if DB.Verbose
+                    fprintf('Channels saved: %f seconds \n', toc(tStart));
+                end
+            end
             
-            % Extract the tags for event types 
+            % Extract the tags for event types
+            typeTagMap = [];
             if isfield(data.etc, 'tags')
-                eventTypeTags = DbHandler.extractTags(data);
+                typeTagMap = DbHandler.extractTagMap(data);
             end
             
             % Store the urevents
             if isfield(data, 'urevent')
                 uniqueEvents = ...
                     EEG_Modality.storeOriginalEvents(DB, datasetUuid, ...
-                    data.urevent, eventUuids, eventTypeTags);
+                    data.urevent, eventUuids, typeTagMap);
                 if DB.Verbose
                     fprintf('Original events saved: %f seconds \n', ...
                         toc(tStart));
@@ -35,7 +36,7 @@ classdef EEG_Modality
             % Store the events
             if isfield(data, 'event')
                 uniqueEvents = EEG_Modality.storeEvents(DB, ...
-                    datasetUuid, data.event, uniqueEvents, eventTypeTags);
+                    datasetUuid, data.event, uniqueEvents, typeTagMap);
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
                 end
@@ -102,7 +103,7 @@ classdef EEG_Modality
         
         
         function uniqueEvents = storeEvents(DB, datasetUuid, event, ...
-                eventUuids, eventTypeTags)
+                eventUuids, typeTagMap)
             % Store the events for EEG dataset
             if isempty(event)
                 uniqueEvents = {};
@@ -117,10 +118,15 @@ classdef EEG_Modality
             fields = fieldnames(event);
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
+            tags = [];
+            if ~isempty(typeTagMap)
+                [uniqueTypes, tags] = ...
+                    DbHandler.extractTagMapTags(uniqueTypes, typeTagMap);
+            end
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 positions, certainties, uniqueTypes, types, eventUuids, ...
-                eventTypeTags);
+                tags);
             uniqueEvents = cell(jEvent.addNewTypes());
             jEvent.addEvents();
             for a = 1:length(otherFields)
@@ -147,7 +153,7 @@ classdef EEG_Modality
         
         function uniqueEvents = ...
                 storeOriginalEvents(DB, datasetUuid, urevent, ...
-                eventUuids, eventTypeTags)
+                eventUuids, typeTagMap)
             % Store the original events for EEG dataset
             if isempty(urevent)
                 uniqueEvents = {};
@@ -160,10 +166,15 @@ classdef EEG_Modality
             certainties = ones(1, length(urevent));
             positions = int64(1:length(types))';
             uniqueTypes = unique(types);
+            tags = [];
+            if ~isempty(typeTagMap)
+                [uniqueTypes, tags] = ...
+                    DbHandler.extractTagMapTags(uniqueTypes, typeTagMap);
+            end
             jEvent = edu.utsa.mobbed.Events(DB.getConnection());
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 positions,  certainties, uniqueTypes, types, ...
-                eventUuids, eventTypeTags);
+                eventUuids, tags);
             uniqueEvents = cell(jEvent.addNewTypes());
             jEvent.addEvents();
             jEvent.save();

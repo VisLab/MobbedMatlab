@@ -87,15 +87,24 @@ classdef DbHandler
             end
         end % createJaggedArray
         
-        function tags = extractTags(data)  
-            tags = [];
+        function typeTagMap = extractTagMap(data)  
+            typeTagMap = [];
             eventFields = {data.etc.tags.map.field};
             if any(strcmpi('type', eventFields))
                 typeIndecie = strcmpi('type', eventFields);
                 typeTagMap = data.etc.tags.map(typeIndecie);
-                tags = {typeTagMap.values.tags}';
-                tags = DbHandler.tags2JaggedArray(tags);
+
             end        
+        end
+        
+        function [uniqueTypes, tags] = extractTagMapTags(uniqueTypes, ...
+                tagMap)
+            tagMapTypes = {tagMap.values.label};
+            tagMapTags = {tagMap.values.tags};
+            indices = ismember(tagMapTypes, uniqueTypes);
+            uniqueTypes = tagMapTypes(indices);
+            tags = tagMapTags(indices);
+            tags = DbHandler.tags2JaggedArray(tags);           
         end
            
         function [values, doubleValues] = extractValues(structure, ...
