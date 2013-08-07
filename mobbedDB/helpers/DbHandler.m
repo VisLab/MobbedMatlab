@@ -108,13 +108,14 @@ classdef DbHandler
         end
            
         function [values, doubleValues] = extractValues(structure, ...
-                doubleColumns)
+                doubleColumns, isInsert)
             % extracts values from a structure array
-            numStructs = length(structure);
             numColumns = length(doubleColumns);
             if numColumns < 1
                 doubleValues = [];
-            else
+            end
+            if isInsert
+                numStructs = length(structure);
                 doubleValues = javaArray('java.lang.Double', ...
                     numStructs, numColumns);
                 for a = 1:numStructs
@@ -131,6 +132,9 @@ classdef DbHandler
             structure = rmfield(structure, doubleColumns);
             values = cellfun(@num2str, ...
                 squeeze(struct2cell(structure))', 'UniformOutput', false);
+%             values = ...
+%                 DbHandler.createJaggedArray(squeeze(...
+%                 struct2cell(structure))');
         end % extractValues
         
         function string = reformatString(string)
