@@ -7,14 +7,14 @@ dbPassword = 'admin';
 
 %% 4.1 Create a database
 Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...
-                dbPassword, 'mobbed.sql');
+    dbPassword, 'mobbed.sql');
 
 %% 4.1 Delete a database
 Mobbed.deletedb(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
 
 %% 4.1 Recreate a database
 Mobbed.createdb(dbName, [dbHost ':' num2str(dbPort)], dbUser, ...
-                dbPassword, 'mobbed.sql');
+    dbPassword, 'mobbed.sql');
 
 %% 4.2 Accessing the database in MATLAB
 DB = Mobbed(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
@@ -108,12 +108,12 @@ s = db2mat(DB);
 s.dataset_name = 'eeglab_data_filtered.set';
 s.data = EEG;
 s.dataset_parent_uuid = sUUID{1};
-sNewF = mat2db(DB, s);
+sUUIDNew = mat2db(DB, s);
 
 tString = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)'];
 
 t = getdb(DB, 'transforms', 0);
-t.transform_uuid = sNewF{1};
+t.transform_uuid = sUUIDNew{1};
 t.transform_string = tString;
 t.transform_description = 'Used EEGLAB FIR filter [1.0, 0]';
 putdb(DB, 'transforms', t);
@@ -121,4 +121,4 @@ putdb(DB, 'transforms', t);
 t = getdb(DB, 'transforms', 0);
 t.transform_string = tString;
 cached = getdb(DB, 'transforms', inf, t);
-filtEEG = db2mat(DB, cached.transform_uuid);
+filtEEG = db2mat(DB, cached(1).transform_uuid);

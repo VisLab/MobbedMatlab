@@ -147,11 +147,11 @@ sUUID = mat2db(DB, s);  % store original dataset
 EEG = pop_eegfilt(EEG, 1.0, 0, [], 0);         % filter an EEG dataset
 s.dataset_name = 'eeglab_data_filtered.set';   % set up for storage
 s.data = EEG;                   % put data in structure for storing
-sNewF = mat2db(DB, s);    % store the filtered dataset
+sUUIDNew = mat2db(DB, s);    % store the filtered dataset
 
 % Cache the transform for future quick retrieval
 t = getdb(DB, 'transforms', 0); % retrieve an empty transform structure
-t.transform_uuid = sNewF{1};    % set the fields
+t.transform_uuid = sUUIDNew{1};    % set the fields
 t.transform_string = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)' ];
 t.transform_description = 'Used EEGLAB FIR filter [1.0, 0]';
 putdb(DB, 'transforms', t);     % set the fields
@@ -160,7 +160,7 @@ putdb(DB, 'transforms', t);     % set the fields
 t = getdb(DB, 'transforms', 0);              % retrieve an empty structure
 t.transform_string = ['pop_eegfilt((' sUUID{1} '),1.0,0,[],0)' ];
 cached = getdb(DB, 'transforms', inf, t);    % get UUID of result
-filtEEG = db2mat(DB, cached.transform_uuid); % get dataset
+filtEEG = db2mat(DB, cached(1).transform_uuid); % get dataset
 
 %% 14.1 Explode the data from an EEG structure as individual frames that can be searched.
 load eeglab_data_ch.mat;                   % load a previously saved EEG structure
@@ -210,3 +210,4 @@ dataspecs = getdb(DB, 'datasets', inf, 'Tags', {'Image'});
 
 %% 16.4 Retrieve the actual data for the datasets retrieved in Example 16.3.
 datasets = db2mat(DB, {dataspecs.dataset_uuid});
+

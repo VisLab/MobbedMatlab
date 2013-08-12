@@ -42,7 +42,8 @@ DB = Mobbed(dbName, [dbHost ':' num2str(dbPort)], dbUser, dbPassword);
 
 %%
 s = getdb(DB, 'events', 0);  % get empty events structure
-s.event_start_time = [1,2]; % get events within range of these times
+s.event_start_time.values = [7, 11]; % get events within range of these times
+s.event_start_time.range = [1, 2];
 sNew = getdb(DB, 'events', inf, s); 
 
 

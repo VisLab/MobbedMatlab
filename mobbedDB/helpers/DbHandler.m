@@ -54,8 +54,8 @@ classdef DbHandler
                 jArray(a) = jArray2;
             end
         end
- 
-              
+        
+        
         function jArray = createJaggedArray(array)
             % Creates a jagged java array
             if isempty(array)
@@ -87,14 +87,14 @@ classdef DbHandler
             end
         end % createJaggedArray
         
-        function typeTagMap = extractTagMap(data)  
+        function typeTagMap = extractTagMap(data)
             typeTagMap = [];
             eventFields = {data.etc.tags.map.field};
             if any(strcmpi('type', eventFields))
                 typeIndecie = strcmpi('type', eventFields);
                 typeTagMap = data.etc.tags.map(typeIndecie);
-
-            end        
+                
+            end
         end
         
         function [uniqueTypes, tags] = extractTagMapTags(uniqueTypes, ...
@@ -104,37 +104,64 @@ classdef DbHandler
             indices = ismember(tagMapTypes, uniqueTypes);
             uniqueTypes = tagMapTypes(indices);
             tags = tagMapTags(indices);
-            tags = DbHandler.tags2JaggedArray(tags);           
+            tags = DbHandler.tags2JaggedArray(tags);
         end
-           
-        function [values, doubleValues] = extractValues(structure, ...
+        
+        function [values, doubleValues, range] = ...
+                extractValues(structure, ...
                 doubleColumns, isInsert)
             % extracts values from a structure array
             numColumns = length(doubleColumns);
-            if numColumns < 1
-                doubleValues = [];
-            end
+            doubleValues = [];
+            range = [];
             if isInsert
-                numStructs = length(structure);
-                doubleValues = javaArray('java.lang.Double', ...
-                    numStructs, numColumns);
-                for a = 1:numStructs
-                    for b = 1:numColumns
-                        if isempty(structure(a).(doubleColumns{b}))
-                            doubleValues(a,b) = [];
-                        else
-                            doubleValues(a,b) = java.lang.Double(...
-                                structure(a).(doubleColumns{b}));
+                if numColumns > 0
+                    numStructs = length(structure);
+                    doubleValues = javaArray('java.lang.Double', ...
+                        numStructs, numColumns);
+                    for a = 1:numStructs
+                        for b = 1:numColumns
+                            if isempty(structure(a).(doubleColumns{b}))
+                                doubleValues(a,b) = [];
+                            else
+                                doubleValues(a,b) = java.lang.Double(...
+                                    structure(a).(doubleColumns{b}));
+                            end
                         end
                     end
                 end
+                structure = rmfield(structure, doubleColumns);
+                values = cellfun(@num2str, ...
+                    squeeze(struct2cell(structure))', 'UniformOutput', ...
+                    false);
+            else
+                range = [-eps('double'), eps('double')];
+                doubleValues = javaArray('java.lang.Double[]', ...
+                    numColumns);
+                for a = 1:numColumns
+                    if isstruct(structure.(doubleColumns{a}))
+                        arraySize = ...
+                            length(structure.(doubleColumns{a}).values);
+                        range = structure.(doubleColumns{a}).range;
+                        currentArray = structure.(doubleColumns{a}).values;
+                        jArray2 = javaArray('java.lang.Double', arraySize);
+                        for b = 1:arraySize
+                            jArray2(b) = java.lang.Double(currentArray(b));
+                        end
+                    else
+                        arraySize = length(structure.(doubleColumns{a}));
+                        currentArray = structure.(doubleColumns{a});
+                        jArray2 = javaArray('java.lang.Double', arraySize);
+                        for b = 1:arraySize
+                            jArray2(b) = java.lang.Double(currentArray(b));
+                        end
+                    end
+                    doubleValues(a) = jArray2;
+                end
+                structure = rmfield(structure, doubleColumns);
+                values = DbHandler.createJaggedArray(...
+                    struct2cell(structure));
             end
-            structure = rmfield(structure, doubleColumns);
-            values = cellfun(@num2str, ...
-                squeeze(struct2cell(structure))', 'UniformOutput', false);
-%             values = ...
-%                 DbHandler.createJaggedArray(squeeze(...
-%                 struct2cell(structure))');
         end % extractValues
         
         function string = reformatString(string)
