@@ -5,18 +5,18 @@ initTestSuite;
 function tStruct = setup %#ok<DEFNU>
 
 % Structure that holds Mobbed connection object constructor arguments
-tStruct = struct('name', 'doubledb', 'url', 'localhost', ...
+tStruct = struct('name', 'testdb', 'url', 'localhost', ...
     'user', 'postgres', 'password', 'admin', 'DB', []);
 
 % Create connection object (create database first if doesn't exist)
 try
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 end
 tStruct.DB = DB;
 
@@ -83,21 +83,37 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testInS(tStruct) %#ok<DEFNU>
+function testSearch(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with double search:\n');
 fprintf(['It should extract events that have specified start time of' ...
-    ' 1,2 or 3 seconds']);
+    ' 1,2 or 3 seconds\n']);
 DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
+s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time = [1, 2, 3]; 
 sNew = getdb(DB, 'events', inf, s); 
 fprintf(['--It should return a structure array containing three' ...
     ' events with a specified start time of 1,2, or 3 seconds\n']);
 assertEqual(length(sNew), 3);
 
+fprintf(['It should extract events that have specified start time of' ...
+    ' 1,2 or 3 seconds\n']);
+DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
+s.event_dataset_uuid = tStruct.datasetUuid;
+s.event_start_time = [1, 2]; 
+s.event_end_time = [1, 2];
+sNew = getdb(DB, 'events', inf, s); 
+fprintf(['--It should return a structure array containing two' ...
+    ' events with a specified start and end time of 1 or 2 seconds\n']);
+assertEqual(length(sNew), 2);
+
+fprintf(['It should extract events that have specified start time' ...
+    ' within a second of 1,2 or 3 seconds\n']);
+s = getdb(DB, 'events', 0); 
+s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time.values = [1, 2, 3]; 
-s.event_start_time.range = [0, 1]; 
+s.event_start_time.range = [-1, 1]; 
 sNew = getdb(DB, 'events', inf, s); 
 fprintf(['--It should return a structure array containing three' ...
     ' events that are within a second of 1,2, or 3 seconds\n']);

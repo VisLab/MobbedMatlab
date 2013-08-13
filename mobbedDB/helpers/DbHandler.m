@@ -135,28 +135,30 @@ classdef DbHandler
                     squeeze(struct2cell(structure))', 'UniformOutput', ...
                     false);
             else
-                range = [-eps('double'), eps('double')];
-                doubleValues = javaArray('java.lang.Double[]', ...
-                    numColumns);
-                for a = 1:numColumns
-                    if isstruct(structure.(doubleColumns{a}))
-                        arraySize = ...
-                            length(structure.(doubleColumns{a}).values);
-                        range = structure.(doubleColumns{a}).range;
-                        currentArray = structure.(doubleColumns{a}).values;
-                        jArray2 = javaArray('java.lang.Double', arraySize);
-                        for b = 1:arraySize
-                            jArray2(b) = java.lang.Double(currentArray(b));
+                if numColumns > 0
+                    range = [-eps('double'), eps('double')];
+                    doubleValues = javaArray('java.lang.Double[]', ...
+                        numColumns);
+                    for a = 1:numColumns
+                        if isstruct(structure.(doubleColumns{a}))
+                            arraySize = ...
+                                length(structure.(doubleColumns{a}).values);
+                            range = structure.(doubleColumns{a}).range;
+                            currentArray = structure.(doubleColumns{a}).values;
+                            jArray2 = javaArray('java.lang.Double', arraySize);
+                            for b = 1:arraySize
+                                jArray2(b) = java.lang.Double(currentArray(b));
+                            end
+                        else
+                            arraySize = length(structure.(doubleColumns{a}));
+                            currentArray = structure.(doubleColumns{a});
+                            jArray2 = javaArray('java.lang.Double', arraySize);
+                            for b = 1:arraySize
+                                jArray2(b) = java.lang.Double(currentArray(b));
+                            end
                         end
-                    else
-                        arraySize = length(structure.(doubleColumns{a}));
-                        currentArray = structure.(doubleColumns{a});
-                        jArray2 = javaArray('java.lang.Double', arraySize);
-                        for b = 1:arraySize
-                            jArray2(b) = java.lang.Double(currentArray(b));
-                        end
+                        doubleValues(a) = jArray2;
                     end
-                    doubleValues(a) = jArray2;
                 end
                 structure = rmfield(structure, doubleColumns);
                 values = DbHandler.createJaggedArray(...

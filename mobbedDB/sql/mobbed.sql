@@ -182,9 +182,9 @@ WITH (
 -- execute 
 CREATE TABLE numeric_values
 (
-  numeric_value_def_uuid uuid,  
-  numeric_value_data_value double precision[],
-  PRIMARY KEY (numeric_value_def_uuid)
+  numeric_value_datadef_uuid uuid,  
+  numeric_value double precision[],
+  PRIMARY KEY (numeric_value_datadef_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -193,11 +193,11 @@ WITH (
 -- execute
 CREATE TABLE numeric_streams
 (
-  numeric_stream_def_uuid uuid,  
+  numeric_stream_datadef_uuid uuid,  
   numeric_stream_record_position bigint CHECK (numeric_stream_record_position > 0),
   numeric_stream_record_time double precision CHECK (numeric_stream_record_time >= 0),
-  numeric_stream_data_value double precision[],
-  PRIMARY KEY (numeric_stream_def_uuid, numeric_stream_record_position)
+  numeric_stream double precision[],
+  PRIMARY KEY (numeric_stream_datadef_uuid, numeric_stream_record_position)
 )
 WITH (
   OIDS=FALSE
@@ -242,9 +242,9 @@ WITH (
 -- execute
 CREATE TABLE xml_values
 (
-  xml_value_def_uuid uuid,
-  xml_value_data_value character varying,
-  PRIMARY KEY (xml_value_def_uuid)
+  xml_value_datadef_uuid uuid,
+  xml_value character varying,
+  PRIMARY KEY (xml_value_datadef_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -253,11 +253,11 @@ WITH (
 -- execute
 CREATE TABLE xml_streams
 (
-  xml_stream_def_uuid uuid,
+  xml_stream_datadef_uuid uuid,
   xml_stream_record_position bigint CHECK (xml_stream_record_position > 0),
   xml_stream_record_time double precision CHECK (xml_stream_record_time >= 0),
-  xml_stream_data_value double precision[],
-  PRIMARY KEY (xml_stream_def_uuid, xml_stream_record_position)
+  xml_stream double precision[],
+  PRIMARY KEY (xml_stream_datadef_uuid, xml_stream_record_position)
 )
 WITH (
   OIDS=FALSE
@@ -278,15 +278,15 @@ ALTER TABLE devices ADD FOREIGN KEY (device_contact_uuid) REFERENCES contacts (c
 -- execute
 ALTER TABLE events ADD FOREIGN KEY (event_type_uuid) REFERENCES event_types (event_type_uuid);
 -- execute
-ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_datadef_uuid) REFERENCES datadefs (datadef_uuid);
 -- execute
-ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_datadef_uuid) REFERENCES datadefs (datadef_uuid);
 -- execute
 ALTER TABLE transforms ADD FOREIGN KEY (transform_uuid) REFERENCES datasets (dataset_uuid);
 -- execute
-ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_datadef_uuid) REFERENCES datadefs (datadef_uuid);
 -- execute
-ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_def_uuid) REFERENCES datadefs (datadef_uuid);
+ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_datadef_uuid) REFERENCES datadefs (datadef_uuid);
 
 -- execute
 INSERT INTO CONTACTS (CONTACT_UUID, CONTACT_FIRST_NAME, CONTACT_LAST_NAME) 
@@ -302,37 +302,8 @@ VALUES ('891df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'GENERIC', 'MATLAB', 'default ge
 
 -- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
-VALUES ('991df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'SIMPLE', 'MATLAB', 'default simple modality');
+VALUES ('991df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'SIMPLE', 'MATLAB', 'default simple modality');		
 
--- execute
-CREATE OR REPLACE FUNCTION extractRange(inQuery varchar, outQuery varchar, lower double precision,
-			upper double precision) RETURNS SETOF RECORD AS $$
-			DECLARE
-			inevent EVENTS;
-			outevent EVENTS;
-			founduuids uuid[];
-			i integer := 1;
-			BEGIN
-			FOR inevent in EXECUTE inQuery
-			LOOP
-			FOR outevent in EXECUTE outQuery ||
-			' INTERSECT SELECT * FROM EVENTS
-			WHERE EVENT_UUID <> $1 AND EVENT_DATASET_UUID = $2 AND EVENT_START_TIME BETWEEN $3 + $5 AND $4 + $6'
-			USING inevent.event_uuid, inevent.event_dataset_uuid, inevent.event_start_time, inevent.event_end_time, lower, upper
-			Loop
-			founduuids[i] := outevent.event_uuid;
-			i := i+1;
-			END LOOP;
-			IF outevent IS NOT NULL THEN
-			RETURN QUERY SELECT *, founduuids AS FOUND_UUIDS FROM EVENTS WHERE EVENT_UUID = inevent.event_uuid;
-			END IF;
-			i := 1;
-			founduuids := NULL;
-			END LOOP;
-			RETURN;
-			END;
-			$$ LANGUAGE plpgsql;
-			
 -- excecute
 CREATE OR REPLACE FUNCTION trans_md5() RETURNS trigger AS $trans_md5$
     BEGIN

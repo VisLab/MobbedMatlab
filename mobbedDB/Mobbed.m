@@ -215,6 +215,7 @@ classdef Mobbed < hgsetget
             values = [];
             doubleColumns = [];
             doubleValues = [];
+            range = [];
             outS = [];
             tags = DbHandler.createJaggedArray(parser.Results.Tags);
             attributes = ...
@@ -249,62 +250,7 @@ classdef Mobbed < hgsetget
                 outS = cell2struct(outValues, outColumns, 2)';
             end
         end % getdb
-        
-%         function [mStructure, extStructure] = extractdb(DB, inType, ...
-%                 inS, outType, outS, limit, varargin)
-%             % Retrieve inter-related items such as events from more
-%             % complex scenarios
-%             parser = inputParser();
-%             parser.addRequired('inType', @ischar);
-%             parser.addRequired('inS', @(x) isempty(x) || isstruct(x) && ...
-%                 ~isempty(fieldnames(x)));
-%             parser.addRequired('outType', @ischar);
-%             parser.addRequired('outS', @(x) isempty(x) || isstruct(x) ...
-%                 && ~isempty(fieldnames(x)));
-%             parser.addRequired('limit', @(x) isnumeric(x) && ...
-%                 isscalar(x) && x > -1);
-%             parser.addParamValue('Range', [0,1], @(x) ...
-%                 isnumeric(x) && isequal(size(x), [1,2]) && x(1) <= x(2));
-%             parser.addParamValue('RegExp', 'off', ...
-%                 @(x) any(strcmpi(x, {'on', 'off'})));
-%             parser.parse(inType, inS, outType, outS, ...
-%                 limit, varargin{:});
-%             inColumns = [];
-%             inValues = [];
-%             outColumns = [];
-%             outValues = [];
-%             mStructure = [];
-%             extStructure = [];
-%             if ~isempty(parser.Results.inS)
-%                 inColumns = fieldnames(parser.Results.inS);
-%                 inValues = struct2cell(parser.Results.inS);
-%             end
-%             if ~isempty(parser.Results.outS)
-%                 outColumns = fieldnames(parser.Results.outS);
-%                 outValues = struct2cell(parser.Results.outS);
-%             end
-%             mValues = cell(DB.DbManager.extractRows(...
-%                 parser.Results.inType, inColumns, inValues, ...
-%                 parser.Results.outType, outColumns, outValues, ...
-%                 limit, parser.Results.RegExp, ...
-%                 parser.Results.Range(1), parser.Results.Range(2)));
-%             if ~isempty(mValues)
-%                 columns = cell(DB.DbManager.getColumnNames(...
-%                     parser.Results.inType));
-%                 mStructure = ...
-%                     cell2struct(mValues, [columns; 'extracted'], 2);
-%                 extracted = ...
-%                     arrayfun(@(x) regexp(x.extracted, ',', 'split'), ...
-%                     mStructure, 'UniformOutput', false);
-%                 [mStructure.extracted] = deal(extracted{:});
-%                 evalues = cell(DB.DbManager.extractUniqueRows(...
-%                     mValues, limit));
-%                 columns = cell(DB.DbManager.getColumnNames(...
-%                     parser.Results.outType));
-%                 extStructure = cell2struct(evalues, columns, 2);
-%             end
-%         end % extractdb
-        
+               
         function [UUIDs, uniqueEvents] = mat2db(DB, datasets, varargin)
             % Create and store a dataset in the database
             parser = inputParser();
