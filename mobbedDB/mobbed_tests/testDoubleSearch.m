@@ -79,13 +79,13 @@ tStruct.event_type_uuids = [eventTypeUuid1(:), eventTypeUuid2(:), ...
 % Function executed after each test
 function teardown(~) %#ok<DEFNU>
 try
-    Mobbed.closeAll();
+    Mobbed.closeall();
 catch ME %#ok<NASGU>
 end
 
 function testSearch(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with double search:\n');
-fprintf(['It should extract events that have specified start time of' ...
+fprintf(['It should extract events that have a start time of' ...
     ' 1,2 or 3 seconds\n']);
 DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
@@ -93,11 +93,11 @@ s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time = [1, 2, 3]; 
 sNew = getdb(DB, 'events', inf, s); 
 fprintf(['--It should return a structure array containing three' ...
-    ' events with a specified start time of 1,2, or 3 seconds\n']);
+    ' events with a start time of 1,2, or 3 seconds\n']);
 assertEqual(length(sNew), 3);
 
-fprintf(['It should extract events that have specified start time of' ...
-    ' 1,2 or 3 seconds\n']);
+fprintf(['It should extract events that have a start and end' ...
+    ' time of 1 or 2 seconds\n']);
 DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
 s.event_dataset_uuid = tStruct.datasetUuid;
@@ -105,16 +105,28 @@ s.event_start_time = [1, 2];
 s.event_end_time = [1, 2];
 sNew = getdb(DB, 'events', inf, s); 
 fprintf(['--It should return a structure array containing two' ...
-    ' events with a specified start and end time of 1 or 2 seconds\n']);
+    ' events with a start and end time of 1 or 2 seconds\n']);
 assertEqual(length(sNew), 2);
 
-fprintf(['It should extract events that have specified start time' ...
+fprintf(['It should extract events that have a start time' ...
     ' within a second of 1,2 or 3 seconds\n']);
 s = getdb(DB, 'events', 0); 
 s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time.values = [1, 2, 3]; 
 s.event_start_time.range = [-1, 1]; 
 sNew = getdb(DB, 'events', inf, s); 
-fprintf(['--It should return a structure array containing three' ...
-    ' events that are within a second of 1,2, or 3 seconds\n']);
+fprintf(['--It should return a structure array containing three events' ...
+    ' that have a start time within a second of 1,2, or 3 seconds\n']);
+assertEqual(length(sNew), 3);
+
+fprintf(['It should extract events that have a start and end' ...
+    ' time within a second of 1,2 or 3 seconds\n']);
+s = getdb(DB, 'events', 0); 
+s.event_dataset_uuid = tStruct.datasetUuid;
+s.event_start_time.values = [1, 2, 3]; 
+s.event_start_time.range = [-1, 1]; 
+s.event_end_time = [1, 2, 3]; 
+sNew = getdb(DB, 'events', inf, s); 
+fprintf(['--It should return a structure array containing three events' ...
+    ' with start and end time within a second of 1,2, or 3 seconds\n']);
 assertEqual(length(sNew), 3);

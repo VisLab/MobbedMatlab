@@ -2,7 +2,7 @@ classdef DbHandler
     
     methods(Static)
         
-        function addJavaPath()
+        function addjavapath()
             % Add all of jar files in the jars subdirectory to java path
             jarPath = [fileparts(which('Mobbed')) filesep 'jars'];
             jarFiles = dir([jarPath filesep '*.jar']);
@@ -15,9 +15,9 @@ classdef DbHandler
             catch mex %#ok<NASGU>
             end
             warning on all;
-        end % addJavaPath
+        end % addjavapath
         
-        function [mName, mUUID] = checkModality(DB, modalityUUID)
+        function [mName, mUUID] = checkmodality(DB, modalityUUID)
             % Checks the given modality
             expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
                 '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-'...
@@ -34,29 +34,9 @@ classdef DbHandler
             end
             mName = outModality.modality_name;
             mUUID = outModality.modality_uuid;
-        end % checkModality
+        end % checkmodality
         
-        function jArray = tags2JaggedArray(cellArray)
-            cellArrayLength = length(cellArray);
-            jArray = javaArray('java.lang.String[]', cellArrayLength);
-            for a = 1:cellArrayLength
-                if iscellstr(cellArray{a})
-                    cellSize = length(cellArray{a});
-                    currentCell = cellArray{a};
-                    jArray2 = javaArray('java.lang.String', cellSize);
-                    for b = 1:cellSize
-                        jArray2(b) = java.lang.String(currentCell{b});
-                    end
-                else
-                    jArray2 = javaArray('java.lang.String', 1);
-                    jArray2(1) = java.lang.String(cellArray{a});
-                end
-                jArray(a) = jArray2;
-            end
-        end
-        
-        
-        function jArray = createJaggedArray(array)
+        function jArray = createjaggedarray(array)
             % Creates a jagged java array
             if isempty(array)
                 jArray = [];
@@ -85,9 +65,10 @@ classdef DbHandler
                 jArray2(1) = java.lang.String(array);
                 jArray(1) = jArray2;
             end
-        end % createJaggedArray
+        end % createjaggedarray
         
-        function typeTagMap = extractTagMap(data)
+        function typeTagMap = extracttagmap(data)
+            % Extracts the type tagMap
             typeTagMap = [];
             eventFields = {data.etc.tags.map.field};
             if any(strcmpi('type', eventFields))
@@ -95,20 +76,21 @@ classdef DbHandler
                 typeTagMap = data.etc.tags.map(typeIndecie);
                 
             end
-        end
+        end % extracttagmap
         
-        function [uniqueTypes, tags] = extractTagMapTags(uniqueTypes, ...
+        function [uniqueTypes, tags] = extracttagmaptags(uniqueTypes, ...
                 tagMap)
+            % Extracts the unique types from the type tagMap
             tagMapTypes = {tagMap.values.label};
             tagMapTags = {tagMap.values.tags};
             indices = ismember(tagMapTypes, uniqueTypes);
             uniqueTypes = tagMapTypes(indices);
             tags = tagMapTags(indices);
-            tags = DbHandler.tags2JaggedArray(tags);
-        end
+            tags = DbHandler.tags2jaggedarray(tags);
+        end % extracttagmaptags
         
         function [values, doubleValues, range] = ...
-                extractValues(structure, ...
+                extractvalues(structure, ...
                 doubleColumns, isInsert)
             % extracts values from a structure array
             numColumns = length(doubleColumns);
@@ -136,74 +118,74 @@ classdef DbHandler
                     false);
             else
                 if numColumns > 0
-                    range = [-eps('double'), eps('double')];
+                    range = ones(numColumns, 2);
                     doubleValues = javaArray('java.lang.Double[]', ...
                         numColumns);
                     for a = 1:numColumns
                         if isstruct(structure.(doubleColumns{a}))
                             arraySize = ...
-                                length(structure.(doubleColumns{a}).values);
-                            range = structure.(doubleColumns{a}).range;
-                            currentArray = structure.(doubleColumns{a}).values;
-                            jArray2 = javaArray('java.lang.Double', arraySize);
+                                length(...
+                                structure.(doubleColumns{a}).values);
+                            range(a,:) = ...
+                                structure.(doubleColumns{a}).range;
+                            currentArray = ...
+                                structure.(doubleColumns{a}).values;
+                            jArray2 = javaArray('java.lang.Double', ...
+                                arraySize);
                             for b = 1:arraySize
-                                jArray2(b) = java.lang.Double(currentArray(b));
+                                jArray2(b) = ...
+                                    java.lang.Double(currentArray(b));
                             end
                         else
-                            arraySize = length(structure.(doubleColumns{a}));
+                            arraySize = ...
+                                length(structure.(doubleColumns{a}));
+                            range(a,:) = [-eps('double'), eps('double')];
                             currentArray = structure.(doubleColumns{a});
-                            jArray2 = javaArray('java.lang.Double', arraySize);
+                            jArray2 = javaArray('java.lang.Double', ...
+                                arraySize);
                             for b = 1:arraySize
-                                jArray2(b) = java.lang.Double(currentArray(b));
+                                jArray2(b) = ...
+                                    java.lang.Double(currentArray(b));
                             end
                         end
                         doubleValues(a) = jArray2;
                     end
                 end
                 structure = rmfield(structure, doubleColumns);
-                values = DbHandler.createJaggedArray(...
+                values = DbHandler.createjaggedarray(...
                     struct2cell(structure));
             end
-        end % extractValues
+        end % extractvalues
         
-        function string = reformatString(string)
+        function string = reformatstring(string)
             % Convert character string to cellstr
             if ischar(string), string = cellstr(string); end;
-        end % reformatString
+        end % reformatstring
         
-        function value = replaceEmpty(a, b)
-            % Return a if non-empty otherwise return b
-            if isempty(a)
-                value = b;
-            else
-                value = a;
-            end
-        end % replaceEmpty
-        
-        function data = retrieveDataDef(DB, datadefUuid, datadefFormat, ...
+        function data = retrievedatadef(DB, datadefUuid, datadefFormat, ...
                 additionalData)
             % Retrieves the data associated with a datadef
             if strcmpi(datadefFormat, 'EXTERNAL')
-                data = DbHandler.retrieveFile(DB, datadefUuid, ...
+                data = DbHandler.retrievefile(DB, datadefUuid, ...
                     additionalData);
             elseif strcmpi(datadefFormat, 'NUMERIC_STREAM')
-                data = DbHandler.retrieveNumericStream(DB, datadefUuid);
+                data = DbHandler.retrievenumericstream(DB, datadefUuid);
             elseif strcmpi(datadefFormat, 'NUMERIC_VALUE')
                 data = double(...
                     edu.utsa.mobbed.Datadefs.retrieveNumericValue(...
-                    DB.getConnection(), datadefUuid));
+                    DB.getconnection(), datadefUuid));
             elseif strcmpi(datadefFormat, 'XML_VALUE')
                 data = char(edu.utsa.mobbed.Datadefs.retrieveXMLValue(...
-                    DB.getConnection(), datadefUuid));
+                    DB.getconnection(), datadefUuid));
             else throw(MException('retrieveDataDef:InvalidFormat', ...
                     'Datadef format is invalid'));
             end
-        end % retrieveDataDef
+        end % retrievedatadef
         
-        function file = retrieveFile(DB, entityUUID, isAdditionalData)
+        function file = retrievefile(DB, entityUUID, isAdditionalData)
             % Retrieves data from a external file
             fileName = [tempname '.mat'];
-            edu.utsa.mobbed.Datadefs.retrieveBlob(DB.getConnection(), ...
+            edu.utsa.mobbed.Datadefs.retrieveBlob(DB.getconnection(), ...
                 fileName, entityUUID, isAdditionalData);
             if exist(fileName, 'file')
                 load(fileName);
@@ -212,16 +194,16 @@ classdef DbHandler
             else
                 file = [];
             end
-        end % retrieveExternal
+        end % retrievefile
         
-        function data = retrieveNumericStream(DB, data_def_uuid)
+        function data = retrievenumericstream(DB, data_def_uuid)
             % Retrieves numeric stream from database
             jNumericData = ...
-                edu.utsa.mobbed.NumericStreams(DB.getConnection());
+                edu.utsa.mobbed.NumericStreams(DB.getconnection());
             jNumericData.reset(data_def_uuid);
             numElements = ...
                 edu.utsa.mobbed.NumericStreams.getArrayLength(...
-                DB.getConnection(), data_def_uuid);
+                DB.getconnection(), data_def_uuid);
             maxPosition = jNumericData.getMaxPosition();
             width = 10000;
             k = 1;
@@ -233,22 +215,12 @@ classdef DbHandler
                 data(:,k:endTime-1)= signal_data';
                 k = k + width;
             end
-        end % retrieveNumericStream
+        end % retrievenumericstream
         
-        function storeFile(DB, entityUuid, data, ...
-                isAdditionalData) %#ok<INUSL>
-            % Store data in a external file
-            fileName = [tempname '.mat'];
-            save(fileName, 'data', '-v7.3');
-            edu.utsa.mobbed.Datadefs.storeBlob(DB.getConnection(), ...
-                fileName, entityUuid, isAdditionalData);
-            delete(fileName);
-        end % storeExternal
-        
-        function storeDataDef(DB, datadefUuid, datadef, timestamps)
+        function storedatadef(DB, datadefUuid, datadef, timestamps)
             % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
-                DbHandler.storeFile(DB, datadefUuid, datadef.data, false)
+                DbHandler.storefile(DB, datadefUuid, datadef.data, false)
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 if isempty(datadef.datadef_sampling_rate) && ...
                         isempty(timestamps)
@@ -266,24 +238,34 @@ classdef DbHandler
                 else
                     times = timestamps;
                 end
-                DbHandler.storeNumericStream(DB, datadefUuid, ...
+                DbHandler.storenumericstream(DB, datadefUuid, ...
                     datadef.data, times);
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_VALUE')
                 edu.utsa.mobbed.Datadefs.storeNumericValue(...
-                    DB.getConnection(), datadefUuid, datadef.data);
+                    DB.getconnection(), datadefUuid, datadef.data);
             elseif strcmpi(datadef.datadef_format, 'XML_VALUE')
                 edu.utsa.mobbed.Datadefs.storeXMLValue(...
-                    DB.getConnection(), datadefUuid, datadef.data);
+                    DB.getconnection(), datadefUuid, datadef.data);
             else throw (MException('retrieveDataDef:InvalidFormat', ...
                     'Datadef format is invalid'));
             end
-        end % storeDataDef
+        end % storedatadef
         
-        function storeNumericStream(DB, dataDefUuid, data, times)
+        function storefile(DB, entityUuid, data, ...
+                isAdditionalData) %#ok<INUSL>
+            % Store data in a external file
+            fileName = [tempname '.mat'];
+            save(fileName, 'data', '-v7.3');
+            edu.utsa.mobbed.Datadefs.storeBlob(DB.getconnection(), ...
+                fileName, entityUuid, isAdditionalData);
+            delete(fileName);
+        end % storefile
+        
+        function storenumericstream(DB, dataDefUuid, data, times)
             % Stores numeric stream
             numFrames = length(data);
             jNumericStream = edu.utsa.mobbed.NumericStreams(...
-                DB.getConnection());
+                DB.getconnection());
             jNumericStream.reset(dataDefUuid);
             k = 1;
             while(k < numFrames)
@@ -293,12 +275,32 @@ classdef DbHandler
                 jNumericStream.save(signals, signalTimes, int64(k));
                 k = k + 10000;
             end
-        end % storeNumericStream
+        end % storenumericstream
         
-        function success = validateUUIDs(UUIDs)
+        function jArray = tags2jaggedarray(cellArray)
+            % Puts the type tagMap tags in a jagged array
+            cellArrayLength = length(cellArray);
+            jArray = javaArray('java.lang.String[]', cellArrayLength);
+            for a = 1:cellArrayLength
+                if iscellstr(cellArray{a})
+                    cellSize = length(cellArray{a});
+                    currentCell = cellArray{a};
+                    jArray2 = javaArray('java.lang.String', cellSize);
+                    for b = 1:cellSize
+                        jArray2(b) = java.lang.String(currentCell{b});
+                    end
+                else
+                    jArray2 = javaArray('java.lang.String', 1);
+                    jArray2(1) = java.lang.String(cellArray{a});
+                end
+                jArray(a) = jArray2;
+            end
+        end % tags2jaggedarray
+        
+        function success = validateuuids(UUIDs)
             % Validates a cellstr of UUIDs
             if isempty(UUIDs), success = true; return; end;
-            UUIDs = DbHandler.reformatString(UUIDs);
+            UUIDs = DbHandler.reformatstring(UUIDs);
             expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
                 '[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'];
             if any(cellfun('isempty', (regexpi(UUIDs,expr))))
@@ -310,7 +312,7 @@ classdef DbHandler
                     'UUIDs can not be empty'));
             end
             success = true;
-        end % validateUUID
+        end % validateuuids
         
     end % static methods
     

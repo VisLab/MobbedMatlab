@@ -24,7 +24,7 @@ tStruct.mUUID = uuids{pos};
 % Function executed after each test
 function teardown(~) %#ok<DEFNU>
 try
-    Mobbed.closeAll();
+    Mobbed.closeall();
 catch ME %#ok<NASGU>
 end
 

@@ -6,4 +6,4 @@
 %% Add the appropriate paths
     configPath = fileparts(which('Mobbed'));
     addpath(genpath(configPath));
-    DbHandler.addJavaPath();
+    DbHandler.addjavapath();

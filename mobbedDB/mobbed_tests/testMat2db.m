@@ -23,7 +23,7 @@ tStruct.DB = DB;
 % Function executed after each test
 function teardown(~) %#ok<DEFNU>
 try
-    Mobbed.closeAll();
+    Mobbed.closeall();
 catch ME %#ok<NASGU>
 end
 

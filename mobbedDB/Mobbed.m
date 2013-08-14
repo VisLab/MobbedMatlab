@@ -77,7 +77,7 @@ classdef Mobbed < hgsetget
                 varargin{:});
             DB.Verbose = parser.Results.verbose;
             % Set the properties of a database
-            DbHandler.addJavaPath();
+            DbHandler.addjavapath();
             DB.DbManager = edu.utsa.mobbed.ManageDB(...
                 parser.Results.dbname, parser.Results.hostname, ...
                 parser.Results.username, parser.Results.password, ...
@@ -110,12 +110,12 @@ classdef Mobbed < hgsetget
                 doubleColumns = cell(DB.DbManager.getDoubleColumns(...
                     'datadefs'));
                 [values, doubleValues] = ...
-                    DbHandler.extractValues(rmfield(datadefs, ...
+                    DbHandler.extractvalues(rmfield(datadefs, ...
                     'data'), doubleColumns, true);
                 UUIDs = cell(DB.DbManager.addRows('datadefs', ...
                     columns, values, doubleColumns, doubleValues));
                 for a = 1:length(UUIDs)
-                    DbHandler.storeDataDef(DB, UUIDs{a}, datadefs(a), ...
+                    DbHandler.storedatadef(DB, UUIDs{a}, datadefs(a), ...
                         parser.Results.TimeStamps);
                 end
             catch ME
@@ -136,7 +136,7 @@ classdef Mobbed < hgsetget
             parser.addOptional('UUIDs', {},@(x) isstruct(x) && ...
                 all(ismember(cell(DB.DbManager.getColumnNames(...
                 'datamaps')), ...
-                fieldnames(x))) || DbHandler.validateUUIDs(x));
+                fieldnames(x))) || DbHandler.validateuuids(x));
             parser.parse(varargin{:});
             columns = cell(DB.DbManager.getColumnNames('datadefs'));
             ddef = cell2struct(cell(length(columns),1), columns,1);
@@ -145,12 +145,12 @@ classdef Mobbed < hgsetget
                 if isstruct(parser.Results.UUIDs)
                     UUIDs = {parser.Results.UUIDs.datamap_def_uuid};
                 else
-                    UUIDs = DbHandler.reformatString(parser.Results.UUIDs);
+                    UUIDs = DbHandler.reformatstring(parser.Results.UUIDs);
                 end
                 numUUIDs = length(UUIDs);
                 ddef = repmat(ddef, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    values = DbHandler.createJaggedArray(UUIDs{k});
+                    values = DbHandler.createjaggedarray(UUIDs{k});
                     outValues = ...
                         cell(DB.DbManager.retrieveRows('datadefs', ...
                         1, 'off', [], [], {'datadef_uuid'}, values, ...
@@ -158,7 +158,7 @@ classdef Mobbed < hgsetget
                     outColumns = ...
                         cell(DB.DbManager.getColumnNames('datadefs'));
                     tempDatadef = cell2struct(outValues, outColumns, 2)';
-                    tempDatadef.data = DbHandler.retrieveDataDef(DB, ...
+                    tempDatadef.data = DbHandler.retrievedatadef(DB, ...
                         UUIDs{k}, tempDatadef.datadef_format, false);
                     ddef(k) = tempDatadef;
                 end
@@ -168,17 +168,17 @@ classdef Mobbed < hgsetget
         function datasets = db2mat(DB, varargin)
             % Retrieve a dataset from the database
             parser = inputParser();
-            parser.addOptional('UUIDs', {}, @DbHandler.validateUUIDs);
+            parser.addOptional('UUIDs', {}, @DbHandler.validateuuids);
             parser.parse(varargin{:});
             columns = cell(DB.DbManager.getColumnNames('datasets'));
             datasets = cell2struct(cell(length(columns),1), columns,1);
             datasets.data = [];
             if ~isempty(parser.Results.UUIDs)
-                UUIDs = DbHandler.reformatString(parser.Results.UUIDs);
+                UUIDs = DbHandler.reformatstring(parser.Results.UUIDs);
                 numUUIDs = length(UUIDs);
                 datasets = repmat(datasets, 1, numUUIDs);
                 for k = 1:numUUIDs
-                    values = DbHandler.createJaggedArray(UUIDs{k});
+                    values = DbHandler.createjaggedarray(UUIDs{k});
                     outValues = ...
                         cell(DB.DbManager.retrieveRows('datasets', ...
                         1, 'off', [], [], {'dataset_uuid'}, values, [], ...
@@ -187,13 +187,14 @@ classdef Mobbed < hgsetget
                         cell(DB.DbManager.getColumnNames('datasets'));
                     tempDataset = cell2struct(outValues, outColumns, 2)';
                     tempDataset.data = ...
-                        DbHandler.retrieveFile(DB, UUIDs{k}, true);
+                        DbHandler.retrievefile(DB, UUIDs{k}, true);
                     datasets(k) = tempDataset;
                 end
             end
         end % db2mat
         
-        function connection = getConnection(DB)
+        function connection = getconnection(DB)
+            % Returns a database connection 
             connection = DB.DbManager.getConnection();
         end % getConnection
         
@@ -217,9 +218,9 @@ classdef Mobbed < hgsetget
             doubleValues = [];
             range = [];
             outS = [];
-            tags = DbHandler.createJaggedArray(parser.Results.Tags);
+            tags = DbHandler.createjaggedarray(parser.Results.Tags);
             attributes = ...
-                DbHandler.createJaggedArray(parser.Results.Attributes);
+                DbHandler.createjaggedarray(parser.Results.Attributes);
             if parser.Results.limit == 0
                 columns = cell(DB.DbManager.getColumnNames(...
                     parser.Results.table));
@@ -235,7 +236,7 @@ classdef Mobbed < hgsetget
                     cell(DB.DbManager.getDoubleColumns(table))));
                 columns = columns(~ismember(columns, doubleColumns));
                 [values, doubleValues, range] = ...
-                    DbHandler.extractValues(structure, ...
+                    DbHandler.extractvalues(structure, ...
                     doubleColumns, false);
             end
             outValues = ...
@@ -260,7 +261,7 @@ classdef Mobbed < hgsetget
             parser.addParamValue('Tags', {}, @(x) ischar(x) || ...
                 iscellstr(x));
             parser.addParamValue('EventTypes', {}, ...
-                @DbHandler.validateUUIDs);
+                @DbHandler.validateuuids);
             parser.parse(datasets, varargin{:});
             uniqueEvents = parser.Results.EventTypes;
             numDatasets = length(datasets);
@@ -281,14 +282,14 @@ classdef Mobbed < hgsetget
                     % Check the dataset modality
                     if ~isempty(datasets(k).dataset_modality_uuid)
                         [modality, datasets(k).dataset_modality_uuid] = ...
-                            DbHandler.checkModality(DB, ...
+                            DbHandler.checkmodality(DB, ...
                             datasets(k).dataset_modality_uuid);
                     end
                     % Store the dataset
                     doubleColumns = cell(DB.DbManager.getDoubleColumns(...
                         'datasets'));
                     [values, doubleValues] = ...
-                        DbHandler.extractValues(rmfield(datasets(k), ...
+                        DbHandler.extractvalues(rmfield(datasets(k), ...
                         'data'), doubleColumns, true);
                     UUIDs = cell(DB.DbManager.addRows('datasets', ...
                         columns, values, doubleColumns, doubleValues));
@@ -301,7 +302,7 @@ classdef Mobbed < hgsetget
                 end
                 % Store the tag(s)
                 if ~isempty(parser.Results.Tags)
-                    tags = DbHandler.reformatString(parser.Results.Tags);
+                    tags = DbHandler.reformatstring(parser.Results.Tags);
                     numTags = length(tags);
                     tags = repmat(tags, 1, numDatasets);
                     entityUuids = repmat(UUIDs, 1, numTags);
@@ -315,7 +316,7 @@ classdef Mobbed < hgsetget
                     doubleColumns = cell(DB.DbManager.getDoubleColumns(...
                         'tags'));
                     [values, doubleValues] = ...
-                        DbHandler.extractValues(tagStruct, ...
+                        DbHandler.extractvalues(tagStruct, ...
                         doubleColumns, true);
                     DB.DbManager.addRows('tags', ...
                         columns, values, doubleColumns, doubleValues);
@@ -344,7 +345,7 @@ classdef Mobbed < hgsetget
                 doubleColumns = cell(DB.DbManager.getDoubleColumns(...
                     parser.Results.table));
                 [values, doubleValues] = ...
-                    DbHandler.extractValues(parser.Results.inS, ...
+                    DbHandler.extractvalues(parser.Results.inS, ...
                     doubleColumns, true);
                 UUIDs = cell(DB.DbManager.addRows(table, columns, ...
                     values, doubleColumns, doubleValues));
@@ -363,12 +364,12 @@ classdef Mobbed < hgsetget
     
     methods(Static)
         
-        function closeAll()
+        function closeall()
             % Closes all workspace database descriptors
             edu.utsa.mobbed.ManageDB.closeAll();
         end
         
-        function configPath = createCredentials()
+        function configPath = createcred()
             % Create a database credentials file
             configPath = inputdbcreds;
         end % createCredentials
@@ -429,7 +430,7 @@ classdef Mobbed < hgsetget
                 properties{3}, properties{4});
         end % deletedbc
         
-        function DB = getFromCredentials(filename)
+        function DB = getcred(filename)
             % Get an open database connection using the credentials from
             % a property file
             parser = inputParser();

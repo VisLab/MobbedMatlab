@@ -9,7 +9,7 @@ classdef GENERIC_Modality
             
             % Store the elements
             if isfield(data, 'element')
-                GENERIC_Modality.storeElements(DB, datasetUuid, ...
+                GENERIC_Modality.storeelements(DB, datasetUuid, ...
                     data.element);
                 if DB.Verbose
                     fprintf('Elements saved: %f seconds \n', toc(tStart));
@@ -19,7 +19,7 @@ classdef GENERIC_Modality
             % Store the events
             if isfield(data, 'event')
                 uniqueEvents = ...
-                    GENERIC_Modality.storeEvents(DB, datasetUuid, ...
+                    GENERIC_Modality.storeevents(DB, datasetUuid, ...
                     data.event, eventUuids);
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
@@ -31,7 +31,7 @@ classdef GENERIC_Modality
             
             % Store the features
             if isfield(data, 'feature')
-                GENERIC_Modality.storeFeatures(DB, datasetUuid, ...
+                GENERIC_Modality.storefeatures(DB, datasetUuid, ...
                     data.feature);
                 if DB.Verbose
                     fprintf('Features saved: %f seconds \n', toc(tStart));
@@ -40,7 +40,7 @@ classdef GENERIC_Modality
             
             % Store the metadata
             if isfield(data, 'metadata')
-                GENERIC_Modality.storeMetadata(DB, datasetUuid, ...
+                GENERIC_Modality.storemetadata(DB, datasetUuid, ...
                     data.metadata);
                 if DB.Verbose
                     fprintf('Metadata saved: %f seconds \n', toc(tStart));
@@ -48,7 +48,7 @@ classdef GENERIC_Modality
             end
             
             % Store everything in a file
-            DbHandler.storeFile(DB, datasetUuid, data, true);
+            DbHandler.storefile(DB, datasetUuid, data, true);
             if DB.Verbose
                 fprintf('Data saved to DB: %f seconds \n', toc(tStart));
             end
@@ -57,7 +57,7 @@ classdef GENERIC_Modality
     end % public methods
     
     methods(Static, Access = private)
-        function storeElements(DB, datasetUuid, element)
+        function storeelements(DB, datasetUuid, element)
             % Store the elements for generic dataset
             if isempty(element)
                 return;
@@ -67,7 +67,7 @@ classdef GENERIC_Modality
             description = {element.description}';
             otherFields = setdiff(fieldnames(element), ...
                 {'label', 'position', 'description'})';
-            jElement = edu.utsa.mobbed.Elements(DB.getConnection());
+            jElement = edu.utsa.mobbed.Elements(DB.getconnection());
             jElement.reset(datasetUuid, 'Generic element group', label, ...
                 description, position);
             jElement.addElements();
@@ -91,9 +91,9 @@ classdef GENERIC_Modality
                     values);
             end
             jElement.save();
-        end % storeElements
+        end % storeelements
         
-        function uniqueEvents = storeEvents(DB, datasetUuid, event, ...
+        function uniqueEvents = storeevents(DB, datasetUuid, event, ...
                 eventUuids)
             % Store the elements for generic dataset
             if isempty(event)
@@ -108,7 +108,7 @@ classdef GENERIC_Modality
             otherFields = setdiff(fieldnames(event), ...
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
-            jEvent = edu.utsa.mobbed.Events(DB.getConnection());
+            jEvent = edu.utsa.mobbed.Events(DB.getconnection());
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 positions,  certainties, uniqueTypes, types, ...
                 eventUuids, []);
@@ -134,11 +134,11 @@ classdef GENERIC_Modality
                     values);
             end
             jEvent.save();
-        end % storeEvents
+        end % storeevents
         
-        function storeFeatures(DB, datasetUuid, feature)
+        function storefeatures(DB, datasetUuid, feature)
             % Store the features for generic dataset
-            jFeature = edu.utsa.mobbed.Metadata(DB.getConnection());
+            jFeature = edu.utsa.mobbed.Metadata(DB.getconnection());
             jFeature.reset(datasetUuid);
             otherFields = setdiff(fieldnames(feature), ...
                 {'type', 'value', 'description'})';
@@ -162,11 +162,11 @@ classdef GENERIC_Modality
                     values);
             end
             jFeature.save();
-        end % storeFeatures
+        end % storefeatures
         
-        function storeMetadata(DB, datasetUuid, metadata)
+        function storemetadata(DB, datasetUuid, metadata)
             % Store the metadata for generic dataset
-            jMetadata = edu.utsa.mobbed.Metadata(DB.getConnection());
+            jMetadata = edu.utsa.mobbed.Metadata(DB.getconnection());
             jMetadata.reset(datasetUuid);
             otherFields = fieldnames(metadata);
             for a = 1:length(otherFields)
@@ -189,7 +189,7 @@ classdef GENERIC_Modality
                     values);
             end
             jMetadata.save();
-        end % storeMetadata
+        end % storemetadata
         
     end % Private methods
     

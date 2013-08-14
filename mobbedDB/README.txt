@@ -1,6 +1,6 @@
 README FILE
 -----------------------------------------------------------
-Mobbed 1.1a Beta
+Mobbed 1.2a Beta
 by Kay Robbins/Jeremy Cockfield/Arif Hossain 
 -----------------------------------------------------------
 Contents:
@@ -24,7 +24,7 @@ II. SYSTEM REQUIREMENTS
 * Ubuntu
 
 2) Matlab 
-* 2012a
+* 2010b
 
 3) Postgresql
 * 9.2
