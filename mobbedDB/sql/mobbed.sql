@@ -97,10 +97,10 @@ WITH (
   dataset_namespace character varying DEFAULT 'mobbed',
   dataset_name character varying NOT NULL,
   dataset_version integer CHECK (dataset_version > 0) DEFAULT 1,
-  dataset_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
+  dataset_contact_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_creation_date timestamp without time zone DEFAULT LOCALTIMESTAMP,
   dataset_description character varying,
-  dataset_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
+  dataset_parent_uuid uuid DEFAULT '491df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_modality_uuid uuid  DEFAULT '791df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   dataset_oid oid,
   PRIMARY KEY (dataset_uuid),
@@ -128,7 +128,7 @@ CREATE TABLE elements
   element_uuid uuid,
   element_label character varying,
   element_dataset_uuid uuid,
-  element_parent_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',  
+  element_parent_uuid uuid DEFAULT '491df7dd-ce3e-47f8-bea5-6a632c6fcccb',  
   element_position bigint CHECK (element_position = -1 OR element_position > 0),
   element_description character varying,
   PRIMARY KEY (element_uuid)
@@ -145,6 +145,7 @@ CREATE TABLE events
   event_type_uuid uuid,
   event_start_time double precision CHECK (event_start_time >= 0),
   event_end_time double precision CHECK (event_end_time >= 0),
+  event_parent_uuid uuid DEFAULT '491df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   event_position bigint CHECK (event_position > 0),
   event_certainty double precision CHECK (event_certainty >= 0 AND event_certainty <= 1), 
   PRIMARY KEY (event_uuid )
@@ -290,19 +291,23 @@ ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_datadef_uuid) REFERENCES dat
 
 -- execute
 INSERT INTO CONTACTS (CONTACT_UUID, CONTACT_FIRST_NAME, CONTACT_LAST_NAME) 
-VALUES ('691df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'System', 'User');
+VALUES ('591df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'System', 'User');
 
 -- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
-VALUES ('791df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'EEG', 'MATLAB', 'default EEGLAB EEG modality');
+VALUES ('691df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'EEG', 'MATLAB', 'default EEGLAB EEG modality');
 
 -- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
-VALUES ('891df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'GENERIC', 'MATLAB', 'default generic modality');
+VALUES ('791df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'GENERIC', 'MATLAB', 'default generic modality');
 
 -- execute
 INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
-VALUES ('991df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'SIMPLE', 'MATLAB', 'default simple modality');		
+VALUES ('891df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'SIMPLE', 'MATLAB', 'default simple modality');		
+
+-- execute
+INSERT INTO MODALITIES (MODALITY_UUID, MODALITY_NAME, MODALITY_PLATFORM, MODALITY_DESCRIPTION) 
+VALUES ('991df7dd-ce3e-47f8-bea5-6a632c6fcccb', 'CSV', 'MATLAB', 'default csv modality');		
 
 -- excecute
 CREATE OR REPLACE FUNCTION trans_md5() RETURNS trigger AS $trans_md5$
