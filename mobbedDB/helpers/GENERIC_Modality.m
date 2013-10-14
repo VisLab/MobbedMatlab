@@ -109,11 +109,11 @@ classdef GENERIC_Modality
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
             jEvent = edu.utsa.mobbed.Events(DB.getconnection());
-            jEvent.reset(datasetUuid, startTimes, endTimes, ...
+            jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
                 positions,  certainties, uniqueTypes, types, ...
                 eventUuids, []);
             uniqueEvents = cell(jEvent.addNewTypes());
-            jEvent.addEvents();
+            jEvent.addEvents(true);
             for a = 1:length(otherFields)
                 values = cellfun(@num2str, {event.(otherFields{a})}', ...
                     'UniformOutput', false);

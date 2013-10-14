@@ -27,6 +27,21 @@ try
 catch ME %#ok<NASGU>
 end
 
+function testMultipleDatasets(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for mat2db with multiple datasets:\n');
+fprintf('It should store multiple datasets in a structure array\n');
+DB = tStruct.DB;
+load eeg_data_ch1.mat;
+s(1) = db2mat(DB);
+s(1).dataset_name = 'dataset 1';
+s(1).data = EEG;
+s(2) = db2mat(DB);
+s(2).dataset_name = 'dataset 2';
+s(2).data = EEG;
+UUIDs = mat2db(DB, s, 'IsUnique', false);
+assertTrue(isequal(length(UUIDs), 2));
+assertFalse(isequal(UUIDs{1}, UUIDs{2}));
+
 function testDuplicateDataset(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for mat2db with duplicate dataset:\n');
 fprintf('It should store a duplicate dataset\n');

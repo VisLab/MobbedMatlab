@@ -22,13 +22,13 @@ classdef EEG_Modality
                 typeTagMap = DbHandler.extracttagmap(data);
             end
             
-            % Create Events object for urevent and event 
+            % Create Events object for urevent and event
             jEvent = edu.utsa.mobbed.Events(DB.getconnection());
             
-            % Store the urevents        
+            % Store the urevents
             if isfield(data, 'urevent')
                 uniqueEvents = ...
-                    EEG_Modality.storeoriginalevents(jEvent, ...
+                    EEG_Modality.storeurevents(jEvent, ...
                     datasetUuid, data.urevent, eventUuids, typeTagMap);
                 if DB.Verbose
                     fprintf('Original events saved: %f seconds \n', ...
@@ -59,7 +59,7 @@ classdef EEG_Modality
     methods (Static, Access = private)
         
         function storeelements(DB, datasetUuid, numChans, chanlocs)
-            % Store the elements for EEG dataset
+            % Store the elements of the EEG dataset
             position = (1:numChans)';
             if ~isempty(chanlocs)
                 if length(chanlocs)~= numChans
@@ -107,7 +107,7 @@ classdef EEG_Modality
         
         function uniqueEvents = storeevents(jEvent, datasetUuid, event, ...
                 eventUuids, typeTagMap)
-            % Store the events for EEG dataset
+            % Store the events of the EEG dataset
             if isempty(event)
                 uniqueEvents = {};
                 return;
@@ -155,10 +155,9 @@ classdef EEG_Modality
             jEvent.save();
         end % storeevents
         
-        function uniqueEvents = ...
-                storeoriginalevents(jEvent, datasetUuid, urevent, ...
-                eventUuids, typeTagMap)
-            % Store the original events for EEG dataset
+        function uniqueEvents = storeurevents(jEvent, datasetUuid, ...
+                urevent, eventUuids, typeTagMap)
+            % Store the urevents of the EEG dataset
             if isempty(urevent)
                 uniqueEvents = {};
                 return;
@@ -174,14 +173,14 @@ classdef EEG_Modality
             if ~isempty(typeTagMap)
                 [uniqueTypes, tags] = ...
                     DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
-            end          
+            end
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
                 positions,  certainties, uniqueTypes, types, ...
                 eventUuids, tags);
             uniqueEvents = cell(jEvent.addNewTypes());
             jEvent.addEvents(true);
             jEvent.save();
-        end % storeoriginalevents
+        end % storeurevents
         
     end % private static methods
     

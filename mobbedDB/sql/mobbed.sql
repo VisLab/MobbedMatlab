@@ -32,7 +32,7 @@ CREATE TABLE comments
   comment_uuid uuid,
   comment_entity_uuid uuid,
   comment_entity_class character varying,
-  comment_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
+  comment_contact_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   comment_time timestamp without time zone DEFAULT LOCALTIMESTAMP,
   comment_value character varying,
   PRIMARY KEY (comment_uuid)
@@ -114,7 +114,7 @@ WITH (
   CREATE TABLE devices
 (
   device_uuid uuid,
-  device_contact_uuid uuid DEFAULT '691df7dd-ce3e-47f8-bea5-6a632c6fcccb',
+  device_contact_uuid uuid DEFAULT '591df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   device_description character varying,
   PRIMARY KEY (device_uuid)
 )
@@ -148,7 +148,7 @@ CREATE TABLE events
   event_parent_uuid uuid DEFAULT '491df7dd-ce3e-47f8-bea5-6a632c6fcccb',
   event_position bigint CHECK (event_position > 0),
   event_certainty double precision CHECK (event_certainty >= 0 AND event_certainty <= 1), 
-  PRIMARY KEY (event_uuid )
+  PRIMARY KEY (event_uuid)
 )
 WITH (
   OIDS=FALSE

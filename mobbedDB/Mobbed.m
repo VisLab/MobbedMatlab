@@ -265,7 +265,7 @@ classdef Mobbed < hgsetget
             parser.parse(datasets, varargin{:});
             uniqueEvents = parser.Results.EventTypes;
             numDatasets = length(datasets);
-            UUIDs = cell(1,numDatasets);
+            UUIDs = cell(1, numDatasets);
             modality = 'EEG';
             namespace = 'mobbed';
             columns = cell(DB.DbManager.getColumnNames('datasets'));
@@ -291,8 +291,9 @@ classdef Mobbed < hgsetget
                     [values, doubleValues] = ...
                         DbHandler.extractvalues(rmfield(datasets(k), ...
                         'data'), doubleColumns, true);
-                    UUIDs = cell(DB.DbManager.addRows('datasets', ...
+                    datasetUuid = cell(DB.DbManager.addRows('datasets', ...
                         columns, values, doubleColumns, doubleValues));
+                    UUIDs{k} = datasetUuid{1};
                     % Store the actual data
                     if ~isempty(datasets(k).data)
                         uniqueEvents = eval([modality ...
