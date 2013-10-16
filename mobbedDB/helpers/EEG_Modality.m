@@ -25,6 +25,8 @@ classdef EEG_Modality
             % Create Events object for urevent and event
             jEvent = edu.utsa.mobbed.Events(DB.getconnection());
             
+            uniqueEvents = {};
+            
             % Store the urevents
             if isfield(data, 'urevent')
                 uniqueEvents = ...
@@ -123,16 +125,16 @@ classdef EEG_Modality
             fields = fieldnames(event);
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
-            tags = [];
+            eventTags = extractEventTags(event);
+            eventTypeTags = {};
             if ~isempty(typeTagMap)
-                [uniqueTypes, tags] = ...
+                [uniqueTypes, eventTypeTags] = ...
                     DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
             end
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 ureventPositions, positions, certainties, uniqueTypes, ...
-                types, eventUuids, tags);
-            uniqueEvents = cell(jEvent.addNewTypes());
-            jEvent.addEvents(false);
+                types, eventUuids, eventTags, eventTypeTags);
+            uniqueEvents = cell(jEvent.addEvents(false));
             for a = 1:length(otherFields)
                 values = cellfun(@(x) num2str(x, 16), ...
                     {event.(otherFields{a})}', 'UniformOutput', false);
@@ -169,15 +171,16 @@ classdef EEG_Modality
             certainties = ones(1, length(urevent));
             positions = int64(1:length(types))';
             uniqueTypes = unique(types);
-            tags = [];
+            eventTypeTags = {};
+            eventTags = {};
             if ~isempty(typeTagMap)
-                [uniqueTypes, tags] = ...
+                [uniqueTypes, eventTypeTags] = ...
                     DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
             end
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
                 positions,  certainties, uniqueTypes, types, ...
-                eventUuids, tags);
-            uniqueEvents = cell(jEvent.addNewTypes());
+                eventUuids, eventTags, eventTypeTags);
+            uniqueEvents = cell(jEvent.addEvents(true));
             jEvent.addEvents(true);
             jEvent.save();
         end % storeurevents

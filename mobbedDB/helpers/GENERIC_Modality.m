@@ -16,6 +16,7 @@ classdef GENERIC_Modality
                 end
             end
             
+            uniqueEvents = {};
             % Store the events
             if isfield(data, 'event')
                 uniqueEvents = ...
@@ -24,9 +25,6 @@ classdef GENERIC_Modality
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
                 end
-                
-            else
-                uniqueEvents = {};
             end
             
             % Store the features
@@ -112,8 +110,7 @@ classdef GENERIC_Modality
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
                 positions,  certainties, uniqueTypes, types, ...
                 eventUuids, []);
-            uniqueEvents = cell(jEvent.addNewTypes());
-            jEvent.addEvents(true);
+            uniqueEvents = cell(jEvent.addEvents(true));
             for a = 1:length(otherFields)
                 values = cellfun(@num2str, {event.(otherFields{a})}', ...
                     'UniformOutput', false);

@@ -67,6 +67,24 @@ classdef DbHandler
             end
         end % createjaggedarray
         
+        function eventTags = extractEventTags(event)
+            eventTags = cell(1, length(event));
+            userTags = cell(1, length(event));
+            hedTags = cell(1, length(event));
+            if isfield(event, 'usertags')
+                userTags = cellfun(@(x)strsplit({event.usertags}, ','), ...
+                    'UniformOutput', false);
+            end
+            if isfield(event, 'hedtags')
+                hedTags = cellfun(@(x)strsplit({event.hedtags}, ','), ...
+                    'UniformOutput', false);
+            end
+            for a = 1: length(event)
+            eventTags{a} = union(userTags{a}, hedTags{a});
+            end
+            eventTags = createjaggedarray(eventTags);
+        end % extractEventTags
+        
         function typeTagMap = extracttagmap(data)
             % Extracts the type tagMap
             typeTagMap = [];
