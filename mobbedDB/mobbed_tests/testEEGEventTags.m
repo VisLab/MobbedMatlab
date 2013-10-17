@@ -40,9 +40,14 @@ fprintf(['\nUnit test for EEG modality dataset that has tags' ...
 fprintf(['It should store a EEG modality dataset that has tags' ...
     ' associated with its events:\n']);
 DB = tStruct.DB;
-load eeg_data_tagged.mat;
+load eeglab_data_individual_tags.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db event tags';
+s1.dataset_name = 'EEG event tags';
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
+twoTags = sum(strcmp('square', {EEG.event.type}));
+oneTag = sum(strcmp('rt', {EEG.event.type}));
+totalTags = twoTags * 2 + oneTag;
+dbtagCount = length(getdb(DB, 'tags', inf));
+assertTrue(totalTags, dbtagCount);

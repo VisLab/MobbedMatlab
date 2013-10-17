@@ -171,8 +171,8 @@ classdef EEG_Modality
             certainties = ones(1, length(urevent));
             positions = int64(1:length(types))';
             uniqueTypes = unique(types);
-            eventTypeTags = {};
-            eventTags = {};
+            eventTypeTags = javaArray('java.lang.String', 1, 1);
+            eventTags = javaArray('java.lang.String', 1, 1);
             if ~isempty(typeTagMap)
                 [uniqueTypes, eventTypeTags] = ...
                     DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
