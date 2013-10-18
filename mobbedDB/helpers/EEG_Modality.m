@@ -17,9 +17,9 @@ classdef EEG_Modality
             end
             
             % Extract the tags for event types
-            typeTagMap = [];
+            typeTagMaps = struct([]);
             if isfield(data.etc, 'tags')
-                typeTagMap = DbHandler.extracttagmap(data);
+                typeTagMaps = DbHandler.extracttypetagmaps(data.etc.tags);
             end
             
             % Create Events object for urevent and event
@@ -31,7 +31,7 @@ classdef EEG_Modality
             if isfield(data, 'urevent')
                 uniqueEvents = ...
                     EEG_Modality.storeurevents(jEvent, ...
-                    datasetUuid, data.urevent, eventUuids, typeTagMap);
+                    datasetUuid, data.urevent, eventUuids);
                 if DB.Verbose
                     fprintf('Original events saved: %f seconds \n', ...
                         toc(tStart));
@@ -41,7 +41,7 @@ classdef EEG_Modality
             % Store the events
             if isfield(data, 'event')
                 uniqueEvents = EEG_Modality.storeevents(jEvent, ...
-                    datasetUuid, data.event, uniqueEvents, typeTagMap);
+                    datasetUuid, data.event, uniqueEvents, typeTagMaps);
                 if DB.Verbose
                     fprintf('Events saved: %f seconds \n', toc(tStart));
                 end
@@ -108,7 +108,7 @@ classdef EEG_Modality
         
         
         function uniqueEvents = storeevents(jEvent, datasetUuid, event, ...
-                eventUuids, typeTagMap)
+                eventUuids, typeTagMaps)
             % Store the events of the EEG dataset
             if isempty(event)
                 uniqueEvents = {};
@@ -125,11 +125,10 @@ classdef EEG_Modality
             fields = fieldnames(event);
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
-            eventTags = extractEventTags(event);
-            eventTypeTags = {};
-            if ~isempty(typeTagMap)
-                [uniqueTypes, eventTypeTags] = ...
-                    DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
+            eventTags = DbHandler.extracteventtags(event);
+            eventTypeTags = DbHandler.initializetypehashmap(uniqueTypes);
+            if ~isempty(typeTagMaps)
+                    DbHandler.extracttagmaptags(uniqueTypes, typeTagMaps);
             end
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 ureventPositions, positions, certainties, uniqueTypes, ...
@@ -158,7 +157,7 @@ classdef EEG_Modality
         end % storeevents
         
         function uniqueEvents = storeurevents(jEvent, datasetUuid, ...
-                urevent, eventUuids, typeTagMap)
+                urevent, eventUuids)
             % Store the urevents of the EEG dataset
             if isempty(urevent)
                 uniqueEvents = {};
@@ -171,12 +170,8 @@ classdef EEG_Modality
             certainties = ones(1, length(urevent));
             positions = int64(1:length(types))';
             uniqueTypes = unique(types);
-            eventTypeTags = javaArray('java.lang.String', 1, 1);
-            eventTags = javaArray('java.lang.String', 1, 1);
-            if ~isempty(typeTagMap)
-                [uniqueTypes, eventTypeTags] = ...
-                    DbHandler.extracttagmaptags(uniqueTypes, typeTagMap);
-            end
+            eventTypeTags = DbHandler.initializetypehashmap(uniqueTypes);
+            eventTags = cell(1,0);
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
                 positions,  certainties, uniqueTypes, types, ...
                 eventUuids, eventTags, eventTypeTags);

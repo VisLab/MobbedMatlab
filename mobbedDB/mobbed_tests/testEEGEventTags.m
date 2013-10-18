@@ -50,4 +50,4 @@ twoTags = sum(strcmp('square', {EEG.event.type}));
 oneTag = sum(strcmp('rt', {EEG.event.type}));
 totalTags = twoTags * 2 + oneTag;
 dbtagCount = length(getdb(DB, 'tags', inf));
-assertTrue(totalTags, dbtagCount);
+assertTrue(isequal(totalTags, dbtagCount));

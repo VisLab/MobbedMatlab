@@ -67,45 +67,64 @@ classdef DbHandler
             end
         end % createjaggedarray
         
-        function eventTags = extractEventTags(event)
+        function eventTags = extracteventtags(event)
             eventTags = cell(1, length(event));
             userTags = cell(1, length(event));
             hedTags = cell(1, length(event));
             if isfield(event, 'usertags')
-                userTags = cellfun(@(x)strsplit({event.usertags}, ','), ...
-                    'UniformOutput', false);
+                userTags = cellfun(@(x)strsplit(x, ','), ...
+                    {event.usertags}, 'UniformOutput', false);
             end
             if isfield(event, 'hedtags')
-                hedTags = cellfun(@(x)strsplit({event.hedtags}, ','), ...
-                    'UniformOutput', false);
+                hedTags = cellfun(@(x)strsplit(x, ','), ...
+                    {event.hedtags}, 'UniformOutput', false);
             end
             for a = 1: length(event)
             eventTags{a} = union(userTags{a}, hedTags{a});
             end
-            eventTags = createjaggedarray(eventTags);
+            eventTags = DbHandler.createjaggedarray(eventTags);
         end % extractEventTags
         
-        function typeTagMap = extracttagmap(data)
+        function typeTagMaps = extracttypetagmaps(fieldMaps)
             % Extracts the type tagMap
-            typeTagMap = [];
-            eventFields = {data.etc.tags.map.field};
-            if any(strcmpi('type', eventFields))
-                typeIndecie = strcmpi('type', eventFields);
-                typeTagMap = data.etc.tags.map(typeIndecie);
-                
+            typeTagMaps = struct([]);
+            numFieldMaps = length(fieldMaps);
+            b = 1;
+            for a = 1:numFieldMaps
+                eventFields = {fieldMaps(a).map.field};
+                if any(strcmpi('type', eventFields))
+                    typeIndecie = strcmpi('type', eventFields);
+                    typeTagMaps(b) = fieldMaps(a).map(typeIndecie);
+                    b = b + 1;
+                end
             end
-        end % extracttagmap
+        end % extracttypetagmaps
         
-        function [uniqueTypes, tags] = extracttagmaptags(uniqueTypes, ...
-                tagMap)
-            % Extracts the unique types from the type tagMap
-            tagMapTypes = {tagMap.values.label};
-            tagMapTags = {tagMap.values.tags};
-            indices = ismember(tagMapTypes, uniqueTypes);
-            uniqueTypes = tagMapTypes(indices);
-            tags = tagMapTags(indices);
-            tags = DbHandler.tags2jaggedarray(tags);
-        end % extracttagmaptags
+        function typeHashMap = extracteventtypetags(uniqueTypes, ...
+                typeTagMaps)
+            typeHashMap = initializetypehashmap();
+            numTypeTagMaps = length(typeTagMaps);
+            numUniqueTypes = length(uniqueTypes);
+            for a = 1:numTypeTagMaps
+                tagMapTypes = {typeTagMaps(a).values.label};
+                tagMapTags = {typeTagMaps(a).values.tags};
+                for b = 1:numUniqueTypes
+                    typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
+                    typeTags = tagMapTags(typeIndice);
+                    typeHashMapTags = typeHashMap.get(uniqueTypes{b});
+                    combinedTags = union(typeTags, typeHashMapTags);
+                    typeHashMap.put(uniqueTypes{b}, combinedTags);
+                end
+            end
+        end % createeventtypehashmap
+        
+        function typeHashMap = initializetypehashmap(uniqueTypes)
+            typeHashMap = java.util.HashMap;
+            numUniqueTypes = length(uniqueTypes);
+            for a = 1:numUniqueTypes
+                typeHashMap.put(uniqueTypes{a}, cell(1,0));
+            end
+        end % initializetypehashmap
         
         function [values, doubleValues, range] = ...
                 extractvalues(structure, ...
