@@ -31,6 +31,8 @@ tStruct.mUUID = uuids{pos};
 function teardown(~) %#ok<DEFNU>
 try
     Mobbed.closeall();
+    Mobbed.deletedb('test_event_tags_db', 'localhost', 'postgres', ...
+        'admin');
 catch ME %#ok<NASGU>
 end
 
@@ -46,8 +48,6 @@ s1.dataset_name = 'EEG event tags';
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
-twoTags = sum(strcmp('square', {EEG.event.type}));
-oneTag = sum(strcmp('rt', {EEG.event.type}));
-totalTags = twoTags * 2 + oneTag;
+totalTags = sum(strcmpi('square', {EEG.event.type}) * 3);
 dbtagCount = length(getdb(DB, 'tags', inf));
 assertTrue(isequal(totalTags, dbtagCount));

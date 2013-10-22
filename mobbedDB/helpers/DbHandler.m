@@ -69,18 +69,18 @@ classdef DbHandler
         
         function eventTags = extracteventtags(event)
             eventTags = cell(1, length(event));
-            userTags = cell(1, length(event));
-            hedTags = cell(1, length(event));
-            if isfield(event, 'usertags')
-                userTags = cellfun(@(x)strsplit(x, ','), ...
-                    {event.usertags}, 'UniformOutput', false);
-            end
-            if isfield(event, 'hedtags')
-                hedTags = cellfun(@(x)strsplit(x, ','), ...
-                    {event.hedtags}, 'UniformOutput', false);
-            end
             for a = 1: length(event)
-            eventTags{a} = union(userTags{a}, hedTags{a});
+                userTags = {};
+                hedTags = {};
+                if isfield(event, 'usertags') && ...
+                        ~isempty(event(a).usertags)
+                    userTags = strsplit(event(a).usertags, ',');
+                end
+                if isfield(event, 'hedtags') && ...
+                        ~isempty(event(a).hedtags)
+                    hedTags = strsplit(event(a).hedtags, ',');
+                end
+                eventTags{a} = union(userTags, hedTags);
             end
             eventTags = DbHandler.createjaggedarray(eventTags);
         end % extractEventTags
@@ -116,7 +116,7 @@ classdef DbHandler
                     typeHashMap.put(uniqueTypes{b}, combinedTags);
                 end
             end
-        end % createeventtypehashmap
+        end % extracteventtypetags
         
         function typeHashMap = initializetypehashmap(uniqueTypes)
             typeHashMap = java.util.HashMap;
@@ -127,8 +127,7 @@ classdef DbHandler
         end % initializetypehashmap
         
         function [values, doubleValues, range] = ...
-                extractvalues(structure, ...
-                doubleColumns, isInsert)
+                extractvalues(structure, doubleColumns, isInsert)
             % extracts values from a structure array
             numColumns = length(doubleColumns);
             doubleValues = [];
