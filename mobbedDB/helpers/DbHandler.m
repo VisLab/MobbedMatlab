@@ -68,7 +68,7 @@ classdef DbHandler
         end % createjaggedarray
         
         function eventTags = extracteventtags(event)
-            eventTags = cell(1, length(event));
+            eventTags = java.util.HashMap;
             for a = 1: length(event)
                 userTags = {};
                 hedTags = {};
@@ -80,14 +80,13 @@ classdef DbHandler
                         ~isempty(event(a).hedtags)
                     hedTags = strsplit(event(a).hedtags, ',');
                 end
-                eventTags{a} = union(userTags, hedTags);
+                eventTags.put(int64(a), union(userTags, hedTags));
             end
-            eventTags = DbHandler.createjaggedarray(eventTags);
         end % extractEventTags
         
         function typeTagMaps = extracttypetagmaps(fieldMaps)
             % Extracts the type tagMap
-            typeTagMaps = struct([]);
+            typeTagMaps = struct('field', [], 'values', []);
             numFieldMaps = length(fieldMaps);
             b = 1;
             for a = 1:numFieldMaps
@@ -102,7 +101,7 @@ classdef DbHandler
         
         function typeHashMap = extracteventtypetags(uniqueTypes, ...
                 typeTagMaps)
-            typeHashMap = initializetypehashmap();
+            typeHashMap = DbHandler.initializetypehashmap(uniqueTypes);
             numTypeTagMaps = length(typeTagMaps);
             numUniqueTypes = length(uniqueTypes);
             for a = 1:numTypeTagMaps
@@ -111,7 +110,13 @@ classdef DbHandler
                 for b = 1:numUniqueTypes
                     typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
                     typeTags = tagMapTags(typeIndice);
+                    if iscellstr(typeTags{1})
+                        typeTags = typeTags{1};
+                    end
                     typeHashMapTags = typeHashMap.get(uniqueTypes{b});
+                    if ~isempty(typeHashMapTags)
+                        typeHashMapTags = cell(typeHashMapTags);
+                    end
                     combinedTags = union(typeTags, typeHashMapTags);
                     typeHashMap.put(uniqueTypes{b}, combinedTags);
                 end
@@ -122,7 +127,7 @@ classdef DbHandler
             typeHashMap = java.util.HashMap;
             numUniqueTypes = length(uniqueTypes);
             for a = 1:numUniqueTypes
-                typeHashMap.put(uniqueTypes{a}, cell(1,0));
+                typeHashMap.put(uniqueTypes{a}, {});
             end
         end % initializetypehashmap
         
