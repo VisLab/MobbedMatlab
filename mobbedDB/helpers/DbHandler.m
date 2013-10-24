@@ -109,16 +109,20 @@ classdef DbHandler
                 tagMapTags = {typeTagMaps(a).values.tags};
                 for b = 1:numUniqueTypes
                     typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
-                    typeTags = tagMapTags(typeIndice);
-                    if iscellstr(typeTags{1})
-                        typeTags = typeTags{1};
-                    end
-                    typeHashMapTags = typeHashMap.get(uniqueTypes{b});
-                    if ~isempty(typeHashMapTags)
-                        typeHashMapTags = cell(typeHashMapTags);
-                    end
-                    combinedTags = union(typeTags, typeHashMapTags);
-                    typeHashMap.put(uniqueTypes{b}, combinedTags);
+                    if any(typeIndice) 
+                        typeTags = tagMapTags(typeIndice);
+                        typeHashMapTags = typeHashMap.get(uniqueTypes{b});
+                        if isempty(typeTags{1})
+                            continue;
+                        elseif iscellstr(typeTags{1})
+                            typeTags = typeTags{1};
+                        end                        
+                        if ~isempty(typeHashMapTags)
+                            typeHashMapTags = cell(typeHashMapTags);
+                        end
+                        combinedTags = union(typeTags, typeHashMapTags);
+                        typeHashMap.put(uniqueTypes{b}, combinedTags);
+                    end                    
                 end
             end
         end % extracteventtypetags
