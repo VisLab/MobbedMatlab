@@ -125,6 +125,7 @@ classdef EEG_Modality
             fields = fieldnames(event);
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
+            eventTypeDescriptions = strcat({'Event type: '}, uniqueTypes);
             eventTags = java.util.HashMap;
             if isfield(event, 'usertags') || isfield(event, 'hedtags')
                 eventTags = DbHandler.extracteventtags(event);
@@ -136,8 +137,9 @@ classdef EEG_Modality
                     typeTagMaps);
             end
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
-                ureventPositions, positions, certainties, uniqueTypes, ...
-                types, eventUuids, eventTags, eventTypeTags);
+                ureventPositions, positions, certainties, ...
+                eventTypeDescriptions, uniqueTypes, types, eventUuids, ...
+                eventTags, eventTypeTags);
             uniqueEvents = cell(jEvent.addEvents(false));
             for a = 1:length(otherFields)
                 values = cellfun(@(x) num2str(x, 16), ...
@@ -175,11 +177,12 @@ classdef EEG_Modality
             certainties = ones(1, length(urevent));
             positions = int64(1:length(types))';
             uniqueTypes = unique(types);
+            eventTypeDescriptions = strcat({'Event type: '}, uniqueTypes);
             eventTags = java.util.HashMap;
             eventTypeTags = java.util.HashMap;
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
-                positions,  certainties, uniqueTypes, types, ...
-                eventUuids, eventTags, eventTypeTags);
+                positions,  certainties, eventTypeDescriptions, ...
+                uniqueTypes, types, eventUuids, eventTags, eventTypeTags);
             uniqueEvents = cell(jEvent.addEvents(true));
             jEvent.addEvents(true);
             jEvent.save();

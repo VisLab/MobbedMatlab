@@ -103,13 +103,16 @@ classdef GENERIC_Modality
             endTimes = cell2mat({event.etime}');
             certainties = cell2mat({event.certainty}');
             uniqueTypes = unique(types);
+            eventTypeDescriptions = strcat({'Event type: '}, uniqueTypes);
+            eventTags = java.util.HashMap;
+            eventTypeTags = java.util.HashMap;
             otherFields = setdiff(fieldnames(event), ...
                 {'type', 'position', 'stime', 'etime', 'certainty'})';
             % Now write to the database
             jEvent = edu.utsa.mobbed.Events(DB.getconnection());
             jEvent.reset(datasetUuid, startTimes, endTimes, positions, ...
-                positions,  certainties, uniqueTypes, types, ...
-                eventUuids, []);
+                positions,  certainties, eventTypeDescriptions, ...
+                uniqueTypes, types, eventUuids, eventTags, eventTypeTags);
             uniqueEvents = cell(jEvent.addEvents(true));
             for a = 1:length(otherFields)
                 values = cellfun(@num2str, {event.(otherFields{a})}', ...

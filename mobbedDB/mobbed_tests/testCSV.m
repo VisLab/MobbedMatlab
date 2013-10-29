@@ -1,4 +1,4 @@
-function test_suite = testGENERIC %#ok<STOUT>
+function test_suite = testCSV %#ok<STOUT>
 initTestSuite;
 
 function tStruct = setup %#ok<DEFNU>
@@ -27,4 +27,13 @@ try
     Mobbed.closeall();
 catch ME %#ok<NASGU>
 end
+
+function testNoEventTypeAndEventTags(tStruct)
+fprintf(['\nUnit test for CVS modality dataset with no event type and' ...
+    ' event tags:\n']);
+
+event_type_file = which ('events_types_no_tags.csv');
+event_file = which('events_no_tags.csv');
+data_file = which('data.csv');
+
 

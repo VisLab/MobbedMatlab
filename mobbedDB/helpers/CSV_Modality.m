@@ -33,7 +33,7 @@ classdef CSV_Modality
             eventTypes = eventTypes(1,2:end);
             eventTypes = vertcat(eventTypes{:});
             uniqueTypes = eventTypes(:, 1);
-            descriptions = eventTypes(:, 2);
+            eventTypeDescriptions = eventTypes(:, 2);
             eventTypeTags = eventTypes(:, 3:end);
             events = splitcsv(data.standardized_events);
             events = events(1,2:end);
@@ -45,8 +45,9 @@ classdef CSV_Modality
             types = events(:, 2);
             eventTags = unique(events(:, 3:end));
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
-                ureventPositions, positions, certainties, uniqueTypes, ...
-                types, eventUuids, eventTags, eventTypeTags);
+                ureventPositions, positions, certainties, ...
+                eventTypeDescriptions, uniqueTypes, types, eventUuids, ...
+                eventTags, eventTypeTags);
             uniqueEvents = cell(jEvent.addEvents(false));
         end % storeevents
                 
