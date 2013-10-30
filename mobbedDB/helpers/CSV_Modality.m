@@ -29,21 +29,34 @@ classdef CSV_Modality
                 
         function uniqueEvents = storeevents(datasetUuid, data, eventUuids)
             % Store the events of the CSV dataset
-            eventTypes = splitcsv(data.standardized_event_types);
-            eventTypes = eventTypes(1,2:end);
-            eventTypes = vertcat(eventTypes{:});
-            uniqueTypes = eventTypes(:, 1);
-            eventTypeDescriptions = eventTypes(:, 2);
-            eventTypeTags = eventTypes(:, 3:end);
-            events = splitcsv(data.standardized_events);
-            events = events(1,2:end);
-            events = vertcat(events{:});
-            [startTimes, endTimes] = events(:, 1);
-            ureventPositions = int64(1:size(events, 1))';
-            positions = int64(1:size(events, 1))';
-            certainties = ones(1, size(events, 1));
-            types = events(:, 2);
-            eventTags = unique(events(:, 3:end));
+            eTypeHeaderLines = 0;
+            if isfield(data.etype_spec, 'header_lines') && ...
+                    ~isempty(data.etype_spec.header_lines)                
+                eTypeHeaderLines = data.etype_spec.header_lines;
+            end
+            eventTypeValues = splitcsv(data.etype_spec.pathname);
+            eventTypeValues = eventTypeValues(1,eTypeHeaderLines+1:end);
+            eventTypeValues = vertcat(eventTypeValues{:});
+            eTypeDelimiter = '|';
+            if isfield(data.etype_spec, 'delimiter') && ...
+                    ~isempty(data.etype_spec.delimiter)
+                eTypeDelimiter = data.etype_spec.delimiter;
+            end
+            eTypeColumns = 1:size(eventTypeValues, 2);
+            if isfield(data.etype_spec, 'type_columns') && ...
+                    ~isempty(data.etype_spec.type_columns)
+                eTypeColumns = data.etype_spec.type_columns;
+            end
+            eTypeDescriptionColumn = 0;
+            if isfield(data.etype_spec, 'description_column') && ...
+                    ~isempty(data.etype_spec.description_column)
+                eTypeDescriptionColumn = data.etype_spec.description_column;
+            end
+            eTypeTagsColumn = 0;
+            if isfield(data.etype_spec, 'tags_column') && ...
+                    ~isempty(data.etype_spec.tags_column)
+                eTypeTagsColumn = data.etype_spec.tags_column;
+            end
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 ureventPositions, positions, certainties, ...
                 eventTypeDescriptions, uniqueTypes, types, eventUuids, ...
