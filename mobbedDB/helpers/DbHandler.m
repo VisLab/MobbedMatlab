@@ -17,6 +17,23 @@ classdef DbHandler
             warning on all;
         end % addjavapath
         
+        function default = setDefault(default, structure, field)
+            if isfield(structure, field) && ~isempty(structure.(field))
+                default = data.etype_spec.delimiter;
+            end
+        end
+        
+        function delimitedTypes = delimitTypes(delimiter, types)
+            delimitedTypes = cellfun(@num2str, types(:, 1), ...
+                'UniformOutput', false);
+            for a = 1:size(types,1)
+                for b = 2:size(types,2)
+                    delimitedTypes{a} = ...
+                        [delimitedTypes{a} delimiter num2str(types{a,b})];
+                end
+            end
+        end
+        
         function [mName, mUUID] = checkmodality(DB, modalityUUID)
             % Checks the given modality
             expr = ['^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-'...
@@ -67,20 +84,40 @@ classdef DbHandler
             end
         end % createjaggedarray
         
+        function eventTypeTags = extractcsvetypetags(types, tagsColumn, ...
+                eventTypeValues)
+            eventTypeTags = initializetypehashmap(unique(types));
+            if tagsColumn > 0
+                tagValues = eventTypeValues(:, tagsColumn);
+                tagValues = cellfun(@(x) strsplit(x, ','), tagValues, ...
+                    'UniformOutput', true);
+                for a = 1:length(types)
+                    typeTags = eventTypeTags.get(types{a});
+                    if ~isempty(typeTags)
+                        typeTags = cell(typeTags);
+                    end
+                    combinedTags = union(typeTags, tagValues{a});
+                    eventTypeTags.put(types, combinedTags);
+                end
+            end
+        end % extractcsvetypetags
+        
         function eventTags = extracteventtags(event)
             eventTags = java.util.HashMap;
-            for a = 1: length(event)
-                userTags = {};
-                hedTags = {};
-                if isfield(event, 'usertags') && ...
-                        ~isempty(event(a).usertags)
-                    userTags = strsplit(event(a).usertags, ',');
+            if isfield(event, 'usertags') || isfield(event, 'hedtags')
+                for a = 1: length(event)
+                    userTags = {};
+                    hedTags = {};
+                    if isfield(event, 'usertags') && ...
+                            ~isempty(event(a).usertags)
+                        userTags = strsplit(event(a).usertags, ',');
+                    end
+                    if isfield(event, 'hedtags') && ...
+                            ~isempty(event(a).hedtags)
+                        hedTags = strsplit(event(a).hedtags, ',');
+                    end
+                    eventTags.put(int64(a), union(userTags, hedTags));
                 end
-                if isfield(event, 'hedtags') && ...
-                        ~isempty(event(a).hedtags)
-                    hedTags = strsplit(event(a).hedtags, ',');
-                end
-                eventTags.put(int64(a), union(userTags, hedTags));
             end
         end % extractEventTags
         
@@ -109,20 +146,20 @@ classdef DbHandler
                 tagMapTags = {typeTagMaps(a).values.tags};
                 for b = 1:numUniqueTypes
                     typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
-                    if any(typeIndice) 
+                    if any(typeIndice)
                         typeTags = tagMapTags(typeIndice);
                         typeHashMapTags = typeHashMap.get(uniqueTypes{b});
                         if isempty(typeTags{1})
                             continue;
                         elseif iscellstr(typeTags{1})
                             typeTags = typeTags{1};
-                        end                        
+                        end
                         if ~isempty(typeHashMapTags)
                             typeHashMapTags = cell(typeHashMapTags);
                         end
                         combinedTags = union(typeTags, typeHashMapTags);
                         typeHashMap.put(uniqueTypes{b}, combinedTags);
-                    end                    
+                    end
                 end
             end
         end % extracteventtypetags
@@ -307,7 +344,7 @@ classdef DbHandler
         end % storefile
         
         function storezipfile(DB, entityUuid, filenames, ...
-                isAdditionalData)  
+                isAdditionalData)
             zipFileName = [tempname '.zip'];
             zip(zipFileName,filenames);
             edu.utsa.mobbed.Datadefs.storeBlob(DB.getconnection(), ...

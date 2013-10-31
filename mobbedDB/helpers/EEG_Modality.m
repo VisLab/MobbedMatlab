@@ -126,16 +126,9 @@ classdef EEG_Modality
             otherFields = setdiff(fields, {'type'; 'latency'});
             uniqueTypes = unique(types);
             eventTypeDescriptions = strcat({'Event type: '}, uniqueTypes);
-            eventTags = java.util.HashMap;
-            if isfield(event, 'usertags') || isfield(event, 'hedtags')
-                eventTags = DbHandler.extracteventtags(event);
-            end
-            eventTypeTags = java.util.HashMap;
-            if ~isempty(typeTagMaps)
-                eventTypeTags = ...
-                    DbHandler.extracteventtypetags(uniqueTypes, ...
-                    typeTagMaps);
-            end
+            eventTags = DbHandler.extracteventtags(event);
+            eventTypeTags = ...
+                DbHandler.extracteventtypetags(uniqueTypes, typeTagMaps);
             jEvent.reset(datasetUuid, startTimes, endTimes, ...
                 ureventPositions, positions, certainties, ...
                 eventTypeDescriptions, uniqueTypes, types, eventUuids, ...
