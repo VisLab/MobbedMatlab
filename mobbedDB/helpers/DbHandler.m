@@ -343,13 +343,12 @@ classdef DbHandler
             delete(fileName);
         end % storefile
         
-        function storezipfile(DB, entityUuid, filenames, ...
-                isAdditionalData)
-            zipFileName = [tempname '.zip'];
-            zip(zipFileName,filenames);
+        function storezipfile(DB, entityUuid, filenames, isAdditionalData)
+            zipFile = [tempname '.zip'];
+            zip(zipFile,filenames);
             edu.utsa.mobbed.Datadefs.storeBlob(DB.getconnection(), ...
-                zipFileName, entityUuid, isAdditionalData);
-            delete(zipFileName);
+                zipFile, entityUuid, isAdditionalData);
+            delete(zipFile);
         end % storezipfile
         
         function storenumericstream(DB, dataDefUuid, data, times)
