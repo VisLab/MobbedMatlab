@@ -48,7 +48,7 @@ classdef EEG_Modality
             end
             
             % Store as file
-            DbHandler.storefile(DB, datasetUuid, data, true);
+            DbHandler.storefile(DB, datasetUuid, data, false);
             if DB.Verbose
                 fprintf('Data saved to DB: %f seconds \n', toc(tStart));
             end

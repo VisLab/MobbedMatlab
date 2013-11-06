@@ -15,8 +15,7 @@ classdef CSV_Modality
             filenames = {data.etype_spec.pathname, ...
                 data.event_spec.pathname, data.data_spec.pathname};
             % Store as zip file
-            DbHandler.storezipfile(DB, datasetUuid, filenames, ...
-                isAdditionalData)
+            DbHandler.storezipfile(DB, datasetUuid, filenames, false);
             if DB.Verbose
                 fprintf('Data saved to DB: %f seconds \n', toc(tStart));
             end
@@ -24,21 +23,22 @@ classdef CSV_Modality
         
         function [uniqueTypes, tags, descriptions] = extracttypes(data)
             headerLines = DbHandler.setDefault(0, data, 'header_lines');
-            values = splitcsv(data.pathname);
-            values = values(1,headerLines+1:end);
-            values = vertcat(values{:});
+            values = csv2cell(data.pathname,'fromfile');
+            values = values(headerLines+1:end, :);
+            [~, columns] = size(values);
             delimiter = DbHandler.setDefault('|', data, 'delimiter');
-            typeColumns = DbHandler.setDefault(1:size(values, 2), data, ...
+            typeColumns = DbHandler.setDefault(1:columns, data, ...
                 'type_columns');
             descriptionColumn = DbHandler.setDefault(0, data, ...
                 'description_column');
-            tagsColumn = DbHandler.setDefault(0, data.etype_spec, ...
-                'tags_column');
-            types = delimitTypes(delimiter, values(:,typeColumns));
+            tagsColumn = DbHandler.setDefault(0, data, 'tags_column');
+            types = DbHandler.delimitValues(delimiter, ...
+                values(:,typeColumns));
             uniqueTypes = unique(types);
-            tags = extractcsvetypetags(types, tagsColumn, values);
+            tags = DbHandler.extractcsvetypetags(types, tagsColumn, ...
+                values);
             descriptions = strcat({'Event type: '}, uniqueTypes);
-            if descriptionColumn > 0
+            if descriptionColumn > 0 && descriptionColumn <= columns
                 descriptions = values(:, descriptionColumn);
             end
         end % extracttypes
@@ -46,9 +46,8 @@ classdef CSV_Modality
         function [types, positions, latencies, certainties, tags] = ...
                 extractevents(data)
             headerLines = DbHandler.setDefault(0, data, 'header_lines');
-            values = splitcsv(data.pathname);
-            values = values(1,headerLines+1:end);
-            values = vertcat(values{:});
+            values = csv2cell(data.pathname,'fromfile');
+            values = values(headerLines+1:end, :);
             [rows, columns] = size(values);
             delimiter = DbHandler.setDefault('|', data, 'delimiter');
             typeColumns = DbHandler.setDefault(1:columns, data, ...
@@ -61,22 +60,24 @@ classdef CSV_Modality
                 'hedtags_column');
             userTagsColumn = DbHandler.setDefault(0, data, ...
                 'usertags_column');
-            types = delimitTypes(delimiter, values(:,typeColumns));
-            positions = 1:rows;
-            latencies = values(:, latencyColumn);
+            types = DbHandler.delimitValues(delimiter, ...
+                values(:,typeColumns));
+            positions = int64(1:rows);
+            latencies = cellfun(@str2num, values(:, latencyColumn))';
             certainties = ones(1, size(values,1));
-            if certaintyColumn > 0
-                certainties = values(:, certaintyColumn);
+            if certaintyColumn > 0 && certaintyColumn <= columns
+                certainties =  cellfun(@str2num, ...
+                    values(:, certaintyColumn))';
             end
-            event.hedtags(rows) = [];
-            if hedTagsColumn > 0
+            event(rows).hedtags = [];
+            if hedTagsColumn > 0 && hedTagsColumn <= columns
                 hedTags = values(:, hedTagsColumn);
-                event.hedtags = deal(hedTags{:});
+                [event.hedtags] = deal(hedTags{:});
             end
-            event.usertags(rows) = [];
-            if userTagsColumn > 0
+            event(rows).usertags = [];
+            if userTagsColumn > 0 && userTagsColumn <= columns
                 userTags = values(:, userTagsColumn);
-                event.hedtags = deal(userTags{:});
+                [event.hedtags] = deal(userTags{:});
             end
             tags = DbHandler.extracteventtags(event);
         end % extractevents
@@ -87,13 +88,13 @@ classdef CSV_Modality
             [uniqueTypes, typeTags, typeDescriptions] = ...
                 CSV_Modality.extracttypes(data.etype_spec);
             [types, positions, latencies, certainties, eventTags] = ...
-                CSV_Modality.extractevents(data);
+                CSV_Modality.extractevents(data.event_spec);
             jEvent = edu.utsa.mobbed.Events(DB.getconnection());
             jEvent.reset(datasetUuid, latencies, latencies, ...
                 positions, positions, certainties, ...
                 typeDescriptions, uniqueTypes, types, ...
                 eventUuids, eventTags, typeTags);
-            uniqueEvents = cell(jEvent.addEvents(false));
+            uniqueEvents = cell(jEvent.addEvents(true));
         end % storeevents
         
     end

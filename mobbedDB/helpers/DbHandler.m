@@ -19,17 +19,17 @@ classdef DbHandler
         
         function default = setDefault(default, structure, field)
             if isfield(structure, field) && ~isempty(structure.(field))
-                default = data.etype_spec.delimiter;
+                default = structure.(field);
             end
         end
         
-        function delimitedTypes = delimitTypes(delimiter, types)
-            delimitedTypes = cellfun(@num2str, types(:, 1), ...
+        function delimitedValues = delimitValues(delimiter, values)
+            delimitedValues = cellfun(@num2str, values(:, 1), ...
                 'UniformOutput', false);
-            for a = 1:size(types,1)
-                for b = 2:size(types,2)
-                    delimitedTypes{a} = ...
-                        [delimitedTypes{a} delimiter num2str(types{a,b})];
+            for a = 1:size(values,1)
+                for b = 2:size(values,2)
+                    delimitedValues{a} = ...
+                        [delimitedValues{a} delimiter num2str(values{a,b})];
                 end
             end
         end
@@ -86,7 +86,7 @@ classdef DbHandler
         
         function eventTypeTags = extractcsvetypetags(types, tagsColumn, ...
                 eventTypeValues)
-            eventTypeTags = initializetypehashmap(unique(types));
+            eventTypeTags = DbHandler.initializetypehashmap(unique(types));
             if tagsColumn > 0
                 tagValues = eventTypeValues(:, tagsColumn);
                 tagValues = cellfun(@(x) strsplit(x, ','), tagValues, ...
@@ -302,7 +302,7 @@ classdef DbHandler
         function storedatadef(DB, datadefUuid, datadef, timestamps)
             % Stores data associated with a datadef
             if strcmpi(datadef.datadef_format, 'EXTERNAL')
-                DbHandler.storefile(DB, datadefUuid, datadef.data, false)
+                DbHandler.storefile(DB, datadefUuid, datadef.data, true);
             elseif strcmpi(datadef.datadef_format, 'NUMERIC_STREAM')
                 if isempty(datadef.datadef_sampling_rate) && ...
                         isempty(timestamps)

@@ -49,7 +49,8 @@ function values = splitcsv(filename)
         tline = fgetl(fid);
         while ischar(tline)   
             lineNum = lineNum + 1;
-            values{lineNum} = strtrim(regexp(tline, ',', 'split')); %#ok<AGROW>
+            value = strtrim(textscan(tline,'%q', 'delimiter',','))';
+            values{lineNum} = value{1}'; %#ok<AGROW>
             tline = fgetl(fid);
         end   
     catch ME %#ok<NASGU>

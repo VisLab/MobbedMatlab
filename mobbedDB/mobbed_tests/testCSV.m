@@ -28,7 +28,7 @@ try
 catch ME %#ok<NASGU>
 end
 
-function testNoEventTypeAndEventTags(tStruct)
+function testNoEventTypeAndEventTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for CVS modality dataset with no event type and' ...
     ' event tags:\n']);
 DB = tStruct.DB;
@@ -37,8 +37,10 @@ s1 = db2mat(DB);
 s1.dataset_name = 'csv no tags';
 s1.data = CSV;
 s1.dataset_modality_uuid = tStruct.mUUID;
+s1.data.etype_spec.header_lines = 1;
 s1.data.etype_spec.type_columns = [1,2,3];
 s1.data.etype_spec.pathname = which('event_types.csv');
+s1.data.event_spec.header_lines = 1;
 s1.data.event_spec.type_columns = [1,2,3];
 s1.data.event_spec.latency_column = 4;
 s1.data.event_spec.certainty_column = 5;
@@ -48,8 +50,29 @@ UUIDs = mat2db(DB, s1, 'IsUnique', false);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
-s2 = db2mat(DB, UUIDs);
-fprintf('--It should return a dataset that is equal\n');
-assertTrue(isequal(s1.data,s2.data));
 
-
+function testEventTypeAndEventTags(tStruct) %#ok<DEFNU>
+fprintf(['\nUnit test for CVS modality dataset with event type and' ...
+    ' event tags:\n']);
+DB = tStruct.DB;
+load csv_data.mat;
+s1 = db2mat(DB);
+s1.dataset_name = 'csv no tags';
+s1.data = CSV;
+s1.dataset_modality_uuid = tStruct.mUUID;
+s1.data.etype_spec.header_lines = 1;
+s1.data.etype_spec.type_columns = [1,2,3];
+s1.data.etype_spec.tags_columns = 4;
+s1.data.etype_spec.pathname = which('event_types.csv');
+s1.data.event_spec.header_lines = 1;
+s1.data.event_spec.type_columns = [1,2,3];
+s1.data.event_spec.latency_column = 4;
+s1.data.event_spec.certainty_column = 5;
+s1.data.event_spec.hedtags_column = 6;
+s1.data.event_spec.usertags_column = 7;
+s1.data.event_spec.pathname = which('events.csv');
+s1.data.data_spec.pathname = which('data.csv');
+UUIDs = mat2db(DB, s1, 'IsUnique', false);
+fprintf('--It should return a cell array containing one string uuid\n');
+assertTrue(iscellstr(UUIDs));
+assertEqual(1, length(UUIDs));

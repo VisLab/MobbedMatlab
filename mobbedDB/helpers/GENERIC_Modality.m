@@ -46,7 +46,7 @@ classdef GENERIC_Modality
             end
             
             % Store everything in a file
-            DbHandler.storefile(DB, datasetUuid, data, true);
+            DbHandler.storefile(DB, datasetUuid, data, false);
             if DB.Verbose
                 fprintf('Data saved to DB: %f seconds \n', toc(tStart));
             end
