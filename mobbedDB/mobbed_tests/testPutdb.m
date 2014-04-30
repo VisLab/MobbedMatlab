@@ -27,7 +27,7 @@ UUID = putdb(DB, 'datadefs', d);
 tStruct.datadef_uuid = UUID{1};
 
 d = getdb(DB, 'datasets', 0);
-d.dataset_name = randomClass.generateString;
+d.dataset_name = randomClass.generateUUID();
 d.dataset_description = 'reference dataset description ';
 UUID = putdb(DB, 'datasets', d);
 tStruct.dataset_uuid = UUID{1};
@@ -57,7 +57,7 @@ catch ME %#ok<NASGU>
 end
 
 function testAttributes(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with attributes:\n');
+fprintf('\nUnit test for putdb with attributes\n');
 
 fprintf('It should store a attribute\n');
 DB = tStruct.DB;
@@ -65,7 +65,7 @@ a1 = getdb(DB, 'attributes', 0);
 a1.attribute_entity_uuid = tStruct.element_uuid;
 a1.attribute_entity_class = 'elements';
 a1.attribute_organizational_uuid = tStruct.dataset_uuid;
-a1.attribute_path = '/Z';
+a1.attribute_path = '/EEG/element';
 a1.attribute_numeric_value = 1;
 a1.attribute_value = '1';
 UUIDs = putdb(DB, 'attributes', a1);
@@ -87,7 +87,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testCollections(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with collections:\n');
+fprintf('\nUnit test for putdb with collections\n');
 
 fprintf('It should store a collection\n');
 DB = tStruct.DB;
@@ -119,7 +119,7 @@ assertEqual(2, length(UUIDs));
 
 
 function testComments(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with comments:\n');
+fprintf('\nUnit test for putdb with comments\n');
 
 fprintf('It should store a comment\n');
 DB = tStruct.DB;
@@ -145,7 +145,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testContacts(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with contacts:\n');
+fprintf('\nUnit test for putdb with contacts\n');
 
 fprintf('It should store a contact\n');
 DB = tStruct.DB;
@@ -180,7 +180,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testDatadefs(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with datadefs:\n');
+fprintf('\nUnit test for putdb with datadefs\n');
 
 fprintf('It should store a datadef\n');
 DB = tStruct.DB;
@@ -206,7 +206,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testDatamaps(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with datamaps:\n');
+fprintf('\nUnit test for putdb with datamaps\n');
 
 fprintf('It should store a datamap\n');
 DB = tStruct.DB;
@@ -238,12 +238,12 @@ assertEqual(2, length(UUIDs));
 
 
 function testDatasets(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with datasets:\n');
+fprintf('\nUnit test for putdb with datasets\n');
 
 fprintf('It should store a dataset\n');
 DB = tStruct.DB;
 d1 = getdb(DB, 'datasets', 0);
-d1.dataset_name = randomClass.generateString;
+d1.dataset_name = randomClass.generateUUID();
 UUIDs = putdb(DB, 'datasets', d1);
 fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
@@ -262,7 +262,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testDevices(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with devices:\n');
+fprintf('\nUnit test for putdb with devices\n');
 
 fprintf('It should store a device\n');
 DB = tStruct.DB;
@@ -286,7 +286,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testElements(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with elements:\n');
+fprintf('\nUnit test for putdb with elements\n');
 fprintf('It should store a element\n');
 DB = tStruct.DB;
 e1 = getdb(DB, 'elements', 0);
@@ -313,7 +313,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testEvents(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with events:\n');
+fprintf('\nUnit test for putdb with events\n');
 
 fprintf('It should store a event\n');
 DB = tStruct.DB;
@@ -342,7 +342,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testEventTypes(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with event types:\n');
+fprintf('\nUnit test for putdb with event types\n');
 
 fprintf('It should store a event type\n');
 DB = tStruct.DB;
@@ -367,7 +367,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testModalities(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with modalities:\n');
+fprintf('\nUnit test for putdb with modalities\n');
 
 fprintf('It should store a modality\n');
 DB = tStruct.DB;
@@ -393,7 +393,7 @@ assertEqual(1, length(UUIDs));
 
 
 function testSubjects(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with subjects:\n');
+fprintf('\nUnit test for putdb with subjects\n');
 
 fprintf('It should store a subject\n');
 DB = tStruct.DB;
@@ -417,38 +417,31 @@ assertEqual(1, length(UUIDs));
 
 
 function testTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with tags:\n');
+fprintf('\nUnit test for putdb with tags\n');
 
 fprintf('It should store a tag\n');
 DB = tStruct.DB;
 t1 = getdb(DB, 'tags', 0);
-t1.tag_name = 'test tag';
-t1.tag_entity_uuid = tStruct.dataset_uuid;
-t1.tag_entity_class = 'datasets';
+t1.tag_name = randomClass.generateString;
 UUIDs = putdb(DB, 'tags', t1);
-fprintf(['--It should return a cell array containing two comma' ...
-    ' separated string uuids\n']);
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
-UUIDs = regexp(UUIDs{1}, ',', 'split');
-assertEqual(2, length(UUIDs));
+assertEqual(1, length(UUIDs));
 
 
 fprintf('It should update a tag\n');
 t2 = getdb(DB, 'tags', 0);
-t2.tag_name = UUIDs{1};
-t2.tag_entity_uuid = UUIDs{2};
+t2.tag_uuid = UUIDs{1};
 t2 = getdb(DB, 'tags', 1, t2);
-t2.tag_name = 'update tag';
+t2.tag_name = randomClass.generateString;
 UUIDs  = putdb(DB, 'tags', t2);
-fprintf(['--It should return a cell array containing two comma' ...
-    ' separated string uuids\n']);
+fprintf('--It should return a cell array containing one string uuid\n');
 assertTrue(iscellstr(UUIDs));
-UUIDs = regexp(UUIDs{1}, ',', 'split');
-assertEqual(2, length(UUIDs));
+assertEqual(1, length(UUIDs));
 
 
 function testTransforms(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for putdb with transforms:\n');
+fprintf('\nUnit test for putdb with transforms\n');
 
 fprintf('It should store a transform\n');
 DB = tStruct.DB;

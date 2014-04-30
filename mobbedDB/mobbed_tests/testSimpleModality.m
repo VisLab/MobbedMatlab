@@ -1,4 +1,4 @@
-function test_suite = testSimple  %#ok<STOUT>
+function test_suite = testSimpleModality  %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test
@@ -36,13 +36,11 @@ end
 
 function testModalityUuid(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a simple modality dataset by' ...
-    ' specifying the modality uuid:\n']);
-fprintf(['It should store a simple modality dataset using the modality' ...
-    ' uuid\n']);
+    ' specifying the modality uuid\n']);
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'simple modality dataset using uuid';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 UUIDs = mat2db(DB, s1, 'IsUnique', false);
@@ -57,13 +55,11 @@ assertEqual(s2.dataset_modality_uuid,tStruct.mUUID);
 
 function testModalityName(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for storing a simple modality dataset by' ...
-    ' specifying the modality name instead of its modality uuid:\n']);
-fprintf(['It should store a simple modality dataset using the modality' ...
-    ' name\n']);
+    ' specifying the modality name instead of its modality uuid\n']);
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'simple modality dataset using name';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = 'SIMPLE';
 UUIDs = mat2db(DB, s1, 'IsUnique', false);

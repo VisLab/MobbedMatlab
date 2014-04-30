@@ -30,7 +30,7 @@ end
 
 function testNoEventTypeAndEventTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for CVS modality dataset with no event type and' ...
-    ' event tags:\n']);
+    ' event tags\n']);
 DB = tStruct.DB;
 load csv_data.mat;
 s1 = db2mat(DB);
@@ -53,7 +53,7 @@ assertEqual(1, length(UUIDs));
 
 function testEventTypeAndEventTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for CVS modality dataset with event type and' ...
-    ' event tags:\n']);
+    ' event tags\n']);
 DB = tStruct.DB;
 load csv_data.mat;
 s1 = db2mat(DB);

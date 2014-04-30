@@ -28,33 +28,33 @@ catch ME %#ok<NASGU>
 end
 
 function testMultipleDatasets(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with multiple datasets:\n');
-fprintf('It should store multiple datasets in a structure array\n');
+fprintf('\nUnit test for mat2db with multiple datasets\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 s(1) = db2mat(DB);
-s(1).dataset_name = 'dataset 1';
+s(1).dataset_name = randomClass.generateUUID();
 s(1).data = EEG;
 s(2) = db2mat(DB);
-s(2).dataset_name = 'dataset 2';
+s(2).dataset_name = randomClass.generateUUID();
 s(2).data = EEG;
 UUIDs = mat2db(DB, s, 'IsUnique', false);
+fprintf('--It should return a cell array containing two string uuids\n');
 assertTrue(isequal(length(UUIDs), 2));
 assertFalse(isequal(UUIDs{1}, UUIDs{2}));
 
 function testDuplicateDataset(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with duplicate dataset:\n');
-fprintf('It should store a duplicate dataset\n');
+fprintf('\nUnit test for mat2db with duplicate dataset\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
+duplicate_name = randomClass.generateUUID();
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db duplicate dataset';
+s1.dataset_name = duplicate_name;
 s1.data = EEG;
 UUIDs = mat2db(DB, s1, 'IsUnique', false);
 s1 = db2mat(DB, UUIDs);
 version1 = str2double(s1.dataset_version);
 s2 = db2mat(DB);
-s2.dataset_name = 'mat2db duplicate dataset';
+s2.dataset_name = duplicate_name;
 s2.data = EEG;
 UUIDs = mat2db(DB, s2, 'IsUnique', false);
 s2 = db2mat(DB, UUIDs);
@@ -65,29 +65,27 @@ assertEqual(version1 + 1, version2);
 
 
 function testUniqueDatasetException(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with unique dataset exception:\n');
-fprintf(['It should throw an exception when storing a unique dataset' ...
-    ' whose namespace and name combination already exist\n']);
+fprintf('\nUnit test for mat2db with unique dataset exception\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
+duplicate_name = randomClass.generateUUID();
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db unique dataset';
+s1.dataset_name = duplicate_name;
 s1.data = EEG;
 mat2db(DB, s1, 'IsUnique', false);
 s2 = db2mat(DB);
-s2.dataset_name = 'mat2db unique dataset';
+s2.dataset_name = duplicate_name;
 s2.data = EEG;
 fprintf('--It should throw an exception and not store the dataset\n');
 assertExceptionThrown(@() error(mat2db(DB, s2)), ...
     'MATLAB:Java:GenericException');
 
 function testTags(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with tags:\n');
-fprintf('It should store a dataset with tags\n');
+fprintf('\nUnit test for mat2db with tags\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db with tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 mat2db(DB, s1, 'IsUnique', false, 'Tags', {'tag1', 'tag2'});
 fprintf(['--It should retrieve a dataset by the tags that were' ...
@@ -96,12 +94,11 @@ s2 = getdb(DB, 'datasets', 1, 'Tags', {'tag1', 'tag2'});
 assertTrue(~isempty(s2));
 
 function testRollback(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for mat2db with rollback:\n');
-fprintf('It should rollback the transaction when mat2db fails\n');
+fprintf('\nUnit test for mat2db with rollback\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'mat2db with rollback';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 numchans = length(s1.data.chanlocs);
 s1.data.chanlocs(numchans+1) = s1.data.chanlocs(1);

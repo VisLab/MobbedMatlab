@@ -7,7 +7,7 @@ classdef SIMPLE_Modality
                 eventUuids)  %#ok<INUSD>
             tStart = tic;
             uniqueEvents = {};
-            DbHandler.storefile(DB, datasetUuid, data, true);
+            DbHandler.storefile(DB, datasetUuid, data, false);
             if DB.Verbose
                 fprintf('Data saved to DB: %f seconds \n', toc(tStart));
             end

@@ -28,8 +28,7 @@ catch ME %#ok<NASGU>
 end
 
 function testNumericStream(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for db2data with numeric stream format:\n');
-fprintf('It should store a datadef that is numeric stream format\n');
+fprintf('\nUnit test for db2data with numeric stream format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -47,8 +46,7 @@ fprintf('--It should retrieve a datadef that is equal\n');
 assertElementsAlmostEqual(sdef.data, sdef2.data);
 
 function testNumericValue(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for db2data with numeric value format:\n');
-fprintf('It should store a datadef that is numeric value format\n');
+fprintf('\nUnit test for db2data with numeric value format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -65,8 +63,7 @@ fprintf('--It should retrieve a datadef that is equal\n');
 assertElementsAlmostEqual(sdef.data, sdef2.data);
 
 function testExternal(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for db2data with external format:\n');
-fprintf('It should store a datadef that is external format\n');
+fprintf('\nUnit test for db2data with external format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -85,8 +82,7 @@ fprintf('--It should retrieve a datadef that is equal\n');
 assertTrue(isequal(sdef.data, sdef2.data));
 
 function testXMLValue(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for db2data with xml value format:\n');
-fprintf('It should store a datadef that is xml value format\n');
+fprintf('\nUnit test for db2data with xml value format\n');
 DB = tStruct.DB;
 sdef = db2data(DB);
 sdef.datadef_format = 'XML_VALUE';

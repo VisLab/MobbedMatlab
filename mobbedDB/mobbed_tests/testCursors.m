@@ -11,12 +11,12 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 % Create connection object (create database first if doesn't exist)
 try
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, false);
+        tStruct.password, true);
 end
 tStruct.DB = DB;
 
@@ -28,19 +28,18 @@ catch ME %#ok<NASGU>
 end
 
 function testCursor(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with cursor:\n');
-fprintf('It should retrieve datasets using a cursor\n');
+fprintf('\nUnit test for getdb with cursor\n');
 DB = tStruct.DB;
-dataset.dataset_name = 'cursor_dataset*';
+dataset.dataset_name = 'cursor_dataset';
 s1 = getdb(DB, 'datasets', 1, dataset, 'RegExp', 'on');
 if isempty(s1)
     dataset = getdb(DB, 'datasets', 0);
-    for a = 1:50
+    for a = 150
         dataset.dataset_name = ['cursor_dataset' num2str(a)];
         putdb(DB, 'datasets', dataset);
     end
 end
-tempdataset.dataset_name = 'cursor_dataset*';
+tempdataset.dataset_name = 'cursor_dataset';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
     ' 30\n'])
 s1 = getdb(DB, 'datasets', 30, tempdataset, 'RegExp', 'on', ...
@@ -53,19 +52,18 @@ s2 = getdb(DB, 'datasets', 30, 'RegExp', 'on', ...
 assertEqual(length(s2), 20);
 
 function testCloseCursor(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for close with cursor that exists:\n');
-fprintf('It should close a cursor that exists\n');
+fprintf('\nUnit test for close with cursor that exists\n');
 DB = tStruct.DB;
-dataset.dataset_name = 'close_dataset*';
+dataset.dataset_name = 'close_dataset';
 s1 = getdb(DB, 'datasets', 1, dataset, 'RegExp', 'on');
 if isempty(s1)
     dataset = getdb(DB, 'datasets', 0);
-    for a = 1:50
+    for a = 150
         dataset.dataset_name = ['close_dataset' num2str(a)];
         putdb(DB, 'datasets', dataset);
     end
 end
-tempdataset.dataset_name = 'close_dataset*';
+tempdataset.dataset_name = 'close_dataset';
 fprintf(['--It should retrieve the same number of rows as the limit' ...
     ' 30\n'])
 s1 = getdb(DB, 'datasets', 30, tempdataset, 'RegExp', 'on', ...
@@ -79,9 +77,7 @@ s2 = getdb(DB, 'datasets', 30, 'RegExp', 'on', ...
 assertEqual(length(s2), 30);
 
 function testCloseInvalidCursor(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for close with cursor that does not exist:\n');
-fprintf(['It should throw an exception when closing a cursor that does' ...
-    ' not exist\n']);
+fprintf('\nUnit test for close with cursor that does not exist\n');
 DB = tStruct.DB;
 fprintf(['--It should throw an exception because the cursor does not' ...
     ' exist\n'])

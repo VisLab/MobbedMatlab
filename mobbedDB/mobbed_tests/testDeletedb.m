@@ -23,8 +23,6 @@ end
 
 function testNotExist(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for deleting a database that does not exists:\n');
-fprintf(['It should throw an exception when deleting a database that' ...
-    ' does not exist\n']);
 fprintf(['--It should throw an exception and a database should not be' ...
     ' deleted\n'])
 tStruct.DB.close();

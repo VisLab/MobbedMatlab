@@ -22,9 +22,7 @@ catch ME %#ok<NASGU>
 end
 
 function testAlreadyExist(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for creating a database that already exits:\n');
-fprintf(['It should throw an exception when creating a database that' ...
-    ' already exists\n']);
+fprintf('\nUnit test for creating a database that already exits\n');
 fprintf(['--It should throw an exception and a database should not be' ...
     ' created\n'])
 assertExceptionThrown(...

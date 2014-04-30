@@ -218,10 +218,33 @@ WITH (
 -- execute
 CREATE TABLE tags
 (
-  tag_name character varying,
+  tag_uuid uuid, 
+  tag_name varchar UNIQUE NOT NULL,
+  CONSTRAINT tags_pkey PRIMARY KEY (tag_uuid)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- execute
+CREATE TABLE tag_entities
+(
   tag_entity_uuid uuid,
-  tag_entity_class character varying,
-  PRIMARY KEY (tag_name, tag_entity_uuid)
+  tag_entity_tag_uuid uuid, 
+  tag_entity_class varchar NOT NULL,
+  CONSTRAINT tag_entities_pkey PRIMARY KEY (tag_entity_uuid, tag_entity_tag_uuid)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- execute
+CREATE TABLE tag_groups
+(
+  tag_group_uuid uuid,
+  tag_group_tag_uuid uuid, 
+  tag_group varchar,
+  CONSTRAINT tag_groups_pkey PRIMARY KEY (tag_group_uuid, tag_group_tag_uuid)
 )
 WITH (
   OIDS=FALSE
@@ -266,26 +289,43 @@ WITH (
 
 -- execute
 ALTER TABLE collections ADD FOREIGN KEY (collection_uuid) REFERENCES datasets (dataset_uuid);
+
 -- execute
 ALTER TABLE comments ADD FOREIGN KEY (comment_contact_uuid) REFERENCES contacts (contact_uuid);
+
 -- execute
 ALTER TABLE datamaps ADD FOREIGN KEY (datamap_def_uuid) REFERENCES datadefs (datadef_uuid);
+
 -- execute
 ALTER TABLE datasets ADD FOREIGN KEY (dataset_contact_uuid) REFERENCES contacts (contact_uuid);
+
 -- execute
 ALTER TABLE datasets ADD FOREIGN KEY (dataset_modality_uuid) REFERENCES modalities (modality_uuid);
+
 -- execute
 ALTER TABLE devices ADD FOREIGN KEY (device_contact_uuid) REFERENCES contacts (contact_uuid);
+
 -- execute
 ALTER TABLE events ADD FOREIGN KEY (event_type_uuid) REFERENCES event_types (event_type_uuid);
--- execute
-ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_datadef_uuid) REFERENCES datadefs (datadef_uuid);
+
 -- execute
 ALTER TABLE numeric_streams ADD FOREIGN KEY (numeric_stream_datadef_uuid) REFERENCES datadefs (datadef_uuid);
+
+-- execute
+ALTER TABLE numeric_values ADD FOREIGN KEY (numeric_value_datadef_uuid) REFERENCES datadefs (datadef_uuid);
+
+-- execute
+ALTER TABLE tag_entities ADD FOREIGN KEY (tag_entity_tag_uuid) REFERENCES tags (tag_uuid);
+
+-- execute
+ALTER TABLE tag_groups ADD FOREIGN KEY (tag_group_tag_uuid) REFERENCES tags (tag_uuid);
+
 -- execute
 ALTER TABLE transforms ADD FOREIGN KEY (transform_uuid) REFERENCES datasets (dataset_uuid);
+
 -- execute
 ALTER TABLE xml_values ADD FOREIGN KEY (xml_value_datadef_uuid) REFERENCES datadefs (datadef_uuid);
+
 -- execute
 ALTER TABLE xml_streams ADD FOREIGN KEY (xml_stream_datadef_uuid) REFERENCES datadefs (datadef_uuid);
 

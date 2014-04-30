@@ -38,13 +38,11 @@ end
 
 function testEventTagsSummarytags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that has summary tags' ...
-    ' associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that has summary tags' ...
-    ' associated with its events:\n']);
+    ' associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_summary_tags1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -54,13 +52,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsMultipleFieldMaps(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that has summary tags' ...
-    ' in multiple fieldMaps associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that has summary tags' ...
-    ' in multiple fieldMaps associated with its events:\n']);
+    ' in multiple fieldMaps associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_summary_tags2.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -70,13 +66,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsSummaryNoTypeTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that has summary tags' ...
-    '  that are not types associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that has summary tags' ...
-    ' that are not types associated with its events:\n']);
+    '  that are not types associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_summary_tags3.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -86,13 +80,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsHedtags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that has hedtags' ...
-    ' associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that has hedtags' ...
-    ' associated with its events:\n']);
+    ' associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_individual_tags1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -102,13 +94,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsUsertags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that have usertags' ...
-    ' associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that have usertags' ...
-    ' associated with its events:\n']);
+    ' associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_individual_tags2.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -118,13 +108,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsHedtagsUserTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that have hedtags and' ...
-    ' usertags associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that have hedtags and' ...
-    ' usertags associated with its events:\n']);
+    ' usertags associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_individual_tags3.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);
@@ -134,13 +122,11 @@ assertTrue(isequal(totalTags, dbtagCount));
 
 function testEventTagsBothtags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for EEG modality dataset that have summary tags' ...
-    'and usertags associated with its events:\n']);
-fprintf(['It should store a EEG modality dataset that have summary ' ...
-    ' tags and usertags associated with its events:\n']);
+    'and usertags associated with its events\n']);
 DB = tStruct.DB;
 load eeglab_data_both_tags1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'EEG event tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = EEG;
 s1.dataset_modality_uuid = tStruct.mUUID;
 mat2db(DB, s1, 'IsUnique', false);

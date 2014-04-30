@@ -28,8 +28,7 @@ catch ME %#ok<NASGU>
 end
 
 function testNumericStream(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for data2db with numeric stream format:\n');
-fprintf('It should store a datadef that is numeric stream format\n');
+fprintf('\nUnit test for data2db with numeric stream format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -43,8 +42,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 
 function testNumericValue(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for data2db with numeric value format:\n');
-fprintf('It should store a datadef that is numeric value format\n');
+fprintf('\nUnit test for data2db with numeric value format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -57,8 +55,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 
 function testExternal(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for data2db with external format:\n');
-fprintf('It should store a datadef that is external format\n');
+fprintf('\nUnit test for data2db with external format\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
@@ -71,8 +68,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 
 function testXMLValue(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for data2db with xml value format:\n');
-fprintf('It should store a datadef that is xml value format\n');
+fprintf('\nUnit test for data2db with xml value format\n');
 DB = tStruct.DB;
 sdef = db2data(DB);
 sdef.datadef_format = 'XML_VALUE';
@@ -84,8 +80,7 @@ assertTrue(iscellstr(UUIDs));
 assertEqual(1, length(UUIDs));
 
 function testRollback(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for data2db with rollback:\n');
-fprintf('It should rollback the transaction when data2db fails\n');
+fprintf('\nUnit test for data2db with rollback\n');
 DB = tStruct.DB;
 load eeg_data_ch1.mat;
 sdef = db2data(DB);
