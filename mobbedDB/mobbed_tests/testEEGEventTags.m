@@ -1,4 +1,4 @@
-function test_suite = testEEGEventTags  %#ok<STOUT>
+function test_suite = testEegEventTags  %#ok<STOUT>
 initTestSuite;
 
 % Function executed before each test

@@ -37,7 +37,7 @@ e3.event_type_description = 'event type description: event type 3';
 eventTypeUuid3 = putdb(DB, 'event_types', e3);
 
 d = getdb(DB, 'datasets', 0);
-d.dataset_name = randomClass.generateString();
+d.dataset_name = randomClass.generateUUID();
 d.dataset_description = 'reference dataset description ';
 d.dataset_uuid = putdb(DB, 'datasets', d);
 datasetUuid = d.dataset_uuid{1};
