@@ -11,12 +11,12 @@ tStruct = struct('name', 'testdb', 'url', 'localhost', ...
 % Create connection object (create database first if doesn't exist)
 try
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, true);
+        tStruct.password, false);
 catch ME %#ok<NASGU>
     Mobbed.createdb(tStruct.name, tStruct.url, tStruct.user, ...
         tStruct.password, 'mobbed.sql', false);
     DB = Mobbed(tStruct.name, tStruct.url, tStruct.user, ...
-        tStruct.password, true);
+        tStruct.password, false);
 end
 tStruct.DB = DB;
 
@@ -84,9 +84,7 @@ catch ME %#ok<NASGU>
 end
 
 function testSearch(tStruct) %#ok<DEFNU>
-fprintf('\nUnit test for getdb with double search:\n');
-fprintf(['It should extract events that have a start time of' ...
-    ' 1,2 or 3 seconds\n']);
+fprintf('\nUnit test for getdb with double search\n');
 DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
 s.event_dataset_uuid = tStruct.datasetUuid;
@@ -96,8 +94,6 @@ fprintf(['--It should return a structure array containing three' ...
     ' events with a start time of 1,2, or 3 seconds\n']);
 assertEqual(length(sNew), 3);
 
-fprintf(['It should extract events that have a start and end' ...
-    ' time of 1 or 2 seconds\n']);
 DB = tStruct.DB;
 s = getdb(DB, 'events', 0);  
 s.event_dataset_uuid = tStruct.datasetUuid;
@@ -108,8 +104,6 @@ fprintf(['--It should return a structure array containing two' ...
     ' events with a start and end time of 1 or 2 seconds\n']);
 assertEqual(length(sNew), 2);
 
-fprintf(['It should extract events that have a start time' ...
-    ' within a second of 1,2 or 3 seconds\n']);
 s = getdb(DB, 'events', 0); 
 s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time.values = [1, 2, 3]; 
@@ -119,8 +113,6 @@ fprintf(['--It should return a structure array containing three events' ...
     ' that have a start time within a second of 1,2, or 3 seconds\n']);
 assertEqual(length(sNew), 3);
 
-fprintf(['It should extract events that have a start and end' ...
-    ' time within a second of 1,2 or 3 seconds\n']);
 s = getdb(DB, 'events', 0); 
 s.event_dataset_uuid = tStruct.datasetUuid;
 s.event_start_time.values = [1, 2, 3]; 
