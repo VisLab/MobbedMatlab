@@ -123,42 +123,49 @@ classdef DbHandler
         
         function typeTagMaps = extracttypetagmaps(fieldMaps)
             % Extracts the type tagMap
+            containsType = false;
             typeTagMaps = struct('field', [], 'values', []);
             numFieldMaps = length(fieldMaps);
             b = 1;
             for a = 1:numFieldMaps
                 eventFields = {fieldMaps(a).map.field};
                 if any(strcmpi('type', eventFields))
+                    containsType = true;
                     typeIndecie = strcmpi('type', eventFields);
                     typeTagMaps(b) = fieldMaps(a).map(typeIndecie);
                     b = b + 1;
                 end
+            end
+            if ~containsType
+                typeTagMaps = [];
             end
         end % extracttypetagmaps
         
         function typeHashMap = extracteventtypetags(uniqueTypes, ...
                 typeTagMaps)
             typeHashMap = DbHandler.initializetypehashmap(uniqueTypes);
-            numTypeTagMaps = length(typeTagMaps);
-            numUniqueTypes = length(uniqueTypes);
-            for a = 1:numTypeTagMaps
-                tagMapTypes = {typeTagMaps(a).values.label};
-                tagMapTags = {typeTagMaps(a).values.tags};
-                for b = 1:numUniqueTypes
-                    typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
-                    if any(typeIndice)
-                        typeTags = tagMapTags(typeIndice);
-                        typeHashMapTags = typeHashMap.get(uniqueTypes{b});
-                        if isempty(typeTags{1})
-                            continue;
-                        elseif iscellstr(typeTags{1})
-                            typeTags = typeTags{1};
+            if ~isempty(typeTagMaps)
+                numTypeTagMaps = length(typeTagMaps);
+                numUniqueTypes = length(uniqueTypes);
+                for a = 1:numTypeTagMaps
+                    tagMapTypes = {typeTagMaps(a).values.label};
+                    tagMapTags = {typeTagMaps(a).values.tags};
+                    for b = 1:numUniqueTypes
+                        typeIndice = strcmpi(uniqueTypes{b}, tagMapTypes);
+                        if any(typeIndice)
+                            typeTags = tagMapTags(typeIndice);
+                            typeHashMapTags = typeHashMap.get(uniqueTypes{b});
+                            if isempty(typeTags{1})
+                                continue;
+                            elseif iscellstr(typeTags{1})
+                                typeTags = typeTags{1};
+                            end
+                            if ~isempty(typeHashMapTags)
+                                typeHashMapTags = cell(typeHashMapTags);
+                            end
+                            combinedTags = union(typeTags, typeHashMapTags);
+                            typeHashMap.put(uniqueTypes{b}, combinedTags);
                         end
-                        if ~isempty(typeHashMapTags)
-                            typeHashMapTags = cell(typeHashMapTags);
-                        end
-                        combinedTags = union(typeTags, typeHashMapTags);
-                        typeHashMap.put(uniqueTypes{b}, combinedTags);
                     end
                 end
             end

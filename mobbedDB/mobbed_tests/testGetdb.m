@@ -31,9 +31,123 @@ function testExactMatchTags(tStruct) %#ok<DEFNU>
 fprintf('\nUnit test for getdb with tags that are a exact match\n');
 DB = tStruct.DB;
 s1 = db2mat(DB);
-s1.dataset_name = 'dataset with exact match tag';
-mat2db(DB, s1, 'IsUnique', false, 'Tags', 'ExactMatchTag');
-s2 = getdb(DB, 'datasets', 1, 'Tags', {{'ExactMatchTag'}});
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', 'a/b/c');
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'Tags', {{'a/b/c'}});
 fprintf('--It should return a structure array that contains a dataset\n');
-assertTrue(isstruct(s2));
-assertEqual(1, length(s2));
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testExactMatchORTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a exact match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'Tags', {{'a/b/c','d/e/f/g'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testExactMatchANDTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a exact match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'Tags', {{'a/b/c'},{'d/e/f/g'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testPrefixMatchTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a prefix match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', 'a/b/c');
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'prefix','Tags', ...
+    {{'a/b/'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testPrefixMatchORTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a prefix match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'prefix','Tags', ...
+    {{'a/','d/e/'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testPrefixMatchANDTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a prefix match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false,'Tags', ...
+    {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'prefix','Tags', ...
+    {{'a/'},{'d/e/'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testWordMatchTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a word match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', 'a/b/c');
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'word','Tags', ...
+    {{'c'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testWordMatchORTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a word match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false, 'Tags', {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'word','Tags', ...
+    {{'a','g/'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));
+
+function testWordMatchANDTags(tStruct) %#ok<DEFNU>
+fprintf('\nUnit test for getdb with tags that are a prefix match\n');
+DB = tStruct.DB;
+s1 = db2mat(DB);
+s1.dataset_name = randomClass.generateUUID();
+UUID = mat2db(DB, s1, 'IsUnique', false,'Tags', ...
+    {'a/b/c','d/e/f/g'});
+s2 = getdb(DB, 'datasets', 0);
+s2.dataset_uuid = UUID{1};
+s3 = getdb(DB, 'datasets', inf, s2, 'TagMatch', 'word','Tags', ...
+    {{'c'},{'d'}});
+fprintf('--It should return a structure array that contains a dataset\n');
+assertTrue(isstruct(s3));
+assertEqual(1, length(s3));

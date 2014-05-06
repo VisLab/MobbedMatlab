@@ -32,9 +32,9 @@ function testNoEventTypeAndEventTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for CVS modality dataset with no event type and' ...
     ' event tags\n']);
 DB = tStruct.DB;
-load csv_data.mat;
+load csv_data1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'csv no tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = CSV;
 s1.dataset_modality_uuid = tStruct.mUUID;
 s1.data.etype_spec.header_lines = 1;
@@ -55,9 +55,9 @@ function testEventTypeAndEventTags(tStruct) %#ok<DEFNU>
 fprintf(['\nUnit test for CVS modality dataset with event type and' ...
     ' event tags\n']);
 DB = tStruct.DB;
-load csv_data.mat;
+load csv_data1.mat;
 s1 = db2mat(DB);
-s1.dataset_name = 'csv no tags';
+s1.dataset_name = randomClass.generateUUID();
 s1.data = CSV;
 s1.dataset_modality_uuid = tStruct.mUUID;
 s1.data.etype_spec.header_lines = 1;
